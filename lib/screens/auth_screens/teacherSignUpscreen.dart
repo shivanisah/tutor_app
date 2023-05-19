@@ -52,7 +52,7 @@ File? imageFile;
     setState(() {
       _image = pickedImageFile;
       loading=false;
-    });
+    });   
   }
 @override
 void dispose(){
@@ -576,7 +576,9 @@ Column(
                         // }
                                       if(_formKey.currentState!.validate()){
                                        provider.userSignup(context,name.text.toString(),number.text.toString(),email.text.toString(),address.text.toString(), 
-                                       passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile);
+                                       passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile,
+                                       selectedGrade,selectedSubjects
+                                       );
                         
                                     }
                                     }catch (e){

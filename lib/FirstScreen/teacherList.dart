@@ -123,11 +123,11 @@ class _TeachersListState extends State<TeachersList> {
 
                                     SizedBox(height:10),
 
-                                    Text(snapshot.data![i]["gender"]),
+                                    // Text(snapshot.data![i]["gender"]),
 
                                     SizedBox(height:10),
 
-                                    Text(snapshot.data![i]["address"]),
+                                    Text(snapshot.data![i]["email"]),
 
                                   ],)
                             )

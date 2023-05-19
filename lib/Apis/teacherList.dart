@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class TeacherList{
   // String baseUrl = "'https://jsonplaceholder.typicode.com/todos/1'";
-  String baseUrl= 'http://192.168.1.66:8000/teacher/';
+  String baseUrl= 'http://192.168.1.81:8000/teacher/';
 
   Future<List<dynamic>> getAllTeacher() async {
   try {

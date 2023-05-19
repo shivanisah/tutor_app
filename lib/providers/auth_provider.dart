@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 
 import '../FirstScreen/Home.dart';
@@ -129,18 +130,33 @@ Future<void> userSignup(
   String password,
   String confirmpassword,
   File? image,
-) async {
+  String selectedGrade,
+  List<String> selectedSubjects,
+)async {
+  var position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  var latitude = position.latitude;
+  var longitude = position.longitude;
+ 
+
+
   var request = http.MultipartRequest(
     'POST',
     Uri.parse(AppUrl.teacherregisterApiEndPoint),
   );
-
+  request.fields['latitude'] = latitude.toString();
+  request.fields['longitude'] = longitude.toString();
   request.fields['full_name'] = name;
   request.fields['phone_number'] = number;
   request.fields['email'] = email;
   request.fields['password'] = password;
   request.fields['address'] = address;
   request.fields['password_confirmation'] = confirmpassword;
+  request.fields['grade'] = selectedGrade;
+  request.fields['subjects'] = selectedSubjects.join(',');
+
 
   if (image != null) {
     var stream = http.ByteStream(image.openRead());

@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/FirstScreen/search.dart';
 import 'package:tutor_app/FirstScreen/teacherList.dart';
 
+import '../location/teachermap_page.dart';
 import 'appBar.dart';
-
+import 'package:http/http.dart' as http;
 
 class Home extends StatelessWidget{
   @override
@@ -94,6 +96,22 @@ class Home extends StatelessWidget{
                     // ),
 
                   ),
+
+                  // button for getting students current location
+                  SizedBox(height:30),
+
+                    ElevatedButton(
+            onPressed:()
+            // getCurrentLocationAndFindTeachers,
+            {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>TeacherMapPage()),
+              );
+
+            },
+                      child: Text('Find Nearby Teachers'),
+                    ),
                   SizedBox(height:30),
                   Container(
                       height:50,
@@ -140,4 +158,47 @@ class Home extends StatelessWidget{
       ) ;
 
   }
+
+void getCurrentLocationAndFindTeachers() async {
+  // Check if location services are enabled
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are disabled, handle this case
+    return;
+  }
+
+  // Check for permission to access the location
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.deniedForever) {
+    // Location permission is permanently denied, handle this case
+    return;
+  }
+  if (permission == LocationPermission.denied) {
+    // Location permission is denied, request it
+    permission = await Geolocator.requestPermission();
+    if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+      // Location permission is denied, handle this case
+      return;
+    }
+  }
+
+  // Get the current position
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  double latitude = position.latitude;
+  double longitude = position.longitude;
+
+  // Make a POST request to the Django view
+  var url = Uri.parse('http://192.168.1.81:8000/find_teachers/');
+  var response = await http.post(
+    url,
+    body: {
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+    },
+  );
+
+  if (response.statusCode == 200) {
+  } else {
+  }
+}
 }
