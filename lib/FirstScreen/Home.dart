@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/FirstScreen/search.dart';
 import 'package:tutor_app/FirstScreen/teacherList.dart';
+import 'package:tutor_app/FirstScreen/teachersearch.dart';
 
-import '../location/teachermap_page.dart';
 import 'appBar.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +27,7 @@ class Home extends StatelessWidget{
               child: Column(
                 children: [
                   
-                  Search(),
+                  MyClassSubjectPage(),
                   Container(
                     // height:215,
                     // color:Colors.blue,
@@ -98,20 +98,20 @@ class Home extends StatelessWidget{
                   ),
 
                   // button for getting students current location
-                  SizedBox(height:30),
+                  // SizedBox(height:30),
 
-                    ElevatedButton(
-            onPressed:()
-            // getCurrentLocationAndFindTeachers,
-            {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>TeacherMapPage()),
-              );
+            //         ElevatedButton(
+            // onPressed:()
+            // // getCurrentLocationAndFindTeachers,
+            // {
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(builder: (context) =>TeacherMapPage()),
+            //   );
 
-            },
-                      child: Text('Find Nearby Teachers'),
-                    ),
+            // },
+            //           child: Text('Find Nearby Teachers'),
+            //         ),
                   SizedBox(height:30),
                   Container(
                       height:50,

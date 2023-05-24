@@ -5,7 +5,14 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../models/user_models/searchmodel.dart';
+
 class TeacherMapPage extends StatefulWidget {
+  final String className;
+  final List<String> subjects;
+
+  const TeacherMapPage({super.key, required this.className, required this.subjects});
+  
   @override
   _TeacherMapPageState createState() => _TeacherMapPageState();
 }
@@ -15,29 +22,82 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
   Set<Marker> markers = {};
   Completer<GoogleMapController> _mapController = Completer<GoogleMapController>();
 
-  Future<void> getCurrentLocationAndFindTeachers() async {
+  Future<void> getCurrentLocationAndFindTeachers(String selectedClassSubject, List<String> selectedSubjects) async {
     // Check if location services are enabled
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are disabled, handle this case
-      return;
-    }
+  //   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+  //   if (!serviceEnabled) {
+  //     // Location services are disabled, handle this case
+  //     showDialog(
+  //   context: context,
+  //   builder: (BuildContext context) => AlertDialog(
+  //     title: Text('Location Services Disabled'),
+  //     content: Text('Please enable location services to use this feature.'),
+  //     actions: [
+  //       ElevatedButton(
+  //         child: Text('OK'),
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //         },
+  //       ),
+  //     ],
+  //   ),
+  // );
+  
+  //     return;
+  //   }
 
     // Check for permission to access the location
-    LocationPermission permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.deniedForever) {
       // Location permission is permanently denied, handle this case
+            showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text('Location Permission Denied Forever'),
+          content: Text('You have denied location permission forever. Please go to your device settings and enable location access for this app.'),
+          actions: [
+            ElevatedButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+
       return;
     }
+    permission = await Geolocator.requestPermission();
+
     if (permission == LocationPermission.denied) {
       // Location permission is denied, request it
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-        // Location permission is denied, handle this case
-        return;
-      }
-    }
 
+      showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: Text('Location Permission Denied'),
+      content: Text('Please enable location permission in your device settings to use this feature.'),
+      actions: [
+        ElevatedButton(
+          child: Text('OK'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
+      // permission = await Geolocator.requestPermission();
+      // if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+      //   // Location permission is denied, handle this case
+      //   return;
+      // }
+    }
+    print(".....................................");
+print(selectedClassSubject);
+print(selectedSubjects);
     // Get the current position
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     double latitude = position.latitude;
@@ -50,6 +110,11 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
       body: {
         'latitude': latitude.toString(),
         'longitude': longitude.toString(),
+        'class':selectedClassSubject,
+        'subjects':selectedSubjects.join(','),
+
+        
+
       },
     );
 
@@ -114,10 +179,12 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
               // Other map configuration options...
             ),
           ),
-          ElevatedButton(
-            onPressed: getCurrentLocationAndFindTeachers,
-            child: Text('Find Teachers'),
-          ),
+ElevatedButton(
+  onPressed: () {
+    getCurrentLocationAndFindTeachers(widget.className, widget.subjects);
+  },
+  child: Text('Find Teachers'),
+),
           Expanded(
             child: ListView.builder(
               itemCount: teachers.length,
@@ -125,11 +192,12 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
                 String name = teachers[index]['name'];
                 double latitude = double.parse(teachers[index]['latitude']);
                 double longitude = double.parse(teachers[index]['longitude']);
+                String grade= teachers[index]['grade'];
 
                 return Card(
                   child: ListTile(
                     title: Text(name),
-                    subtitle: Text('Latitude: $latitude, Longitude: $longitude'),
+                    subtitle: Text('Latitude: $latitude, Longitude: $longitude.Grade:$grade'),
                     // Other card content...
                   ),
                 );
