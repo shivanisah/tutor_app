@@ -10,14 +10,25 @@ import "../screens/auth_screens/teacherSignUpscreen.dart";
 class AppB extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    return       AppBar(
-        backgroundColor: Colors.blueAccent,
-        iconTheme: IconThemeData(color:Colors.black),
-        title:Center(child: Text("Tutor App",style:TextStyle(
+        Size size = MediaQuery.of(context).size;
+
+    return    AppBar(
+      // toolbarHeight: size.height*0.6, // Increase the height of the AppBar
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.vertical(
+      //         bottom: Radius.circular(30), // Make the AppBar curved
+      //       ),
+      //     ),
+        // backgroundColor: Colors.blueAccent,
+        elevation:0,
+        iconTheme: IconThemeData(color:Colors.white),
+        title:Center(child: Text("Tutor App",
+        style:TextStyle(
           fontWeight:FontWeight.w500,
           fontStyle:FontStyle.italic,
-          color:Colors.black,
-        ))),
+          color:Colors.white,
+        )
+        )),
         actions: [
           IconButton(
               icon:Icon(Icons.settings),

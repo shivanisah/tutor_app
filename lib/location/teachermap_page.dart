@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tutor_app/location/teacherinfoWindow.dart';
 
+import '../app_urls/app_urls.dart';
 import '../models/user_models/searchmodel.dart';
 
 class TeacherMapPage extends StatefulWidget {
@@ -104,7 +106,7 @@ print(selectedSubjects);
     double longitude = position.longitude;
 
     // Make a POST request to the Django view
-    var url = Uri.parse('http://192.168.1.81:8000/find_teachers/');
+    var url = Uri.parse(AppUrl.findteacherinmap);
     var response = await http.post(
       url,
       body: {
@@ -143,20 +145,55 @@ print(selectedSubjects);
     Set<Marker> markers = {};
     teachers.forEach((teacher) {
       String name = teacher['name'];
+      String grade = teacher['grade'];
       double latitude = double.parse(teacher['latitude']);
       double longitude = double.parse(teacher['longitude']);
+      // List<String> subjects = teacher['subjects'].cast<String>();
+
 
       Marker marker = Marker(
         markerId: MarkerId(name),
         position: LatLng(latitude, longitude),
-        infoWindow: InfoWindow(title: name),
+        infoWindow: InfoWindow(title: name,
+        ),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+
+        onTap:(){
+          _showTeacherInfo(context, name, grade);
+        }
       );
 
       markers.add(marker);
     });
     return markers;
   }
+  void _showTeacherInfo(BuildContext context, String name, String grade) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        // Customize the appearance of the bottom sheet
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Name: $name',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 4.0),
+              Text('Grade: $grade'),
+              SizedBox(height: 4.0),
+              // Text('Subjects: ${subjects.join(", ")}'),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +204,7 @@ print(selectedSubjects);
       body: Column(
         children: [
           Expanded(
+            
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
                   target: LatLng(27.7172, 85.3240),                        
@@ -179,31 +217,31 @@ print(selectedSubjects);
               // Other map configuration options...
             ),
           ),
-ElevatedButton(
-  onPressed: () {
-    getCurrentLocationAndFindTeachers(widget.className, widget.subjects);
-  },
-  child: Text('Find Teachers'),
-),
-          Expanded(
-            child: ListView.builder(
-              itemCount: teachers.length,
-              itemBuilder: (context, index) {
-                String name = teachers[index]['name'];
-                double latitude = double.parse(teachers[index]['latitude']);
-                double longitude = double.parse(teachers[index]['longitude']);
-                String grade= teachers[index]['grade'];
-
-                return Card(
-                  child: ListTile(
-                    title: Text(name),
-                    subtitle: Text('Latitude: $latitude, Longitude: $longitude.Grade:$grade'),
-                    // Other card content...
-                  ),
-                );
-              },
-            ),
-          ),
+      ElevatedButton(
+      onPressed: () {
+        getCurrentLocationAndFindTeachers(widget.className, widget.subjects);
+      },
+      child: Text('Click Here'),
+      ),
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: teachers.length,
+          //     itemBuilder: (context, index) {
+          //       String name = teachers[index]['name'];
+          //       double latitude = double.parse(teachers[index]['latitude']);
+          //       double longitude = double.parse(teachers[index]['longitude']);
+          //       String grade= teachers[index]['grade'];
+      
+          //       return Card(
+          //         child: ListTile(
+          //           title: Text(name),
+          //           subtitle: Text('Latitude: $latitude, Longitude: $longitude.Grade:$grade'),
+          //           // Other card content...
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

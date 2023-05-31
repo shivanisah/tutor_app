@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/providers/auth_provider.dart';
+import 'package:tutor_app/shared_preferences.dart/user_preferences.dart';
+import 'package:tutor_app/utils/colors.dart';
 // import 'package:tutor_app/providers/googlemapPage.dart';
 
 import 'FirstScreen/Home.dart';
@@ -23,16 +25,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
             providers: [
         ChangeNotifierProvider(create: (_)=>AuthProvider ()),
-        // ChangeNotifierProvider<TeacherMapPage>(create: (_)=>TeacherMapPage ()),
-        // Provider<Completer<GoogleMapController>>(create: (_) => Completer<GoogleMapController>()),
+        ChangeNotifierProvider(create: (_)=>UserPreferences ()),
+
 
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Tutor App',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Palette.theme,
         ),
         home:  Home(),
       ),

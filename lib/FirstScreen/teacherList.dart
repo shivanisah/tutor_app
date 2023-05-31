@@ -2,11 +2,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:tutor_app/screens/auth_screens/studentSignUpScreen.dart';
 
 import '../Apis/teacherList.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+
+import '../utils/colors.dart';
 
 
 
@@ -42,7 +45,7 @@ class _TeachersListState extends State<TeachersList> {
                 physics:NeverScrollableScrollPhysics(),
                 shrinkWrap:true,
                 gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,
-                  mainAxisExtent:280,
+                  mainAxisExtent:MediaQuery.of(context).size.height*0.45,
 
                 ),
                 itemCount:snapshot.data?.length,
@@ -56,7 +59,7 @@ class _TeachersListState extends State<TeachersList> {
                       //       );
                     },
                     child: Container(
-                        height:400,
+                        // height:500,
                         margin:EdgeInsets.only(right:14,left:10,top:5,bottom:13),
                         // margin:EdgeInsets.all(5),
                         // width:160,
@@ -87,11 +90,12 @@ class _TeachersListState extends State<TeachersList> {
                           children: [
                             Container(
                               height:140,
-                              width:200,
+                              // width:200,
                               decoration:BoxDecoration(
                                   borderRadius:BorderRadius.only(topLeft:Radius.circular(8),topRight:Radius.circular(8)),
                                   
                                   image:DecorationImage(
+                                    
                                     // image:AssetImage("assets/images/d1.jpg"),
 
 
@@ -99,6 +103,7 @@ class _TeachersListState extends State<TeachersList> {
                                             ? NetworkImage(snapshot.data![i]["image"])
                                             : const AssetImage("assets/images/d1.jpg") as ImageProvider<Object>,                 
                                            fit:BoxFit.cover,
+                                           
                                            alignment: Alignment.topCenter,
                                   )
 
@@ -108,26 +113,53 @@ class _TeachersListState extends State<TeachersList> {
                               // )
                             ),
                             // Divider(color: Colors.black12,),
-                            SizedBox(height:20),
+                            // SizedBox(height:10),
                             Container(
                                 width:200,
+                                padding: EdgeInsets.all(8),
                                 // color:Colors.red,
                                 child:Column(
-                                  // crossAxisAlignment:CrossAxisAlignment.start,
+                                  crossAxisAlignment:CrossAxisAlignment.start,
                                   // mainAxisAlignment:MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(snapshot.data![i]['full_name']),
-                                    SizedBox(height:10),
+                                    SizedBox(height:5),
 
                                     Text(snapshot.data![i]["phone_number"]),
 
-                                    SizedBox(height:10),
+                                    SizedBox(height:5),
 
                                     // Text(snapshot.data![i]["gender"]),
 
-                                    SizedBox(height:10),
 
                                     Text(snapshot.data![i]["email"]),
+
+                                    SizedBox(height:8),
+
+                                    GestureDetector(
+                                      onTap: (){
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>StudentSignUp()));
+
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        // border: Border.all(width: 0.7,color: Colors.black),
+                                          color: Palette.theme1
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            SizedBox(width:6),
+                                            Text('View Details',style:TextStyle(color:Colors.white)),
+                                            SizedBox(width:8),
+                                         Icon(Icons.arrow_circle_right,color:Colors.white),
+                                    
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  
 
                                   ],)
                             )

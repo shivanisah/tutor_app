@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/FirstScreen/appBar.dart';
+import 'package:tutor_app/utils/colors.dart';
 
+import '../../Apis/fetchClassSubject.dart';
+import '../../models/user_models/searchmodel.dart';
 import '../../providers/auth_provider.dart';
 
 
@@ -14,20 +17,11 @@ class TutorRegistration extends StatefulWidget{
 }
 
 class _TutorRegistrationState extends State<TutorRegistration> {
-  final List<String> items = [
- 'Science','Maths','Nepali','English','Java','Python','C++','DotNet','Dart',
- 'science','maths','nepali','english','java','python','c++','dotNet','dart'
-];
-final Map<String, List<String>> gradeSubjectMap = {
-    "Grade 1": ["Math", "English", "Science"],
-    "Grade 2": ["Math", "English", "Social Studies"],
-    "Grade 3": ["Math", "English", "Science", "Social Studies"],
-  };
-  String selectedGrade = "Grade 1"; // default selection
-  List<String> availableSubjects = []; // to be populated dynamically based on selected grade
-  List<String> selectedSubjects = []; // to store selected subjects
 
-List<String> selectedItems = [];
+
+  List<ClassSubject> _classSubjects = [];
+  ClassSubject? _selectedClassSubject;
+  List<String> _selectedSubjects = [];
 
 
   TextEditingController name=TextEditingController();
@@ -64,12 +58,16 @@ void dispose(){
   confirmpasswordController.dispose();
   super.dispose();
 }
-
-@override
+  @override
   void initState() {
     super.initState();
-    availableSubjects = gradeSubjectMap[selectedGrade]!;
+    fetchClassSubjects().then((classSubjects) {
+      setState(() {
+        _classSubjects = classSubjects;
+      });
+    });
   }
+
   @override
   Widget build(BuildContext context) {
   final provider = Provider.of<AuthProvider>(context,listen: false);
@@ -79,10 +77,11 @@ double width = MediaQuery.of(context).size.width;
 double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar:PreferredSize(
-        preferredSize:const Size.fromHeight(60),
-        child:AppB(),
-      ),
+      appBar:AppBar(),
+      // appBar:PreferredSize(
+      //   preferredSize:const Size.fromHeight(60),
+      //   child:AppB(),
+      // ),
       body:Container(  
       
         height:height,
@@ -95,71 +94,76 @@ double height = MediaQuery.of(context).size.height;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [            
               SizedBox(height:20),
-              Center(
-                child: Text("Register as a Tutor", 
-                // textAlign: TextAlign.right,
-                style:TextStyle(fontSize:20 )),
-              ),
+              Text("Sign up", 
+              // textAlign: TextAlign.right,
+              style:TextStyle(fontSize:25 )),
               SizedBox(height:10),
 
               //image ........................................................
 
-                          Center(
-                            child: Stack(
-                                                children: [
-                                                  // buildImage(),
-                                                  ClipOval(
-                        child:    SizedBox(
-                           width:128,
-                                                    height:128,
-                          child: AspectRatio(
-                                      aspectRatio: 1.0,
-                              child:_image!=null?Image.file(_image,fit:BoxFit.cover,
-                                                    width:128,
-                                                    height:128,
-                                                    alignment: Alignment.topCenter,
-                                                    ) :
+                        //   Center(
+                        //     child: Stack(
+                        //                         children: [
+                        //                           // buildImage(),
+                        //                           ClipOval(
+                        // child:    SizedBox(
+                        //    width:128,
+                        //                             height:128,
+                        //   child: AspectRatio(
+                        //               aspectRatio: 1.0,
+                        //       child:_image!=null?Image.file(_image,fit:BoxFit.cover,
+                        //                             width:128,
+                        //                             height:128,
+                        //                             alignment: Alignment.topCenter,
+                        //                             ) :
                               
                             
-                                                    Image.asset('assets/images/d1.jpg',                                     
-                                                     fit:BoxFit.cover,
-                                                    width:128,
-                                                    height:128,
-                                                    alignment: Alignment.topCenter,
-                                                  ),
-                                                ),
-                                           ),
-                                                  ),
-                                                  Positioned(
-                            bottom:0,
-                            right:4,
-                            child: buildEditIcon(color)
-                            ),
-                                                  ]
-                                                  ),
-                          ),
+                        //                             Image.asset('assets/images/d1.jpg',                                     
+                        //                              fit:BoxFit.cover,
+                        //                             width:128,
+                        //                             height:128,
+                        //                             alignment: Alignment.topCenter,
+                        //                           ),
+                        //                         ),
+                        //                    ),
+                        //                           ),
+                        //                           Positioned(
+                        //     bottom:0,
+                        //     right:4,
+                        //     child: buildEditIcon(color)
+                        //     ),
+                        //                           ]
+                        //                           ),
+                        //   ),
+              SizedBox(height:6),
+              Text("Please enter your personal information so "),
+              Text("we can know you better."),         
               SizedBox(height: 20,),
+              Text("Your Name *"),
+              SizedBox(height:5),
               TextFormField(              
                 controller:name,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
-                labelText:"Enter your full name",
-                labelStyle: TextStyle(color:Colors.black),
+                hintText:"Full Name",
+                hintStyle: TextStyle(color:Colors.black),
+                fillColor:Color.fromARGB(255, 234, 235, 236),
+                filled:true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Color.fromARGB(255, 234, 235, 236)), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -172,27 +176,31 @@ double height = MediaQuery.of(context).size.height;
                   },  
                  ),
                  SizedBox(height: 20),
+                 Text("Email Address*"),
+                 SizedBox(height:5),
                      TextFormField(              
                 controller:email,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
-                labelText:"Email",
-                labelStyle: TextStyle(color:Colors.black),
+                hintText:"Email",
+                hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled:true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -210,6 +218,8 @@ double height = MediaQuery.of(context).size.height;
                  ),
               
                SizedBox(height: 20),
+               Text("Your Number *"),
+               SizedBox(height:5),
                TextFormField( 
                 keyboardType:TextInputType.number,             
                 controller:number,
@@ -218,21 +228,23 @@ double height = MediaQuery.of(context).size.height;
                 border:InputBorder.none,  
                 hintText:"Phone number",
                 hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled:true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -250,27 +262,31 @@ double height = MediaQuery.of(context).size.height;
                  ),
                 
                   SizedBox(height: 20), 
+                  Text("Your Address *"),
+                  SizedBox(height:5),
                                 TextFormField(              
                 controller:address,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
                 hintText:"Enter your address",
                 hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled: true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -282,115 +298,97 @@ double height = MediaQuery.of(context).size.height;
                     return null;
                   },  
                  ),
-               
+                 SizedBox(height:20),
+                 Text("Grade and Subjects *"),
+                 SizedBox(height:5),
+   //...........................class and subjects............................................//
+           Column(
           
-            SizedBox(height: 20),      
-            
-              
-                    Container(
-            height:60,
-            // color:Color.fromRGBO(0, 0, 0, 1),
-            child: InputDecorator(
-              decoration:InputDecoration(border:OutlineInputBorder(
                 
-                borderRadius: BorderRadius.circular(12),
-                    borderSide:BorderSide(color:Color.fromARGB(255, 29, 28, 28)), 
-              )
-              
-              
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton( 
-                   
-                  isExpanded: true,
-                  hint: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      'Select Subjects',
-                      style: TextStyle(
-                        color:Colors.black,
-                        fontSize: 16,
-                        // color: Theme.of(context).hintColor,
-                      ),
-                    ),
-                  ),
-                  items: items.map((item) {
-                    return DropdownMenuItem<String>(
-                      value: item,
-                      //disable default onTap to avoid closing menu when selecting an item
-                      enabled: false,
-                      child: StatefulBuilder(
-                        builder: (context, menuSetState) {
-                          final _isSelected = selectedItems.contains(item);
-                          return InkWell(
-                            onTap: () {
-                              _isSelected
-                                      ? selectedItems.remove(item)
-                                      : selectedItems.add(item);
-                              //This rebuilds the StatefulWidget to update the button's text
-                              setState(() {});
-                              //This rebuilds the dropdownMenu Widget to update the check mark
-                              menuSetState(() {});
-                            },
-                            child: Container(
-                              height: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Row(
-                                children: [
-                                  _isSelected
-                                          ? const Icon(Icons.check_box_outlined)
-                                          : const Icon(Icons.check_box_outline_blank),
-                                  const SizedBox(width: 16),
-                                  Text(
-                                    item,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+          children: [
+            Container(
+              width:350,
+              height:50,
+              // margin: EdgeInsets.only(top:10),
+              decoration: 
+              BoxDecoration(
+              color: Palette.fillcolor,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color:Palette.fillcolor),
+                              //             boxShadow:[
+                              //   BoxShadow(
+                              //     color: Colors.grey,
+    
+                              //     blurRadius:5,
+                              //     offset:Offset(0,0.5),
+                              //   ),
+                              //   BoxShadow(
+                              //     color:Colors.white,
+                              //     offset:Offset(-0.5,0),
+                              //   ),
+                              // ]
+    
+               ),
+              child: Align(
+                alignment: AlignmentDirectional.center,
+                child: DropdownButton<ClassSubject>(
+                  value: _selectedClassSubject,
+                  hint: Text('Select class',style:TextStyle(color:Colors.black)),
+                  onChanged: (ClassSubject? newValue) {
+                    setState(() {
+                      _selectedClassSubject = newValue;
+                      _selectedSubjects.clear();
+                    });
+                  },
+                  
+                  items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
+                    return DropdownMenuItem<ClassSubject>(
+                      value: classSubject,
+                      child: Text(classSubject.className),
                     );
                   }).toList(),
-                  //Use last selected item as the current value so if we've limited menu height, it scroll to last item.
-                  value: selectedItems.isEmpty ? null : selectedItems.last,
-                  onChanged: (value) {},
-                  selectedItemBuilder: (context) {
-                    return items.map(
-                              (item) {
-                        return Container(
-                          alignment: AlignmentDirectional.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            selectedItems.join(', '),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            maxLines: 1,
-                          ),
-                        );
-                      },
-                    ).toList();
-                    
-                  },
-                  // buttonStyleData: const ButtonStyleData(
-                  //   height: 40,
-                  //   width: 140,
-                  // ),
-                  // menuItemStyleData: const MenuItemStyleData(
-                  //   height: 40,
-                  //   padding: EdgeInsets.zero,
-                  // ),
+                  style: TextStyle(color: Colors.black, fontSize: 19),
+                  icon: Icon(Icons.arrow_drop_down,size: 30,),
+                  underline: SizedBox(),      
                 ),
-                
               ),
             ),
+            SizedBox(height: 4),
+            if (_selectedClassSubject != null)
+              Column(
+                children: _selectedClassSubject!.subjects.map<Widget>((subject) {
+                  return ListTile(
+                    title: Text(subject),
+                    leading: Theme(
+                      data: ThemeData(
+                    // unselectedWidgetColor: Colors.grey, // Color when checkbox is not selected
+                    checkboxTheme: CheckboxThemeData(
+                      fillColor: MaterialStateProperty.all<Color>(Palette.theme1), // Color when checkbox is selected
+                     ),
+                        ),
+                      child: Checkbox(
+                        value: _selectedSubjects.contains(subject),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              _selectedSubjects.add(subject);
+                            } else {
+                              _selectedSubjects.remove(subject);
+                            }
+                          });
+                        },
+                      ),
                     ),
+                  );
+                }).toList(),
+              ),
+          ]
+        ),
+              
+              
                     SizedBox(height:20),
+                    Text("Password"),
+                    SizedBox(height:5),
               TextFormField(    
                 obscureText:_isObscure,          
                 controller:passwordController,
@@ -410,21 +408,23 @@ double height = MediaQuery.of(context).size.height;
                 border:InputBorder.none,  
                 hintText:"Password",
                 hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled:true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -443,9 +443,11 @@ double height = MediaQuery.of(context).size.height;
                  ),
           
                  SizedBox(height:20),
-              TextFormField(    
-                obscureText:_isObscure2,          
-                controller:confirmpasswordController,
+                 Text("Confirm Password"),
+                 SizedBox(height:5),
+                 TextFormField(    
+                 obscureText:_isObscure2,          
+                 controller:confirmpasswordController,
                 decoration:InputDecoration(   
                 suffixIcon: IconButton(
                   icon:Icon(_isObscure?
@@ -462,21 +464,23 @@ double height = MediaQuery.of(context).size.height;
                 border:InputBorder.none,  
                 hintText:"Confirm Password",
                 hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled: true,
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
-                  borderRadius:BorderRadius.circular(12),
+                  borderRadius:BorderRadius.circular(6),
                 ),
                 focusedErrorBorder: OutlineInputBorder
                 (borderSide:BorderSide(color:Colors.red),
-                borderRadius:BorderRadius.circular(12),
+                borderRadius:BorderRadius.circular(6),
                 ),
                 enabledBorder:OutlineInputBorder(                 
-                    borderRadius:BorderRadius.circular(12),
-                    borderSide:BorderSide(color: Color.fromARGB(255, 0, 0, 0)), 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
                   ),
                   focusedBorder:OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:BorderSide(color:Colors.black)
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
                   )
                     
                 ),
@@ -490,109 +494,60 @@ double height = MediaQuery.of(context).size.height;
                             },
             
                  ),
-//Grades and Subjects ............................................................................................
-Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Select Grade",
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            DropdownButton<String>(
-              value: selectedGrade,
-              items: gradeSubjectMap.keys
-                  .map<DropdownMenuItem<String>>((String grade) {
-                return DropdownMenuItem<String>(
-                  value: grade,
-                  child: Text(grade),
-                );
-              }).toList(),
-              onChanged: (String? grade) {
-                setState(() {
-                  selectedGrade = grade!;
-                  availableSubjects = gradeSubjectMap[selectedGrade]!;
-                  selectedSubjects.clear(); // clear previously selected subjects
-                });
-              },
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              "Select Subjects",
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            Wrap(
-              children: availableSubjects
-                  .map<Widget>((String subject) => CheckboxListTile(
-                        title: Text(subject),
-                        value: selectedSubjects.contains(subject),
-                        onChanged: (bool? selected) {
-                          setState(() {
-                            if (selected!) {
-                              selectedSubjects.add(subject);
-                            } else {
-                              selectedSubjects.remove(subject);
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
-            // SizedBox(height: 16.0),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     // Handle submit button click
-            //     print("Selected Grade: $selectedGrade");
-            //     print("Selected Subjects: $selectedSubjects");
-            //   },
-            //   child: Text("Submit"),
-            // ),
-          ],
-        ),
       
+//.......................................................................
 
+                  SizedBox(height:30),
+                  Row(children: [
+                  Container(height:20,width:20,color:Palette.theme1),
+                  SizedBox(width:10),
+                    Column(children: [
+                  Text("By tapping continue, you accept the"),
+                  Text("Terms of service and privacy policy of"),
+                  Text("Tutor App"),
 
+                    ],)
+                  ],),
 
-
-
-
-          SizedBox(height:20),
-                        Center(
+                       SizedBox(height:30),
+                        Container(
+                          width:350,
                           child: MaterialButton(
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0))),
+                                          BorderRadius.all(Radius.circular(6))),
                                   // elevation: 5.0,
-                                  height: 40,
+                                  
+                                  height: 50,
                                   onPressed: (){
                                   try{
                             if(_image!=null){
                                 imageFile =  File(_image.path);
-
-                        }  
-                        // else{
-                        //    imgUrl = "";
-
-
-                        // }
-                                      if(_formKey.currentState!.validate()){
-                                       provider.userSignup(context,name.text.toString(),number.text.toString(),email.text.toString(),address.text.toString(), 
-                                       passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile,
-                                       selectedGrade,selectedSubjects
-                                       );
                         
-                                    }
-                                    }catch (e){
-                                           SnackBar( content: Text(e.toString()), ) ;   }
+                          }  
 
+                                      if(_formKey.currentState!.validate()){
+                                       provider.teacherSignup(context,name.text.toString(),number.text.toString(),email.text.toString(),address.text.toString(), 
+                                       passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile,
+                                       _selectedClassSubject?.className??'',_selectedSubjects
+                                       );
+                          
+                                    }
+
+                                    }catch (e){
+                                           SnackBar( content: Text(e.toString()), ) ;}
+                        
                                   },        
                                       
-                                  child: provider.signUpLoading?CircularProgressIndicator():Text(
-                                    "Register",
+                                  child: provider.signUpLoading?CircularProgressIndicator():
+                                  Text(
+                                    "Sign Up",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 15,
+                                      color:Colors.white,
                                     ),
                                   ),
-                                  color:Color.fromARGB(255, 58, 93, 153),
+                                  color:Palette.theme1,
                                 ),
                         ),
 

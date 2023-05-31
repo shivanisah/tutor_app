@@ -9,10 +9,11 @@ class Teacher{
   String? token;
   bool? emailVerified;
   bool? isStaff;
+  String? user_type;
 
 
 
-Teacher({this.name, this.id,this.email, this.password,this.token,this.phone,this.emailVerified,this.isStaff});
+Teacher({this.name, this.id,this.email, this.password,this.token,this.phone,this.emailVerified,this.isStaff,this.user_type});
 
 
 factory Teacher.fromReqBody(String body) {
@@ -25,7 +26,8 @@ factory Teacher.fromReqBody(String body) {
       phone: json['phone_number'],
       token: json['access'],
       emailVerified: json['email_verified'],
-      isStaff: json['is_staff']
+      isStaff: json['is_staff'],
+      user_type:json['user_type']
     );
 
   }

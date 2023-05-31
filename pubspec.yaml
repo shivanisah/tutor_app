@@ -42,7 +42,10 @@ dependencies:
   geolocator: ^8.0.1
   google_maps_flutter: ^2.2.6
   image_picker: ^0.8.4
-  
+  google_fonts: ^4.0.4
+  shared_preferences: ^2.1.1
+  curved_navigation_bar: ^1.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
