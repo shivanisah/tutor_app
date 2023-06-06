@@ -5,9 +5,13 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/location/teacherinfoWindow.dart';
+import 'package:tutor_app/tutor/tutorDetailPage.dart';
 
 import '../app_urls/app_urls.dart';
 import '../models/user_models/searchmodel.dart';
+import '../models/user_models/teacher_data.dart';
+import '../student/studentEnrollment.dart';
+import '../utils/colors.dart';
 
 class TeacherMapPage extends StatefulWidget {
   final String className;
@@ -146,6 +150,9 @@ print(selectedSubjects);
     teachers.forEach((teacher) {
       String name = teacher['name'];
       String grade = teacher['grade'];
+      String email = teacher['email'];
+      int id = teacher['id'];
+      String phone_number = teacher['phone_number'];
       double latitude = double.parse(teacher['latitude']);
       double longitude = double.parse(teacher['longitude']);
       // List<String> subjects = teacher['subjects'].cast<String>();
@@ -159,7 +166,7 @@ print(selectedSubjects);
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
 
         onTap:(){
-          _showTeacherInfo(context, name, grade);
+          _showTeacherInfo(context, name, grade,email,id,phone_number);
         }
       );
 
@@ -167,27 +174,66 @@ print(selectedSubjects);
     });
     return markers;
   }
-  void _showTeacherInfo(BuildContext context, String name, String grade) {
+  void _showTeacherInfo(BuildContext context, String name, String grade,String email,int id,String phone_number) {
   showModalBottomSheet(
     context: context,
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(50.0)),
+  ),
+
     builder: (BuildContext context) {
       return Container(
-        // Customize the appearance of the bottom sheet
+        height:150,
+        
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Name: $name',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 4.0),
-              Text('Grade: $grade'),
-              SizedBox(height: 4.0),
-              // Text('Subjects: ${subjects.join(", ")}'),
-            ],
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Name: $name',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 4.0),
+                Text('Email: $email'),
+                SizedBox(height: 4.0),
+                // Text('Subjects: ${subjects.join(", ")}'),
+                                                  SizedBox(height:20),
+                                    GestureDetector(
+                                        onTap: (){
+                                        TeacherData teacher = TeacherData(
+                                          
+                                                            fullName:name,
+                                                            grade: grade,
+                                                            email:email,
+                                                            id:id,
+                                                            phoneNumber: phone_number
+
+
+                                                          );
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailPage(teacher:teacher)));
+          
+          
+                                        },
+                                        child: Container(
+                                          height:50,
+                                          width:120,
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(6),
+                                          // border: Border.all(width: 0.7,color: Colors.black),
+                                            color: Palette.theme1
+                                          ),
+                                          child:
+                                                
+                                              Center(child: Text('View Details',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
+                                        ),
+                                      ),
+          
+              ],
+            ),
           ),
         ),
       );

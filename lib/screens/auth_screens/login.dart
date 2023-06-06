@@ -156,7 +156,7 @@ double height = MediaQuery.of(context).size.height;
                   Icons.visibility_off:Icons.visibility),
                   onPressed:(){
                     setState((){
-                      _isObscure=!_isObscure2;
+                      _isObscure=!_isObscure;
           
                     });
                   }
@@ -248,7 +248,13 @@ double height = MediaQuery.of(context).size.height;
                                         // border: Border.all(width: 0.7,color: Colors.black),
                                           color: Palette.theme1
                                         ),
-                                        child:provider.loading?Center(child: CircularProgressIndicator()):            
+                                        child:provider.loading?Visibility(
+                                     maintainSize: true,
+                                     maintainAnimation: true,
+                                     maintainState: true,
+                                     visible: true,
+
+                                          child: CircularProgressIndicator(color:Colors.white)):            
                                             Center(child: Text('Continue',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
                                       ),
                                     ),
@@ -267,7 +273,7 @@ double height = MediaQuery.of(context).size.height;
                           // height:  1.5,
                           color:  Color.fromARGB(255, 134, 148, 162),
 
-                )
+                          )
                            ),
                            TextSpan(text: 'Signup',
                            recognizer:TapGestureRecognizer()..onTap = () =>

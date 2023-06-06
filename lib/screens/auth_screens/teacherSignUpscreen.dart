@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/FirstScreen/appBar.dart';
+import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
 import '../../Apis/fetchClassSubject.dart';
@@ -32,6 +35,7 @@ class _TutorRegistrationState extends State<TutorRegistration> {
   TextEditingController confirmpasswordController =TextEditingController();
   bool _isObscure = true;
   bool _isObscure2 = true;
+  bool _isChecked = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -262,13 +266,13 @@ double height = MediaQuery.of(context).size.height;
                  ),
                 
                   SizedBox(height: 20), 
-                  Text("Your Address *"),
+                  Text("Education Certificate *"),
                   SizedBox(height:5),
                                 TextFormField(              
                 controller:address,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
-                hintText:"Enter your address",
+                hintText:"Upload Certificate",
                 hintStyle: TextStyle(color:Colors.black),
                 fillColor: Palette.fillcolor,
                 filled: true,
@@ -291,99 +295,99 @@ double height = MediaQuery.of(context).size.height;
                     
                 ),
              
-                validator: (value) {
-                    if (value == null || value.isEmpty) {
-                     return 'This field is required';
-                    }
-                    return null;
-                  },  
+                // validator: (value) {
+                //     if (value == null || value.isEmpty) {
+                //      return 'This field is required';
+                //     }
+                //     return null;
+                //   },  
                  ),
-                 SizedBox(height:20),
-                 Text("Grade and Subjects *"),
-                 SizedBox(height:5),
+                //  SizedBox(height:20),
+                //  Text("Grade and Subjects *"),
+                //  SizedBox(height:5),
    //...........................class and subjects............................................//
-           Column(
+        //    Column(
           
                 
-          children: [
-            Container(
-              width:350,
-              height:50,
-              // margin: EdgeInsets.only(top:10),
-              decoration: 
-              BoxDecoration(
-              color: Palette.fillcolor,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color:Palette.fillcolor),
-                              //             boxShadow:[
-                              //   BoxShadow(
-                              //     color: Colors.grey,
+        //   children: [
+        //     Container(
+        //       width:350,
+        //       height:50,
+        //       // margin: EdgeInsets.only(top:10),
+        //       decoration: 
+        //       BoxDecoration(
+        //       color: Palette.fillcolor,
+        //       borderRadius: BorderRadius.circular(6),
+        //       border: Border.all(color:Palette.fillcolor),
+        //                       //             boxShadow:[
+        //                       //   BoxShadow(
+        //                       //     color: Colors.grey,
     
-                              //     blurRadius:5,
-                              //     offset:Offset(0,0.5),
-                              //   ),
-                              //   BoxShadow(
-                              //     color:Colors.white,
-                              //     offset:Offset(-0.5,0),
-                              //   ),
-                              // ]
+        //                       //     blurRadius:5,
+        //                       //     offset:Offset(0,0.5),
+        //                       //   ),
+        //                       //   BoxShadow(
+        //                       //     color:Colors.white,
+        //                       //     offset:Offset(-0.5,0),
+        //                       //   ),
+        //                       // ]
     
-               ),
-              child: Align(
-                alignment: AlignmentDirectional.center,
-                child: DropdownButton<ClassSubject>(
-                  value: _selectedClassSubject,
-                  hint: Text('Select class',style:TextStyle(color:Colors.black)),
-                  onChanged: (ClassSubject? newValue) {
-                    setState(() {
-                      _selectedClassSubject = newValue;
-                      _selectedSubjects.clear();
-                    });
-                  },
+        //        ),
+        //       child: Align(
+        //         alignment: AlignmentDirectional.center,
+        //         child: DropdownButton<ClassSubject>(
+        //           value: _selectedClassSubject,
+        //           hint: Text('Select class',style:TextStyle(color:Colors.black)),
+        //           onChanged: (ClassSubject? newValue) {
+        //             setState(() {
+        //               _selectedClassSubject = newValue;
+        //               _selectedSubjects.clear();
+        //             });
+        //           },
                   
-                  items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
-                    return DropdownMenuItem<ClassSubject>(
-                      value: classSubject,
-                      child: Text(classSubject.className),
-                    );
-                  }).toList(),
-                  style: TextStyle(color: Colors.black, fontSize: 19),
-                  icon: Icon(Icons.arrow_drop_down,size: 30,),
-                  underline: SizedBox(),      
-                ),
-              ),
-            ),
-            SizedBox(height: 4),
-            if (_selectedClassSubject != null)
-              Column(
-                children: _selectedClassSubject!.subjects.map<Widget>((subject) {
-                  return ListTile(
-                    title: Text(subject),
-                    leading: Theme(
-                      data: ThemeData(
-                    // unselectedWidgetColor: Colors.grey, // Color when checkbox is not selected
-                    checkboxTheme: CheckboxThemeData(
-                      fillColor: MaterialStateProperty.all<Color>(Palette.theme1), // Color when checkbox is selected
-                     ),
-                        ),
-                      child: Checkbox(
-                        value: _selectedSubjects.contains(subject),
-                        onChanged: (bool? value) {
-                          setState(() {
-                            if (value == true) {
-                              _selectedSubjects.add(subject);
-                            } else {
-                              _selectedSubjects.remove(subject);
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-          ]
-        ),
+        //           items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
+        //             return DropdownMenuItem<ClassSubject>(
+        //               value: classSubject,
+        //               child: Text(classSubject.className),
+        //             );
+        //           }).toList(),
+        //           style: TextStyle(color: Colors.black, fontSize: 19),
+        //           icon: Icon(Icons.arrow_drop_down,size: 30,),
+        //           underline: SizedBox(),      
+        //         ),
+        //       ),
+        //     ),
+        //     SizedBox(height: 4),
+        //     if (_selectedClassSubject != null)
+        //       Column(
+        //         children: _selectedClassSubject!.subjects.map<Widget>((subject) {
+        //           return ListTile(
+        //             title: Text(subject),
+        //             leading: Theme(
+        //               data: ThemeData(
+        //             // unselectedWidgetColor: Colors.grey, // Color when checkbox is not selected
+        //             checkboxTheme: CheckboxThemeData(
+        //               fillColor: MaterialStateProperty.all<Color>(Palette.theme1), // Color when checkbox is selected
+        //              ),
+        //                 ),
+        //               child: Checkbox(
+        //                 value: _selectedSubjects.contains(subject),
+        //                 onChanged: (bool? value) {
+        //                   setState(() {
+        //                     if (value == true) {
+        //                       _selectedSubjects.add(subject);
+        //                     } else {
+        //                       _selectedSubjects.remove(subject);
+        //                     }
+        //                   });
+        //                 },
+        //               ),
+        //             ),
+        //           );
+        //         }).toList(),
+        //       ),
+        //   ]
+        // ),
               
               
                     SizedBox(height:20),
@@ -398,7 +402,7 @@ double height = MediaQuery.of(context).size.height;
                   Icons.visibility_off:Icons.visibility),
                   onPressed:(){
                     setState((){
-                      _isObscure=!_isObscure2;
+                      _isObscure=!_isObscure;
           
                     });
                   }
@@ -450,7 +454,7 @@ double height = MediaQuery.of(context).size.height;
                  controller:confirmpasswordController,
                 decoration:InputDecoration(   
                 suffixIcon: IconButton(
-                  icon:Icon(_isObscure?
+                  icon:Icon(_isObscure2?
                   Icons.visibility_off:Icons.visibility),
                   onPressed:(){
                     setState((){
@@ -499,7 +503,16 @@ double height = MediaQuery.of(context).size.height;
 
                   SizedBox(height:30),
                   Row(children: [
-                  Container(height:20,width:20,color:Palette.theme1),
+                  Container(
+                    height:20,
+                    width:20,
+                    child: Checkbox(value: _isChecked, onChanged: (value){
+                      setState(() {
+                        _isChecked = value! ;
+                      });
+                    }),
+                  ),
+                  // Container(height:20,width:20,color:Palette.theme1),
                   SizedBox(width:10),
                     Column(children: [
                   Text("By tapping continue, you accept the"),
@@ -527,9 +540,9 @@ double height = MediaQuery.of(context).size.height;
                           }  
 
                                       if(_formKey.currentState!.validate()){
-                                       provider.teacherSignup(context,name.text.toString(),number.text.toString(),email.text.toString(),address.text.toString(), 
+                                       provider.teacherSignup(context,name.text.toString(),number.text.toString(),email.text.toString(), 
                                        passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile,
-                                       _selectedClassSubject?.className??'',_selectedSubjects
+                                      //  _selectedClassSubject?.className??'',_selectedSubjects
                                        );
                           
                                     }
@@ -539,7 +552,13 @@ double height = MediaQuery.of(context).size.height;
                         
                                   },        
                                       
-                                  child: provider.signUpLoading?CircularProgressIndicator():
+                                  child: provider.signUpLoading?Visibility(
+                                    maintainSize: true,
+                                    maintainAnimation: true,
+                                    maintainState: true,
+                                    visible:true,
+                                    
+                                    child: CircularProgressIndicator(color: Colors.white,)):
                                   Text(
                                     "Sign Up",
                                     style: TextStyle(
@@ -550,6 +569,38 @@ double height = MediaQuery.of(context).size.height;
                                   color:Palette.theme1,
                                 ),
                         ),
+              SizedBox(height:20),
+                               Center(
+                   child: RichText(
+                     text: TextSpan(
+                         style: TextStyle(color: Colors.black),
+                         children: <TextSpan>[
+                           TextSpan(text: "Already have an account? ",
+                           style:GoogleFonts.poppins(
+
+                          fontSize:  15,
+                          fontWeight:  FontWeight.w400,
+                          // height:  1.5,
+                          color:  Color.fromARGB(255, 134, 148, 162),
+
+                          )
+                           ),
+                           TextSpan(text: 'Log In',
+                           recognizer:TapGestureRecognizer()..onTap = () =>
+                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>Login(),)),
+                           style:GoogleFonts.poppins(
+
+                          fontSize:  15,
+                          fontWeight:  FontWeight.w600,
+                          // height:  1.5,
+                          color:  Palette.theme1,
+
+                )
+                            ),
+                         ],
+                     ),
+                   ),
+                 ),
 
                     
             ],),

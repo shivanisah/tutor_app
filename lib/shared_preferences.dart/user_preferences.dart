@@ -20,4 +20,22 @@ class UserPreferences with ChangeNotifier{
     notifyListeners();
   }
 
+    Future<Teacher> getUser() async{
+    final SharedPreferences _pref = await SharedPreferences.getInstance();
+
+    int? id = _pref.getInt('id');
+    String? email = _pref.getString('email');
+    String? token = _pref.getString('token');
+    bool? is_staff  = _pref.getBool('is_staff');
+
+    return Teacher(
+      email: email,
+      id: id,
+      token: token,
+      isStaff: is_staff
+    );
+
+  }
+
+
 }

@@ -1,5 +1,6 @@
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:tutor_app/screens/auth_screens/studentSignUpScreen.dart';
@@ -9,6 +10,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/user_models/teacher_data.dart';
+import '../student/studentEnrollment.dart';
+import '../tutor/tutorDetailPage.dart';
 import '../utils/colors.dart';
 
 
@@ -45,7 +49,7 @@ class _TeachersListState extends State<TeachersList> {
                 physics:NeverScrollableScrollPhysics(),
                 shrinkWrap:true,
                 gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,
-                  mainAxisExtent:MediaQuery.of(context).size.height*0.45,
+                  mainAxisExtent:MediaQuery.of(context).size.height*0.4,
 
                 ),
                 itemCount:snapshot.data?.length,
@@ -125,20 +129,35 @@ class _TeachersListState extends State<TeachersList> {
                                     Text(snapshot.data![i]['full_name']),
                                     SizedBox(height:5),
 
-                                    Text(snapshot.data![i]["phone_number"]),
+                                    Text(snapshot.data![i]['id'].toString()),
 
                                     SizedBox(height:5),
 
                                     // Text(snapshot.data![i]["gender"]),
 
 
-                                    Text(snapshot.data![i]["email"]),
+                                    // Text(snapshot.data![i]["address"]),
 
                                     SizedBox(height:8),
 
                                     GestureDetector(
                                       onTap: (){
-                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>StudentSignUp()));
+                                        TeacherData teacher = TeacherData(
+                                                            fullName: snapshot.data![i]['full_name'],
+                                                            phoneNumber: snapshot.data![i]['phone_number'],
+                                                            address: snapshot.data![i]['address'],
+                                                            email: snapshot.data![i]['email'],
+                                                            id: snapshot.data![i]['id'] ,
+                                                            image:File( snapshot.data![i]['image']),
+                                                            education: snapshot.data![i]['education'],
+                                                            teaching_experience: snapshot.data![i]['teaching_experience'],
+                                                            teaching_location: snapshot.data![i]['teaching_location'],
+                                                            about_me: snapshot.data![i]['about_me'],
+                                                            gender: snapshot.data![i]['gender'],
+                                                            grade: snapshot.data![i]['grade'],
+
+                                                          );
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailPage(teacher:teacher)));
 
                                       },
                                       child: Container(

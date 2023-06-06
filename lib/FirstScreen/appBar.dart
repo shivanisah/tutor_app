@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 import "../location/enablelocation.dart";
 import "../location/map.dart";
 import "../screens/auth_screens/login.dart";
-import "../screens/auth_screens/loginscreen.dart";
 import "../screens/auth_screens/teacherSignUpscreen.dart";
 
 

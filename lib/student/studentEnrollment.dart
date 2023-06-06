@@ -7,35 +7,57 @@ import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
 import '../../providers/auth_provider.dart';
+import '../models/user_models/teacher_data.dart';
+import '../models/user_models/teacher_model.dart';
+import '../shared_preferences.dart/user_preferences.dart';
 
 
-class StudentSignUp extends StatefulWidget{
+class StudentEnrollment extends StatefulWidget{
   @override
-  State<StudentSignUp> createState() => _StudentSignUp();
+  State<StudentEnrollment> createState() => _StudentEnrollment();
 }
 
-class _StudentSignUp extends State<StudentSignUp> {
+class _StudentEnrollment extends State<StudentEnrollment> {
 
 
-  TextEditingController emailController=TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmpasswordController = TextEditingController();
+  TextEditingController pnameController=TextEditingController();
+  TextEditingController pnumberController = TextEditingController();
+  TextEditingController snameController = TextEditingController();
+  TextEditingController snumberController = TextEditingController();
+  TextEditingController sgenderController = TextEditingController();
 
-  bool _isObscure = true;
-  bool _isObscure2 = true;
+
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
 
 @override
 void dispose(){
-  emailController.dispose();
-  passwordController.dispose();
-  confirmpasswordController.dispose();
+  pnameController.dispose();
+  pnumberController.dispose();
+  snameController.dispose();
+  snumberController.dispose();
+
   super.dispose();
 }
   @override
   Widget build(BuildContext context) {
+  final userPreferences = UserPreferences();
+    int? userId;
+
+    // Retrieve the id value from UserPreferences
+    userPreferences.getUser().then((teacher) {
+      if (teacher != null) {
+        setState(() {
+          userId = teacher.id;
+          print(userId);
+        });
+      }
+    });  
+final TeacherData teacher = ModalRoute.of(context)!.settings.arguments as TeacherData;
+  print(".........................");
+  
+  print(teacher.id);
   final provider = Provider.of<AuthProvider>(context,listen: false);
 
 
@@ -59,9 +81,9 @@ double height = MediaQuery.of(context).size.height;
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [            
-              SizedBox(height:90),
+              SizedBox(height:40),
 
-              Text("Sign Up", 
+              Text("Personal Info", 
               // textAlign: TextAlign.right,
               style:  GoogleFonts.poppins(
 
@@ -73,7 +95,7 @@ double height = MediaQuery.of(context).size.height;
               )                
               ),
             SizedBox(height:6),
-              Text("Please enter the register details ",style:  GoogleFonts.poppins(
+              Text("Please enter your personal details ",style:  GoogleFonts.poppins(
 
               fontSize:  12,
                   // fontWeight:  FontWeight.w600,
@@ -93,7 +115,7 @@ double height = MediaQuery.of(context).size.height;
 
                  SizedBox(height: 20),
                              Text(
-               'Email Address ',
+               'Parents Name',
                style:  GoogleFonts.poppins(
 
               fontSize:  15,
@@ -105,10 +127,10 @@ double height = MediaQuery.of(context).size.height;
             ),           
               SizedBox(height:4),
                      TextFormField(              
-                controller:emailController,
+                controller:pnameController,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
-                hintText:"Email",
+                hintText:"Parent's Name",
                 hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400 
                 ),
                 fillColor: Color.fromARGB(255, 234, 235, 236),
@@ -135,17 +157,15 @@ double height = MediaQuery.of(context).size.height;
                 validator: (value) {
                     if (value == null || value.isEmpty) {
                      return 'This field is required';
-                    }else if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
-            return ("Please enter a valid email");
                     }
-          
-                    
                     return null;
                   },  
+                    
                  ),
-                 SizedBox(height: 20),
+
+                                  SizedBox(height: 20),
                              Text(
-               'Password',
+               'Parents Number',
                style:  GoogleFonts.poppins(
 
               fontSize:  15,
@@ -156,29 +176,16 @@ double height = MediaQuery.of(context).size.height;
                 )
             ),           
               SizedBox(height:4),
-              TextFormField(    
-                obscureText:_isObscure,          
-                controller:passwordController,
-                decoration:InputDecoration(   
-                suffixIcon: IconButton(
-                  icon:Icon(_isObscure?
-                  Icons.visibility_off:Icons.visibility),
-                  onPressed:(){
-                    setState((){
-                      _isObscure=!_isObscure;
-          
-                    });
-                  }
-                  ),
-          
-                
+                     TextFormField(  
+                      keyboardType: TextInputType.number,            
+                controller:pnumberController,
+                decoration:InputDecoration(             
                 border:InputBorder.none,  
-                hintText:"Password",
+                hintText:"Parent's Number",
                 hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400 
                 ),
                 fillColor: Color.fromARGB(255, 234, 235, 236),
                 filled: true,
-
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
                   borderRadius:BorderRadius.circular(6),
@@ -197,50 +204,37 @@ double height = MediaQuery.of(context).size.height;
                   )
                     
                 ),
-                             validator: (value) {
-                              RegExp regex = new RegExp(r'^.{6,}$');
-                              if (value!.isEmpty) {
-                                return "Password cannot be empty";
-                              }
-                              if (!regex.hasMatch(value)) {
-                                return ("please enter valid password min. 6 character");
-                              } else {
-                                return null;
-                              }
-                            },
-            
+             
+                validator: (value) {
+                    if (value == null || value.isEmpty) {
+                     return 'This field is required';
+                    }
+                    else if(!RegExp(r'^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$').hasMatch(value)){
+                              return "Please Enter a Valid Phone Number";
+                    }
+                    else 
+                    return null;
+                  },  
+                    
                  ),
                  SizedBox(height: 20),
                              Text(
-               'Confirm Password',
+               "Student's Name",
                style:  GoogleFonts.poppins(
 
               fontSize:  15,
                   // fontWeight:  FontWeight.w600,
-                height:  1.5,
+                  height:  1.5,
                 color:  Colors.black,
 
                 )
             ),           
               SizedBox(height:4),
-                TextFormField(    
-                obscureText:_isObscure2,          
-                controller:confirmpasswordController,
-                decoration:InputDecoration(   
-                suffixIcon: IconButton(
-                  icon:Icon(_isObscure2?
-                  Icons.visibility_off:Icons.visibility),
-                  onPressed:(){
-                    setState((){
-                      _isObscure2=!_isObscure2;
-          
-                    });
-                  }
-                  ),
-          
-                
+                     TextFormField(              
+                controller:snameController,
+                decoration:InputDecoration(             
                 border:InputBorder.none,  
-                hintText:"Confirm Password",
+                hintText:"Student's Name",
                 hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400 
                 ),
                 fillColor: Color.fromARGB(255, 234, 235, 236),
@@ -263,19 +257,72 @@ double height = MediaQuery.of(context).size.height;
                   )
                     
                 ),
-                             validator: (value) {
-                              RegExp regex = new RegExp(r'^.{6,}$');
-                              if (value!.isEmpty) {
-                                return "Password cannot be empty";
-                              }
-                              if (!regex.hasMatch(value)) {
-                                return ("please enter valid password min. 6 character");
-                              } else {
-                                return null;
-                              }
-                            },
-            
+             
+                validator: (value) {
+                    if (value == null || value.isEmpty) {
+                     return 'This field is required';
+                    }
+                    return null;
+                  },  
+                    
                  ),
+                 SizedBox(height: 20),
+                             Text(
+               "Student's Number",
+               style:  GoogleFonts.poppins(
+
+              fontSize:  15,
+                  // fontWeight:  FontWeight.w600,
+                  height:  1.5,
+                color:  Colors.black,
+
+                )
+            ),           
+              SizedBox(height:4),
+                     TextFormField(   
+                      keyboardType: TextInputType.number,           
+                controller:snumberController,
+                decoration:InputDecoration(             
+                border:InputBorder.none,  
+                hintText:"Student's Number",
+                hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400 
+                ),
+                fillColor: Color.fromARGB(255, 234, 235, 236),
+                filled: true,
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red,),
+                  borderRadius:BorderRadius.circular(6),
+                ),
+                focusedErrorBorder: OutlineInputBorder
+                (borderSide:BorderSide(color:Colors.red),
+                borderRadius:BorderRadius.circular(6),
+                ),
+                enabledBorder:OutlineInputBorder(                 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
+                  ),
+                  focusedBorder:OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
+                  )
+                    
+                ),
+             
+                validator: (value) {
+                    if (value == null || value.isEmpty) {
+                     return 'This field is required';
+                    }
+                    else if(!RegExp(r'^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$').hasMatch(value)){
+                              return "Please Enter a Valid Phone Number";
+                    }
+                    else 
+                    return null;
+                  },  
+                    
+                 ),
+
+
+
                           SizedBox(height:20),
                     GestureDetector(
                                       onTap: ()  {
@@ -283,11 +330,16 @@ double height = MediaQuery.of(context).size.height;
                                      // Set the loading state to true
 
                                     
-                                      provider.studentSignup(
+                                      provider.studentEnrollment(
                                         context,
-                                        emailController.text.toString(),
-                                        passwordController.text.toString(),
-                                        confirmpasswordController.text.toString(),
+                                        pnameController.text.toString(),
+                                        pnumberController.text.toString(),
+                                        snameController.text.toString(),
+                                        snumberController.text.toString(),
+                                        teacher.id,
+                                        userId!
+                                      
+
                                       );
                                   }
                                     },
@@ -307,7 +359,7 @@ double height = MediaQuery.of(context).size.height;
                                      visible: true,
 
                                           child: CircularProgressIndicator(color:Colors.white)):            
-                                            Center(child: Text('Register', style:  GoogleFonts.poppins(
+                                            Center(child: Text('Proceed', style:  GoogleFonts.poppins(
 
                                                                 fontSize:  15,
                                                                     // fontWeight:  FontWeight.w600,
@@ -318,75 +370,8 @@ double height = MediaQuery.of(context).size.height;
                                       ),
                                     ),
 
-              SizedBox(height:20),
-                               Center(
-                   child: RichText(
-                     text: TextSpan(
-                         style: TextStyle(color: Colors.black),
-                         children: <TextSpan>[
-                           TextSpan(text: "Already have an account? ",
-                           style:GoogleFonts.poppins(
-
-                          fontSize:  15,
-                          fontWeight:  FontWeight.w400,
-                          // height:  1.5,
-                          color:  Color.fromARGB(255, 134, 148, 162),
-
-                )
-                           ),
-                           TextSpan(text: 'LogIn',
-                           recognizer:TapGestureRecognizer()..onTap = () =>
-                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>Login(),)),
-                           style:GoogleFonts.poppins(
-
-                          fontSize:  15,
-                          fontWeight:  FontWeight.w600,
-                          // height:  1.5,
-                          color:  Palette.theme1,
-
-                )
-                            ),
-                         ],
-                     ),
-                   ),
-                 ),
 
 
-
-                //  SizedBox(height:20),
-                //         Center(
-                //   child:      MaterialButton(
-                //                 shape: RoundedRectangleBorder(
-                //                     borderRadius:
-                //                         BorderRadius.all(Radius.circular(20.0))),
-                //                 elevation: 5.0,
-                //                 height: 40,
-                //                 onPressed: () async {
-                //                   if (_formkey.currentState!.validate()) {
-                //                     provider.setSignUpLoading(true); // Set the loading state to true
-
-                //                     try {
-                //                       await provider.studentSignup(
-                //                         context,
-                //                         emailController.text.toString(),
-                //                         passwordController.text.toString(),
-                //                         confirmpasswordController.text.toString(),
-                //                       );
-                //                     } finally {
-                //                       provider.setSignUpLoading(false); // Set the loading state to false after the API call
-                //                     }
-                //                   }
-                //                     },
-
-                //                 child: provider.signUpLoading?Visibility(child: CircularProgressIndicator(color: Colors.white,)):Text(
-                //                   "SignUp",
-                //                   style: TextStyle(
-                //                     fontSize: 20,
-                //                   ),
-                //                 ),
-                //                 color: Colors.white,
-                //               ),
-                //         ),
 
                     
             ],),

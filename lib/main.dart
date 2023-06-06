@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/providers/auth_provider.dart';
+import 'package:tutor_app/providers/enrollmentlist_provider.dart';
+import 'package:tutor_app/providers/teacherProfileprovider.dart';
 import 'package:tutor_app/shared_preferences.dart/user_preferences.dart';
+import 'package:tutor_app/startScreens/splashScreen.dart';
+import 'package:tutor_app/startScreens/startPage.dart';
 import 'package:tutor_app/utils/colors.dart';
 // import 'package:tutor_app/providers/googlemapPage.dart';
 
@@ -26,17 +30,24 @@ class MyApp extends StatelessWidget {
             providers: [
         ChangeNotifierProvider(create: (_)=>AuthProvider ()),
         ChangeNotifierProvider(create: (_)=>UserPreferences ()),
+        ChangeNotifierProvider(create: (_)=>EnrollmentProvider ()),
+        ChangeNotifierProvider(create: (_)=>TeacherProfileProvider ()),
+
 
 
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        initialRoute: '/splash',
+        routes:{
+          '/splash' :(context) => SplashScreen()
+        },
         title: 'Tutor App',
         theme: ThemeData(
           primarySwatch: Palette.theme,
         ),
-        home:  Home(),
+        home:  AccountPage(),
       ),
     );
   }

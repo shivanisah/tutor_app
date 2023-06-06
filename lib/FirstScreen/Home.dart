@@ -5,7 +5,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/FirstScreen/search.dart';
 import 'package:tutor_app/FirstScreen/teacherList.dart';
 import 'package:tutor_app/FirstScreen/teachersearch.dart';
+import 'package:tutor_app/enrollments/fetchbutton.dart';
+import 'package:tutor_app/tutorDrawer/mainPageDrawer.dart';
 import 'package:tutor_app/utils/colors.dart';
+import 'package:tutor_app/widgets/drawer.dart';
 
 import '../screens/auth_screens/login.dart';
 import '../screens/auth_screens/teacherSignUpscreen.dart';
@@ -29,6 +32,7 @@ class _HomeState extends State<Home> {
     return
       SafeArea(
         child: Scaffold(
+          drawer:Drawer(),
             appBar: 
             
             PreferredSize(
@@ -48,27 +52,31 @@ class _HomeState extends State<Home> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+
+                          
 IconButton(
             icon:Icon(Icons.menu),
             color: Colors.white,
             onPressed:(){
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) =>Login()),
+                // MaterialPageRoute(builder: (context) =>FetchButtonEnrollment()),
+               MaterialPageRoute(builder: (context) => DrawerTest()),
+
               );
 
             }
 
         ),   
-                                 Text('Tutor App',style:TextStyle(
-                                fontSize: 20,
-                                fontWeight:FontWeight.w500,
-                                fontStyle:FontStyle.italic,
-                                color:Colors.white,
-                                         )
-                                               ),
-            //  user == null?Text("Welcome",style: TextStyle(color:Colors.white),): 
-            //  Text("Hello $user,",style: TextStyle(color:Colors.white),),
+                                //  Text('Tutor App',style:TextStyle(
+                                // fontSize: 20,
+                                // fontWeight:FontWeight.w500,
+                                // fontStyle:FontStyle.italic,
+                                // color:Colors.white,
+                                //          )
+                                //                ),
+             user == null?Text("Welcome",style: TextStyle(color:Colors.white),): 
+             Text("Hello $user,",style: TextStyle(color:Colors.white),),
                                                             
                               // Text("Hello ")
 
@@ -120,7 +128,6 @@ IconButton(
               ),
               
             ),
-      
       
       
       
