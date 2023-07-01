@@ -24,10 +24,11 @@ class _SplashScreen extends State<SplashScreen> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     
     var email = preferences.getString('email');
+    var user_type = preferences.getString('user_type');
     // bool? is_staff = preferences.getBool('is_staff');
     if(email!=null ){
      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Home(),
-                     settings: RouteSettings(arguments:email )
+                     settings: RouteSettings(arguments:user_type )
 
      ));
      

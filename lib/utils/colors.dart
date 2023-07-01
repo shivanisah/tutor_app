@@ -24,6 +24,6 @@ class Palette {
   
   static const Color theme1 = Color(0xFF192C6A);
   static const Color fillcolor = Color.fromARGB(255, 234, 235, 236);
-
+  static const Color fontcolor = Color.fromARGB(255, 167, 50, 24);
 
 }

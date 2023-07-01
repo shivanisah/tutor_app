@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_app/FirstScreen/appBar.dart';
+// import 'package:tutor_app/FirstScreen/appBar.dart';
 import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
-import '../../Apis/fetchClassSubject.dart';
-import '../../models/user_models/searchmodel.dart';
+// import '../../Apis/fetchClassSubject.dart';
+// import '../../models/user_models/searchmodel.dart';
 import '../../providers/auth_provider.dart';
 
 
@@ -22,9 +22,9 @@ class TutorRegistration extends StatefulWidget{
 class _TutorRegistrationState extends State<TutorRegistration> {
 
 
-  List<ClassSubject> _classSubjects = [];
-  ClassSubject? _selectedClassSubject;
-  List<String> _selectedSubjects = [];
+  // List<ClassSubject> _classSubjects = [];
+  // ClassSubject? _selectedClassSubject;
+  // List<String> _selectedSubjects = [];
 
 
   TextEditingController name=TextEditingController();
@@ -36,10 +36,13 @@ class _TutorRegistrationState extends State<TutorRegistration> {
   bool _isObscure = true;
   bool _isObscure2 = true;
   bool _isChecked = false;
+  String gender = "Male";
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 bool loading = false;
+File? _certificateFile;
+String? _certificateFilePath;
 File? imageFile;
   var _image;
   final picker = ImagePicker();
@@ -52,6 +55,19 @@ File? imageFile;
       loading=false;
     });   
   }
+
+
+Future _pickCertificate()async{
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if(pickedFile !=null){
+    setState(() { _certificateFile = File(pickedFile.path);
+    _certificateFilePath = pickedFile.path;
+    }
+    );
+  }
+
+
+}
 @override
 void dispose(){
   name.dispose();
@@ -62,21 +78,20 @@ void dispose(){
   confirmpasswordController.dispose();
   super.dispose();
 }
-  @override
-  void initState() {
-    super.initState();
-    fetchClassSubjects().then((classSubjects) {
-      setState(() {
-        _classSubjects = classSubjects;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchClassSubjects().then((classSubjects) {
+  //     setState(() {
+  //       _classSubjects = classSubjects;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
   final provider = Provider.of<AuthProvider>(context,listen: false);
 
-final color = Colors.blue;
 double width = MediaQuery.of(context).size.width;
 double height = MediaQuery.of(context).size.height;
 
@@ -264,18 +279,63 @@ double height = MediaQuery.of(context).size.height;
                     return null;
                   },  
                  ),
+
+                                SizedBox(height: 20),
+                             Text(
+               "Gender",
+               style:  GoogleFonts.poppins(
+
+              fontSize:  15,
+                  height:  1.5,
+                color:  Colors.black,
+
+                )
+            ),  
+            SizedBox(height:4),
+            Row(children: [
+              Radio(
+                groupValue: gender,
+              value:"Male",
+              
+              onChanged: (value){
+                setState(() {
+                  gender = value.toString();
+                });
+              },
+            
+              ),
+              Text("Male"),
+              SizedBox(width:30),
+            Radio(
+              groupValue: gender,
+              value:"Female",
+              onChanged: (value){
+                setState(() {
+                  gender = value.toString();
+                });
+              },
+
+              ),
+              Text("Female")
+
+            ],),
+ 
                 
-                  SizedBox(height: 20), 
-                  Text("Education Certificate *"),
-                  SizedBox(height:5),
-                                TextFormField(              
-                controller:address,
+                SizedBox(height: 20), 
+                Text("Education Certificate *"),
+                SizedBox(height:5),
+                TextFormField(  
+                readOnly: true,
+                onTap: _pickCertificate,
                 decoration:InputDecoration(             
                 border:InputBorder.none,  
-                hintText:"Upload Certificate",
+                hintText:_certificateFilePath!=null? 
+                _certificateFilePath:            
+                "Upload Certificate",
                 hintStyle: TextStyle(color:Colors.black),
                 fillColor: Palette.fillcolor,
                 filled: true,
+                suffixIcon: IconButton(icon: Icon(Icons.attach_file),onPressed: _pickCertificate,),
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
                   borderRadius:BorderRadius.circular(6),
@@ -538,10 +598,12 @@ double height = MediaQuery.of(context).size.height;
                                 imageFile =  File(_image.path);
                         
                           }  
+                          
 
                                       if(_formKey.currentState!.validate()){
                                        provider.teacherSignup(context,name.text.toString(),number.text.toString(),email.text.toString(), 
-                                       passwordController.text.toString(), confirmpasswordController.text.toString(),imageFile,
+                                       passwordController.text.toString(), confirmpasswordController.text.toString(),
+                                       imageFile,_certificateFile,gender
                                       //  _selectedClassSubject?.className??'',_selectedSubjects
                                        );
                           
@@ -552,20 +614,31 @@ double height = MediaQuery.of(context).size.height;
                         
                                   },        
                                       
-                                  child: provider.signUpLoading?Visibility(
-                                    maintainSize: true,
-                                    maintainAnimation: true,
-                                    maintainState: true,
-                                    visible:true,
+                                  child:
+                                  Consumer<AuthProvider>(
+                                        builder: (context, provider,child) {
+                                          if (provider.signUpLoading) {
+                                            return Center(child: CircularProgressIndicator(color: Colors.white));
+                                          } else {
+                                            return Center(child: Text('Sign Up', style: TextStyle(color: Colors.white, fontSize: 16)));
+                                          }
+                                        },
+                                      ),
+
+                                  //  provider.signUpLoading?Visibility(
+                                  //   maintainSize: true,
+                                  //   maintainAnimation: true,
+                                  //   maintainState: true,
+                                  //   visible:true,
                                     
-                                    child: CircularProgressIndicator(color: Colors.white,)):
-                                  Text(
-                                    "Sign Up",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color:Colors.white,
-                                    ),
-                                  ),
+                                  //   child: CircularProgressIndicator(color: Colors.white,)):
+                                  // Text(
+                                  //   "Sign Up",
+                                  //   style: TextStyle(
+                                  //     fontSize: 15,
+                                  //     color:Colors.white,
+                                  //   ),
+                                  // ),
                                   color:Palette.theme1,
                                 ),
                         ),

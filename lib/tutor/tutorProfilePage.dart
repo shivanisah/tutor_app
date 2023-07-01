@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/user_models/teacherProfilemodel.dart';
-import '../../models/user_models/teacher_model.dart';
 import '../../providers/teacherProfileprovider.dart';
 import '../../shared_preferences.dart/user_preferences.dart';
 import '../../utils/colors.dart';
@@ -17,6 +16,20 @@ class TeacherProfilePage extends StatefulWidget{
 }
 
 class _TeacherProfilePage extends State<TeacherProfilePage> {
+
+  
+
+    final userPreferences = UserPreferences();
+    int? teacherId;
+
+
+bool _isMounted = true; 
+
+  @override
+  void dispose() {
+    _isMounted = false; 
+    super.dispose();
+  }  
 String selectedTeachinglocation = "";
 
 List teaching_location = [
@@ -68,23 +81,88 @@ List teaching_experience = [
         _classSubjects = classSubjects;
       });
     });
+    _isMounted = true;
   }
+void setSelectedTeachingExperience(String? value){
+      setState(() {
+        selectedTeachingExperience= value!;
+   TeacherProfile(
+      id: teacherId!,
+      teaching_experience: selectedTeachingExperience,
+    );
+      });   
+  
+}
+void setSelectedEducation(String? value){
+      setState(() {
+        selected_education= value!;
+        TeacherProfile(
+      id: teacherId!,
+      education: selected_education,
+    );
 
+      });   
+  
+}
+
+
+void setSelectedTeachingLocation(String? value){
+      setState(() {
+        selectedTeachinglocation = value!;
+                TeacherProfile(
+      id: teacherId!,
+      teaching_location: selectedTeachinglocation,
+    );
+
+      });   
+  
+}
+
+void setSelectedGrade(String? value){
+      setState(() {
+        selectedTeachinglocation = value!;
+
+      });   
+                TeacherProfile(
+      id: teacherId!,
+      teaching_location: selectedTeachinglocation,
+    );
+  
+}
+
+
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  final teacherprofileProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
+  final userPreferences = UserPreferences();
+
+  userPreferences.getUser().then((teacher) {
+    if (teacher != null && _isMounted) {
+      setState(() {
+        teacherId = teacher.id;
+        teacherprofileProvider.fetchTeacherProfile(teacherId!);
+      });
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
     final teacherprofileProvider = Provider.of<TeacherProfileProvider>(context);
-    final userPreferences = UserPreferences();
-    int? teacherId;
+    final profile = teacherprofileProvider.teacherProfile;
+    // final userPreferences = UserPreferences();
+    // int? teacherId;
 
-    userPreferences.getUser().then((teacher) {
-      if (teacher != null) {
-        setState(() {
-          teacherId = teacher.id;
-          // print(teacherId);
-        });
-      }
-    });  
+    // userPreferences.getUser().then((teacher) {
+    //   if (teacher != null && _isMounted) {
+    //     setState(() {
+    //       teacherId = teacher.id;
+    //       // print(teacherId);
+    //     });
+    //   }
+    // });  
 
 
     return Scaffold(
@@ -121,7 +199,9 @@ List teaching_experience = [
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    value:selected_education,
+                    // value:selected_education,
+                   value:selected_education.isNotEmpty?selected_education:profile?.education?? '',
+
                     isExpanded: true,
                     isDense: true,
               
@@ -137,7 +217,9 @@ List teaching_experience = [
                     ],
                     onChanged:(value){
                       setState(() {
-                        selected_education = value!;
+                        setSelectedEducation(value);
+                        // selected_education = value!;
+                        
                       });
                     }),
               ),
@@ -153,7 +235,9 @@ List teaching_experience = [
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    value:selectedTeachingExperience,
+                    // value:selectedTeachingExperience,
+                   value:selectedTeachingExperience.isNotEmpty?selectedTeachingExperience:profile?.teaching_experience?? '',
+
                     isExpanded: true,
                     isDense: true,
               
@@ -169,7 +253,8 @@ List teaching_experience = [
                     ],
                     onChanged:(value){
                       setState(() {
-                        selectedTeachingExperience = value!;
+                        setSelectedTeachingExperience(value);
+                        // selectedTeachingExperience = value!;
                       });
                     }),
               ),
@@ -195,7 +280,9 @@ List teaching_experience = [
                       value: _selectedClassSubject,
                       isExpanded:true,
                       isDense: true,
-                      hint: Text('Select class',style:TextStyle(color:Colors.black)),
+                      // hint: profile?.grade!=null?Text('${profile?.grade}',style:TextStyle(color:Colors.black)):Text('Select class',style:TextStyle(color:Colors.black)),
+                        hint: Text('Select class',style:TextStyle(color:Colors.black)),
+
                       onChanged: (ClassSubject? newValue) {
                         setState(() {
                           _selectedClassSubject = newValue;
@@ -259,7 +346,9 @@ List teaching_experience = [
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    value:selectedTeachinglocation,
+                    value:selectedTeachinglocation.isNotEmpty?selectedTeachinglocation:profile?.teaching_location?? '',
+                  
+                    // value:selectedTeachinglocation,
                     isExpanded: true,
                     isDense: true,
               
@@ -275,7 +364,11 @@ List teaching_experience = [
                     ],
                     onChanged:(value){
                       setState(() {
-                        selectedTeachinglocation = value!;
+                       print("///////////////////");
+                        print(selectedTeachinglocation);
+
+                        setSelectedTeachingLocation(value);
+                        // selectedTeachinglocation = value!;
                       });
                     }),
               ),
@@ -286,20 +379,23 @@ List teaching_experience = [
       
                             SizedBox(height:30),
                         GestureDetector(
+                          
                                           onTap: ()async{
-                                      if(selectedTeachinglocation=="" 
+                          //             if(selectedTeachinglocation=="" 
                                       
-                                      ){
-                          final snackBar = SnackBar(content: Text('All selection fields are required'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          //             ){
+                          // final snackBar = SnackBar(content: Text('All selection fields are required'));
+                          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
           
-                                      }
-                                      else{
+                          //             }
+                                      
+
+                            //  updateTeacherProfile();           
                                          
                 final teacher = TeacherProfile(
                   id: teacherId!, 
-                  teachingLocation: selectedTeachinglocation,
-                  teachingExperience: selectedTeachingExperience,
+                  teaching_location: selectedTeachinglocation,
+                  teaching_experience: selectedTeachingExperience,
                   education: selected_education, 
                   className : _selectedClassSubject?.className?? '',
                   subjects:_selectedSubjects
@@ -308,7 +404,7 @@ List teaching_experience = [
                 await teacherprofileProvider.updateTeacher(context,teacher.id, teacher);
               
           
-                                      }
+                                      
           
                                           },
                                           child: Container(

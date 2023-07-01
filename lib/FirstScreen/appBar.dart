@@ -1,15 +1,11 @@
 import "package:flutter/material.dart";
 
-import "../location/enablelocation.dart";
-import "../location/map.dart";
-import "../screens/auth_screens/login.dart";
 import "../screens/auth_screens/teacherSignUpscreen.dart";
 
 
 class AppB extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-        Size size = MediaQuery.of(context).size;
 
     return    AppBar(
       // toolbarHeight: size.height*0.6, // Increase the height of the AppBar

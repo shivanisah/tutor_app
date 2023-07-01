@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_app/FirstScreen/appBar.dart';
 import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
@@ -263,13 +262,10 @@ double height = MediaQuery.of(context).size.height;
                   )
                     
                 ),
-                             validator: (value) {
-                              RegExp regex = new RegExp(r'^.{6,}$');
-                              if (value!.isEmpty) {
-                                return "Password cannot be empty";
-                              }
-                              if (!regex.hasMatch(value)) {
-                                return ("please enter valid password min. 6 character");
+                            validator: (value) {
+                              if (confirmpasswordController.text !=
+                                  passwordController.text) {
+                                return "Password did not match";
                               } else {
                                 return null;
                               }
@@ -300,22 +296,16 @@ double height = MediaQuery.of(context).size.height;
                                         // border: Border.all(width: 0.7,color: Colors.black),
                                           color: Palette.theme1
                                         ),
-                                        child:provider.loading?Visibility(
-                                     maintainSize: true,
-                                     maintainAnimation: true,
-                                     maintainState: true,
-                                     visible: true,
-
-                                          child: CircularProgressIndicator(color:Colors.white)):            
-                                            Center(child: Text('Register', style:  GoogleFonts.poppins(
-
-                                                                fontSize:  15,
-                                                                    // fontWeight:  FontWeight.w600,
-                                                                    height:  1.5,
-                                                                  color:  Colors.white,
-
-                                                                  ))),                                       
-                                      ),
+                                        child:
+                                  Consumer<AuthProvider>(
+                                                builder: (context, provider,child) {
+                                                  if (provider.signUpLoading) {
+                                                    return Center(child: CircularProgressIndicator(color: Colors.white));
+                                                  } else {
+                                                    return Center(child: Text('Sign Up', style: TextStyle(color: Colors.white, fontSize: 16)));
+                                                  }
+                                                },
+                                              ),                                      ),
                                     ),
 
               SizedBox(height:20),

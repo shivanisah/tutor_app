@@ -4,13 +4,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tutor_app/location/teacherinfoWindow.dart';
-import 'package:tutor_app/tutor/tutorDetailPage.dart';
+import 'package:tutor_app/tutor/tutorDetailScreen.dart';
 
 import '../app_urls/app_urls.dart';
-import '../models/user_models/searchmodel.dart';
 import '../models/user_models/teacher_data.dart';
-import '../student/studentEnrollment.dart';
 import '../utils/colors.dart';
 
 class TeacherMapPage extends StatefulWidget {
@@ -149,14 +146,19 @@ print(selectedSubjects);
     Set<Marker> markers = {};
     teachers.forEach((teacher) {
       String name = teacher['name'];
-      String grade = teacher['grade'];
+      String? grade = teacher['grade'];
       String email = teacher['email'];
       int id = teacher['id'];
       String phone_number = teacher['phone_number'];
+      String? address = teacher['address'];
+      String? teaching_location = teacher['teaching_location'];
+      String? teaching_experience = teacher['teaching_experience'];
+      String? gender = teacher['gender'];
+      String? education = teacher['education'];
+      String? subjects = teacher['subjects'];
+
       double latitude = double.parse(teacher['latitude']);
       double longitude = double.parse(teacher['longitude']);
-      // List<String> subjects = teacher['subjects'].cast<String>();
-
 
       Marker marker = Marker(
         markerId: MarkerId(name),
@@ -166,7 +168,9 @@ print(selectedSubjects);
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
 
         onTap:(){
-          _showTeacherInfo(context, name, grade,email,id,phone_number);
+          _showTeacherInfo(context, name, grade ?? '',email,id,phone_number,address ?? '',teaching_location ??'',
+          
+          teaching_experience?? '',gender?? '',education ??'',subjects ?? '');
         }
       );
 
@@ -174,7 +178,9 @@ print(selectedSubjects);
     });
     return markers;
   }
-  void _showTeacherInfo(BuildContext context, String name, String grade,String email,int id,String phone_number) {
+  void _showTeacherInfo(BuildContext context, String name, String? grade,String email,int id,String phone_number,String? address,
+                        String? teaching_location,String? teaching_experience,String? gender,String? education,String? subjects
+  ) {
   showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
@@ -203,17 +209,24 @@ print(selectedSubjects);
                                                   SizedBox(height:20),
                                     GestureDetector(
                                         onTap: (){
+                                          List<String>? subjectsList = subjects?.split(',');
                                         TeacherData teacher = TeacherData(
                                           
                                                             fullName:name,
-                                                            grade: grade,
+                                                            grade: grade ?? '',
                                                             email:email,
                                                             id:id,
-                                                            phoneNumber: phone_number
+                                                            phoneNumber: phone_number,
+                                                            address:address,
+                                                            teaching_experience: teaching_experience,
+                                                            teaching_location: teaching_location,
+                                                            education: education,
+                                                            gender:gender,
+                                                            subjects:subjectsList,
 
 
                                                           );
-                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailPage(teacher:teacher)));
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailScreen(teacher:teacher)));
           
           
                                         },

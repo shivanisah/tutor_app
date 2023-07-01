@@ -1,19 +1,14 @@
 
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tutor_app/FirstScreen/search.dart';
 import 'package:tutor_app/FirstScreen/teacherList.dart';
 import 'package:tutor_app/FirstScreen/teachersearch.dart';
-import 'package:tutor_app/enrollments/fetchbutton.dart';
 import 'package:tutor_app/tutorDrawer/mainPageDrawer.dart';
 import 'package:tutor_app/utils/colors.dart';
-import 'package:tutor_app/widgets/drawer.dart';
 
 import '../screens/auth_screens/login.dart';
-import '../screens/auth_screens/teacherSignUpscreen.dart';
 import '../shared_preferences.dart/user_preferences.dart';
-import 'appBar.dart';
+import '../studentDrawer/studentDrawer.dart';
 import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget{
@@ -24,15 +19,17 @@ class Home extends StatefulWidget{
 }
 
 class _HomeState extends State<Home> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
 
   Widget build(BuildContext context){
     final user = ModalRoute.of(context)!.settings.arguments as String?;
-    Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
     return
       SafeArea(
         child: Scaffold(
-          drawer:Drawer(),
+           key: _scaffoldKey,
+           drawer:user == 'teacher'?TutorMainPageDrawer():StudentDrawer(),
             appBar: 
             
             PreferredSize(
@@ -54,16 +51,18 @@ class _HomeState extends State<Home> {
                         children: [
 
                           
-IconButton(
+          IconButton(
             icon:Icon(Icons.menu),
             color: Colors.white,
             onPressed:(){
-              Navigator.pushReplacement(
-                context,
-                // MaterialPageRoute(builder: (context) =>FetchButtonEnrollment()),
-               MaterialPageRoute(builder: (context) => DrawerTest()),
+          _scaffoldKey.currentState?.openDrawer();              
+          
+          // Navigator.pushReplacement(
+              //   context,
+              //   // MaterialPageRoute(builder: (context) =>FetchButtonEnrollment()),
+              //  MaterialPageRoute(builder: (context) => DrawerTest()),
 
-              );
+              // );
 
             }
 
@@ -75,7 +74,7 @@ IconButton(
                                 // color:Colors.white,
                                 //          )
                                 //                ),
-             user == null?Text("Welcome",style: TextStyle(color:Colors.white),): 
+             user == null?Text("Welcome",style: TextStyle(color:Color.fromARGB(255, 156, 136, 136)),): 
              Text("Hello $user,",style: TextStyle(color:Colors.white),),
                                                             
                               // Text("Hello ")

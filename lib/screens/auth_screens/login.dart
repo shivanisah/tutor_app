@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_app/FirstScreen/appBar.dart';
-import 'package:tutor_app/screens/auth_screens/teacherSignUpscreen.dart';
+// import 'package:tutor_app/FirstScreen/appBar.dart';
+import 'package:tutor_app/startScreens/studenttutorAccount.dart';
 import 'package:tutor_app/utils/colors.dart';
 
 import '../../providers/auth_provider.dart';
@@ -20,7 +20,7 @@ class _Login extends State<Login> {
   TextEditingController emailController=TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _isObscure = true;
-  bool _isObscure2 = true;
+  // bool _isObscure2 = true;
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
@@ -233,10 +233,13 @@ double height = MediaQuery.of(context).size.height;
                  ),
                 SizedBox(height:20),
                     GestureDetector(
+
                                       onTap: (){
                                   if(_formkey.currentState!.validate()){
                                       provider.userLogin(context,emailController.text.toString(), passwordController.text.toString());
+                                    
                                   }
+
 
                                       },
                                       child: Container(
@@ -248,14 +251,25 @@ double height = MediaQuery.of(context).size.height;
                                         // border: Border.all(width: 0.7,color: Colors.black),
                                           color: Palette.theme1
                                         ),
-                                        child:provider.loading?Visibility(
-                                     maintainSize: true,
-                                     maintainAnimation: true,
-                                     maintainState: true,
-                                     visible: true,
+                                        child:
+                                        Consumer<AuthProvider>(
+              builder: (context, provider,child) {
+                if (provider.loading) {
+                  return Center(child: CircularProgressIndicator(color: Colors.white));
+                }
+                 else {
+                  return Center(child: Text('Continue', style: TextStyle(color: Colors.white, fontSize: 16)));
+                }
+              },
+            ),
+                                    //     provider.loading?Visibility(
+                                    //  maintainSize: true,
+                                    //  maintainAnimation: true,
+                                    //  maintainState: true,
+                                    //  visible: true,
 
-                                          child: CircularProgressIndicator(color:Colors.white)):            
-                                            Center(child: Text('Continue',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
+                                    //       child: CircularProgressIndicator(color:Colors.white)):            
+                                            // Center(child: Text('Continue',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
                                       ),
                                     ),
 
@@ -277,7 +291,7 @@ double height = MediaQuery.of(context).size.height;
                            ),
                            TextSpan(text: 'Signup',
                            recognizer:TapGestureRecognizer()..onTap = () =>
-                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>TutorRegistration(),)),
+                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>StudentTutorAccount(),)),
                            style:GoogleFonts.poppins(
 
                           fontSize:  15,

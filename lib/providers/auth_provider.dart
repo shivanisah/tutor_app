@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tutor_app/tutor/tutorDashboard.dart';
+// import 'package:tutor_app/tutor/tutorDashboard.dart';
 import 'package:tutor_app/utils/colors.dart';
 // import 'package:http/http.dart';
 
@@ -19,6 +19,7 @@ import '../screens/auth_screens/login.dart';
 import 'package:http/http.dart' as http;
 
 import '../shared_preferences.dart/user_preferences.dart';
+import '../student/enrollmentMessage.dart';
 
 
 class AuthProvider extends ChangeNotifier{
@@ -28,15 +29,15 @@ class AuthProvider extends ChangeNotifier{
   bool get loading => _loading ;
 
 
-setLoading(bool value) {
-    _loading = value;
-    notifyListeners();
-  }
+// setLoading(bool value) {
+//     _loading = value;
+//     notifyListeners();
+//   }
 
-  setSignUpLoading(bool value) {
-    _signUpLoading = value;
-    notifyListeners();
-  }
+  // setSignUpLoading(bool value) {
+  //   _signUpLoading = value;
+  //   notifyListeners();
+  // }
 
   Map<String,String> headers = {                           
        "Content-Type": "application/json; charset=UTF-8" };  
@@ -52,7 +53,7 @@ setLoading(bool value) {
       
     });
 
-        setSignUpLoading(true);
+    _signUpLoading = true;
     
     notifyListeners();
     try{
@@ -67,17 +68,17 @@ setLoading(bool value) {
       print(responsebody.contains("non_field_errors"));
       print(response.statusCode);
       if(response.statusCode ==400){
-        setSignUpLoading(false);
-        notifyListeners();
-       final snackBar = SnackBar(content: Text('Account already exits'));
-       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // setSignUpLoading(false);
+        // notifyListeners();
+      //  final snackBar = SnackBar(content: Text('Account already exits'));
+      //  ScaffoldMessenger.of(context).showSnackBar(snackBar);
         
       }
         if(response.statusCode==201){
-        setSignUpLoading(false);
+        // setSignUpLoading(false);
         
-        notifyListeners();
-        final snackBar = SnackBar(content: Text('Verify your email before login'));
+        // notifyListeners();
+        final snackBar = SnackBar(content: Text('Verify your email before login'),backgroundColor: Palette.theme1,);
          ScaffoldMessenger.of(context).showSnackBar(snackBar);
                          Timer(Duration(seconds: 2), (){
                  Navigator.push(
@@ -94,23 +95,39 @@ setLoading(bool value) {
 
       
     } on SocketException{
-      setSignUpLoading(false);
       final snackBar = SnackBar(content: Text('No Internet Connection'));
        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
       // flushBarErrorMessage('NO Internet connection', context);
     }
+    _signUpLoading = false;
+    notifyListeners();
   }
 //StudentEnrollment
   Future<void> studentEnrollment(BuildContext context,String parentsName,String ParentsNumber,
-  String studentsName,String studentsNumber,int tutor,int student) async{
+  String studentsName,String studentsNumber,String gender,String grade,String? teaching_location,List<String> subjects,
+  
+  int tutor,int student,String finalselectedDate,
+  // String selectedTimeSlot
+  String selecctedStartTimeSlot,
+  String selectedEndTimeSlot
+  )async{
     var body = jsonEncode({
       'parents_name':parentsName,
       'parents_number':ParentsNumber,
       'students_name':studentsName,
       'students_number':studentsNumber,
+      'gender':gender,
+      'grade':grade,
+      'preffered_teaching_location':teaching_location,
+      'subjects':subjects.join(','),
       'tutor':tutor,
       'student':student,
+      'selected_tuitionjoining_date':finalselectedDate,
+      // 'teaching_time':selectedTimeSlot,
+      'startTime':selecctedStartTimeSlot,
+      'endTime':selectedEndTimeSlot,
+
 
     
       
@@ -118,8 +135,7 @@ setLoading(bool value) {
       
     });
 
-        setSignUpLoading(true);
-    
+  _loading = true;    
     notifyListeners();
     try{
       http.Response response = await http.post(Uri.parse(AppUrl.studentenrollmentApiEndPoint),headers: headers,
@@ -133,22 +149,22 @@ setLoading(bool value) {
       print(responsebody.contains("non_field_errors"));
       print(response.statusCode);
       if(response.statusCode ==400){
-        setSignUpLoading(false);
-        notifyListeners();
-       final snackBar = SnackBar(content: Text('Something went wrong'));
+        // setSignUpLoading(false);
+        // notifyListeners();
+       final snackBar = SnackBar(content: Text('Something went wrong'),backgroundColor: Colors.red,);
        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         
       }
         if(response.statusCode==201){
-        setSignUpLoading(false);
+        // setSignUpLoading(false);
         
-        notifyListeners();
-        final snackBar = SnackBar(content: Text('Your enrollment form is submitted successfully'));
+        // notifyListeners();
+        final snackBar = SnackBar(content: Text('Your enrollment form is submitted successfully'),backgroundColor: Palette.theme1,);
          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                         Timer(Duration(seconds: 2), (){
+                Timer(Duration(seconds: 2), (){
                  Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>Login()),
+                MaterialPageRoute(builder: (context) =>EnrollmentMessage()),
               );
         });
 
@@ -160,12 +176,14 @@ setLoading(bool value) {
 
       
     } on SocketException{
-      setSignUpLoading(false);
+      // setSignUpLoading(false);
       final snackBar = SnackBar(content: Text('No Internet Connection'));
        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
       // flushBarErrorMessage('NO Internet connection', context);
     }
+    _loading = false;
+    notifyListeners();
   }
 //tutor Details Adding
   Future<void> teacherDetails(BuildContext context,String address) async{
@@ -174,9 +192,9 @@ setLoading(bool value) {
      
     });
 
-        setSignUpLoading(true);
+    //     setSignUpLoading(true);
     
-    notifyListeners();
+    // notifyListeners();
     try{
       http.Response response = await http.post(Uri.parse(AppUrl.studentenrollmentApiEndPoint),headers: headers,
     body: body
@@ -189,16 +207,14 @@ setLoading(bool value) {
       print(responsebody.contains("non_field_errors"));
       print(response.statusCode);
       if(response.statusCode ==400){
-        setSignUpLoading(false);
-        notifyListeners();
        final snackBar = SnackBar(content: Text('Something went wrong'));
        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         
       }
         if(response.statusCode==201){
-        setSignUpLoading(false);
+        // setSignUpLoading(false);
         
-        notifyListeners();
+        // notifyListeners();
         final snackBar = SnackBar(content: Text('Your enrollment form is submitted successfully'));
          ScaffoldMessenger.of(context).showSnackBar(snackBar);
                          Timer(Duration(seconds: 2), (){
@@ -216,7 +232,7 @@ setLoading(bool value) {
 
       
     } on SocketException{
-      setSignUpLoading(false);
+      // setSignUpLoading(false);
       final snackBar = SnackBar(content: Text('No Internet Connection'));
        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
@@ -236,6 +252,8 @@ Future<void> teacherSignup(
   String password,
   String confirmpassword,
   File? image,
+  File? certificateFile, 
+  String gender,
   // String selectedGrade,
   // List<String> selectedSubjects,
 )async {
@@ -281,6 +299,7 @@ Future<void> teacherSignup(
   request.fields['password'] = password;
   // request.fields['address'] = address;
   request.fields['password_confirmation'] = confirmpassword;
+  request.fields['gender'] = gender;
   // request.fields['grade'] = selectedGrade;
   // request.fields['subjects'] = selectedSubjects.join(',');
 
@@ -296,9 +315,14 @@ Future<void> teacherSignup(
     );
     request.files.add(multipartFile);
   }
-
-  setSignUpLoading(true);
+ if (certificateFile != null) {
+    var certificate = await http.MultipartFile.fromPath('certificate', certificateFile.path);
+    request.files.add(certificate);
+  }
+  _signUpLoading = true;
   notifyListeners();
+  // setSignUpLoading(true);
+  // notifyListeners();
 
   try {
     var response = await request.send();
@@ -307,16 +331,12 @@ Future<void> teacherSignup(
     print(responsebody);
 
     if (response.statusCode == 400) {
-      setSignUpLoading(false);
-      notifyListeners();
-      final snackBar = SnackBar(content: Text('Account already exists'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // final snackBar = SnackBar(content: Text('Account already exists'),backgroundColor: Colors.red,);
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
     if (response.statusCode == 201) {
-      setSignUpLoading(false);
-      notifyListeners();
-      final snackBar = SnackBar(content: Text('Verify your email before login'));
+      final snackBar = SnackBar(content: Text('Verify your email before login'),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Timer(Duration(seconds: 2), () {
         Navigator.push(
@@ -326,36 +346,36 @@ Future<void> teacherSignup(
       });
     }
   } on SocketException {
-    setSignUpLoading(false);
-    notifyListeners();
-    final snackBar = SnackBar(content: Text('No Internet Connection'));
+    // setSignUpLoading(false);
+    // notifyListeners();
+    final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+  _signUpLoading = false;
+  notifyListeners();
 }
 
 
   //Code for login
     Future<void> userLogin(BuildContext context,String email,String password) async{
     var body = jsonEncode({'email': email, 'password': password});
-    setLoading(true);
+    _loading = true;
     
     notifyListeners();
     try{
-      http.Response  response = await http.post(Uri.parse(AppUrl.loginEndPint),body: body,headers: headers);
-    // print(response.body );
+      http.Response  response = await http.post(Uri.parse(AppUrl.loginEndPoint),body: body,headers: headers);
+    print(response.body );
     var verify = jsonDecode(response.body);
     print(verify);
     print(response.statusCode);
 
     if(response.statusCode ==400){
-      setLoading(false);
       notifyListeners();
       final snackBar = SnackBar(content: Text('Invalid credentials'),backgroundColor: Colors.red,);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     }
     if(response.statusCode ==401){
-      setLoading(false);
       notifyListeners();
       final snackBar = SnackBar(content: Text('email not verified'),backgroundColor:Colors.red);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -363,7 +383,6 @@ Future<void> teacherSignup(
     }
     if (response.statusCode==200){
       
-      setLoading(false);
       var data = response.body;
       
       Teacher user = Teacher.fromReqBody(data);
@@ -382,7 +401,7 @@ Future<void> teacherSignup(
                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>Home(),
-                settings: RouteSettings(arguments:user.email )
+                settings: RouteSettings(arguments:user.user_type )
                 ),
               );
 
@@ -391,7 +410,7 @@ Future<void> teacherSignup(
                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>Home(),
-                settings: RouteSettings(arguments:user.email )
+                settings: RouteSettings(arguments:user.user_type )
                 ),
               );
 
@@ -406,13 +425,8 @@ Future<void> teacherSignup(
       content: Text(e.toString()),
     ) ;                                   
     }
-    
-    
-    
-    
-    
-    
-    
+
+    _loading = false;   
 
   }
 

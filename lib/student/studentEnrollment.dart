@@ -1,14 +1,10 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_app/FirstScreen/appBar.dart';
-import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
 import '../../providers/auth_provider.dart';
 import '../models/user_models/teacher_data.dart';
-import '../models/user_models/teacher_model.dart';
 import '../shared_preferences.dart/user_preferences.dart';
 
 
@@ -25,7 +21,33 @@ class _StudentEnrollment extends State<StudentEnrollment> {
   TextEditingController snameController = TextEditingController();
   TextEditingController snumberController = TextEditingController();
   TextEditingController sgenderController = TextEditingController();
+  String gender = "Male";
+  DateTime currentDate = DateTime.now();
+  String? finalselectedDate;
+  DateTime? userSelectedDate;
 
+    datePicker(context) async{
+       userSelectedDate = await 
+      showDatePicker(context: context, 
+      initialDate: currentDate, 
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2025)
+      );
+      if(userSelectedDate == null){
+        return;
+
+      }
+      else{
+        setState(() {
+          currentDate = userSelectedDate!;
+          finalselectedDate = 
+          "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+          // print("Date...............................................................................");
+          print(finalselectedDate);
+          // onSelect(userSelectedDate);
+        });
+      }
+    }
 
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
@@ -50,14 +72,23 @@ void dispose(){
       if (teacher != null) {
         setState(() {
           userId = teacher.id;
-          print(userId);
         });
       }
     });  
-final TeacherData teacher = ModalRoute.of(context)!.settings.arguments as TeacherData;
-  print(".........................");
+
+  final arguments = ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
+  final teacher = arguments['teacher'] as TeacherData;
+  // final selectedTimeSlot = arguments['selectedTimeSlot'] as String?;
+  final selectedStartTimeSlot = arguments['selectedstartTimeSlot'] as String?;
+  final selectedEndTimeSlot = arguments['selectedendTimeSlot'] as String?;
+  // print("tttttttttttttt...............................");
+  // print(selectedStartTimeSlot);
+  // print(selectedEndTimeSlot);
+// final TeacherData teacher = ModalRoute.of(context)!.settings.arguments as TeacherData;
+  // print(".........................");
   
-  print(teacher.id);
+  // print(teacher.id);
+  // print('subjects${teacher.subjects}');
   final provider = Provider.of<AuthProvider>(context,listen: false);
 
 
@@ -320,10 +351,95 @@ double height = MediaQuery.of(context).size.height;
                   },  
                     
                  ),
+                SizedBox(height: 20),
+                             Text(
+               "Student's Gender",
+               style:  GoogleFonts.poppins(
 
+              fontSize:  15,
+                  height:  1.5,
+                color:  Colors.black,
 
+                )
+            ),  
+            SizedBox(height:4),
+            Row(children: [
+              Radio(
+                groupValue: gender,
+              value:"Male",
+              
+              onChanged: (value){
+                setState(() {
+                  gender = value.toString();
+                });
+              },
+            
+              ),
+              Text("Male"),
+              SizedBox(width:30),
+            Radio(
+              groupValue: gender,
+              value:"Female",
+              onChanged: (value){
+                setState(() {
+                  gender = value.toString();
+                });
+              },
 
-                          SizedBox(height:20),
+              ),
+              Text("Female")
+
+            ],),
+            //DatePicker
+                SizedBox(height: 16), 
+                Text("To Join Tuition",
+                style:  GoogleFonts.poppins(
+
+                fontSize:  15,
+                height:  1.5,
+                color:  Colors.black,
+
+                )
+                ),
+                SizedBox(height:5),
+                TextFormField(  
+                readOnly: true,
+                onTap:(){
+                 datePicker(context);
+                } ,
+                decoration:InputDecoration(             
+                border:InputBorder.none,  
+                hintText:userSelectedDate!= null? finalselectedDate:
+                // "${currentDate.year}-${currentDate.month}-${currentDate.day}":
+                
+                "Pick Date",
+                hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled: true,
+                suffixIcon: IconButton(icon: Icon(Icons.calendar_month),onPressed:(){datePicker(context);}),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red,),
+                  borderRadius:BorderRadius.circular(6),
+                ),
+                focusedErrorBorder: OutlineInputBorder
+                (borderSide:BorderSide(color:Colors.red),
+                borderRadius:BorderRadius.circular(6),
+                ),
+                enabledBorder:OutlineInputBorder(                 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
+                  ),
+                  focusedBorder:OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
+                  )
+                    
+                ),
+             
+                 ),
+
+ 
+            SizedBox(height:20),
                     GestureDetector(
                                       onTap: ()  {
                                   if (_formkey.currentState!.validate()) {
@@ -336,8 +452,16 @@ double height = MediaQuery.of(context).size.height;
                                         pnumberController.text.toString(),
                                         snameController.text.toString(),
                                         snumberController.text.toString(),
+                                        gender,
+                                        teacher.grade.toString(),
+                                        teacher.teaching_location?? ''.toString(),
+                                        teacher.subjects!,
                                         teacher.id,
-                                        userId!
+                                        userId!,
+                                        finalselectedDate!,
+                                        // selectedTimeSlot!,
+                                        selectedStartTimeSlot?? '',
+                                        selectedEndTimeSlot?? '',
                                       
 
                                       );
@@ -352,27 +476,17 @@ double height = MediaQuery.of(context).size.height;
                                         // border: Border.all(width: 0.7,color: Colors.black),
                                           color: Palette.theme1
                                         ),
-                                        child:provider.loading?Visibility(
-                                     maintainSize: true,
-                                     maintainAnimation: true,
-                                     maintainState: true,
-                                     visible: true,
-
-                                          child: CircularProgressIndicator(color:Colors.white)):            
-                                            Center(child: Text('Proceed', style:  GoogleFonts.poppins(
-
-                                                                fontSize:  15,
-                                                                    // fontWeight:  FontWeight.w600,
-                                                                    height:  1.5,
-                                                                  color:  Colors.white,
-
-                                                                  ))),                                       
-                                      ),
+                                        child:
+                                Consumer<AuthProvider>(
+                                              builder: (context, provider,child) {
+                                                if (provider.loading) {
+                                                  return Center(child: CircularProgressIndicator(color: Colors.white));
+                                                } else {
+                                                  return Center(child: Text('Proceed', style: TextStyle(color: Colors.white, fontSize: 16)));
+                                                }
+                                              },
+                                            ),                                      ),
                                     ),
-
-
-
-
                     
             ],),
           ),

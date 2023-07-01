@@ -1,18 +1,13 @@
 
-import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:tutor_app/screens/auth_screens/studentSignUpScreen.dart';
+import 'package:tutor_app/tutor/tutorDetailScreen.dart';
 
 import '../Apis/teacherList.dart';
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 
 import '../models/user_models/teacher_data.dart';
-import '../student/studentEnrollment.dart';
-import '../tutor/tutorDetailPage.dart';
+import '../models/user_models/timeSlot.dart';
 import '../utils/colors.dart';
 
 
@@ -100,18 +95,28 @@ class _TeachersListState extends State<TeachersList> {
                                   
                                   image:DecorationImage(
                                     
-                                    // image:AssetImage("assets/images/d1.jpg"),
+                                    image:AssetImage("assets/images/d1.jpg"),
+                                    fit:BoxFit.cover
+                                  
 
-
-                                          image: snapshot.data![i]["image"] != null
-                                            ? NetworkImage(snapshot.data![i]["image"])
-                                            : const AssetImage("assets/images/d1.jpg") as ImageProvider<Object>,                 
-                                           fit:BoxFit.cover,
+                                          // image: snapshot.data![i]["image"] != null
+                                          //   ? 
+                                          //   NetworkImage(snapshot.data![i]["image"])
+                                          //   : const AssetImage("assets/images/d1.jpg") as ImageProvider<Object>,                 
+                                          //  fit:BoxFit.cover,
                                            
-                                           alignment: Alignment.topCenter,
+                                          //  alignment: Alignment.topCenter,
                                   )
+                                  
 
                               ),
+
+
+
+
+
+
+
                               // child:CircleAvatar(backgroundImage: AssetImage("assets/images/d1.jpg"),
                               // radius:70
                               // )
@@ -129,35 +134,46 @@ class _TeachersListState extends State<TeachersList> {
                                     Text(snapshot.data![i]['full_name']),
                                     SizedBox(height:5),
 
-                                    Text(snapshot.data![i]['id'].toString()),
+                                    Text(snapshot.data ?[i]["address"]?? ''),
 
                                     SizedBox(height:5),
 
                                     // Text(snapshot.data![i]["gender"]),
 
 
-                                    // Text(snapshot.data![i]["address"]),
 
                                     SizedBox(height:8),
 
                                     GestureDetector(
-                                      onTap: (){
+                                      onTap: () {
+                                        Map<String, dynamic> teacherData = snapshot.data![i];
+                                        // List<TimeSlot> timeSlots = await teacherlist.getTimeSlots()
+                                        String subjectsString = snapshot.data![i]['subjects'];
+                                        List<String> subjectsList = subjectsString.split(',');
+                                        // List<TimeSlot> timeSlots = List<TimeSlot>.from(teacherData['time_slots'].map((slot) => TimeSlot.fromJson(slot)));
+                                        List<TimeSlot> timeSlots = (snapshot.data![i]['time_slots'] as List)
+                                                  .map((slot) => TimeSlot.fromJson(slot))
+                                                  .toList();
+                                              print(timeSlots);
+                                        print(timeSlots);
                                         TeacherData teacher = TeacherData(
                                                             fullName: snapshot.data![i]['full_name'],
                                                             phoneNumber: snapshot.data![i]['phone_number'],
                                                             address: snapshot.data![i]['address'],
                                                             email: snapshot.data![i]['email'],
                                                             id: snapshot.data![i]['id'] ,
-                                                            image:File( snapshot.data![i]['image']),
+                                                            // image:File( snapshot.data![i]['image']),
                                                             education: snapshot.data![i]['education'],
                                                             teaching_experience: snapshot.data![i]['teaching_experience'],
                                                             teaching_location: snapshot.data![i]['teaching_location'],
                                                             about_me: snapshot.data![i]['about_me'],
                                                             gender: snapshot.data![i]['gender'],
                                                             grade: snapshot.data![i]['grade'],
-
+                                                            subjects:subjectsList,
+                                                            timeSlots: List<TimeSlot>.from(snapshot.data![i]['time_slots'].map((slot) => TimeSlot.fromJson(slot))),
+                                                            // timeSlots: timeSlots
                                                           );
-                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailPage(teacher:teacher)));
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailScreen(teacher:teacher)));
 
                                       },
                                       child: Container(
@@ -191,7 +207,7 @@ class _TeachersListState extends State<TeachersList> {
 
           }else{
             return const Center(
-              child:Text("No data found")
+              child:CircularProgressIndicator()
             );
 
           }

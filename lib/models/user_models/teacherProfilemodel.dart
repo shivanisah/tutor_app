@@ -1,17 +1,17 @@
 class TeacherProfile {
   final int id;
-  final String teachingLocation;
-  final String teachingExperience;
-  final String education;
-  final String className;
-  final List<String> subjects;
+  final String? teaching_location;
+  final String? teaching_experience;
+  final String? education;
+  final String? className;
+  final List<String>? subjects;
 
   TeacherProfile({
     required this.id,
-    required this.teachingLocation,
-    required this.teachingExperience,
-    required this.education,
-    required this.className,
-    required this.subjects
+    this.teaching_location,
+    this.teaching_experience,
+    this.education,
+    this.className,
+    this.subjects
   });
 }

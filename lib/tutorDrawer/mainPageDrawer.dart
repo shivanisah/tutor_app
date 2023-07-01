@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tutor_app/tutor/tutorDashboard.dart';
 import 'package:tutor_app/utils/colors.dart';
 
+import '../shared_preferences.dart/user_preferences.dart';
+
 
 class TutorMainPageDrawer extends StatefulWidget{
   @override
@@ -9,16 +11,24 @@ class TutorMainPageDrawer extends StatefulWidget{
 }
 
 class _TutorMainPageDrawer extends State<TutorMainPageDrawer> {
+    final userPreferences = UserPreferences();
+    String email = '';
 
 
   @override
   Widget build(BuildContext context) {
+            userPreferences.getUser().then((teacher) {
+      setState(() {
+        email = teacher.email?? '';
+      });
+    });
+
 
     return Drawer(
       child:ListView(
         padding:EdgeInsets.zero,
           children: [
-            UserAccountsDrawerHeader(accountName: Text("Shivani"), accountEmail: Text("shivanisah145@gmail.com"),
+            UserAccountsDrawerHeader(accountName: Text(""), accountEmail: Text(email),
             currentAccountPicture: CircleAvatar(
               child:ClipOval(child: Image.asset("assets/images/d1.jpg",
               width:90,
@@ -38,9 +48,12 @@ class _TutorMainPageDrawer extends State<TutorMainPageDrawer> {
               title:Text("Dashboard"),
               trailing:Icon(Icons.arrow_forward,color:Palette.theme1),
               onTap:(){
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => TutorDashboard(),));
+                Navigator.push(context,MaterialPageRoute(builder: (context) => TutorDashboard(),),
+                // ModalRoute.withName('/'),
+                );
               }
-            )
+            ),
+
           ],
       )
     );
