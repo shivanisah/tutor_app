@@ -27,7 +27,19 @@ class _EnrollmentMessage extends State<EnrollmentMessage> {
     });
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+
+        leading:IconButton(
+          icon:Icon(Icons.arrow_back) ,
+          onPressed:(){
+            Navigator.pushReplacement(
+              context,MaterialPageRoute(builder:(context)=>Home(),
+              settings:RouteSettings(arguments: user_type)
+              )
+            );
+          }
+          )
+      ),
       body:Container(
         color: Colors.white,
         // margin:EdgeInsets.only(top:160),

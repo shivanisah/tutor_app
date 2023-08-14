@@ -19,34 +19,29 @@ class _EnrollmentListState extends State<EnrollmentList> {
   int? teacherId;
   bool isConfirmationSent = false;
   Set<int> confirmedEnrollmentIds = {};
+  bool isLoading = true;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    fetchData();
+    // final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
+    // teacherId = ModalRoute.of(context)!.settings.arguments as int;
+    // enrollmentProvider.fetchEnrollments(teacherId!);
+  }
+    Future<void> fetchData()async{
+    try{
     final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
     teacherId = ModalRoute.of(context)!.settings.arguments as int;
-    enrollmentProvider.fetchEnrollments(teacherId!);
+   await enrollmentProvider.fetchEnrollments(teacherId!);
+
+    }catch(error){
+
+    }finally{
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-// Future<void> updateConfirmation(Enrollment enrollment, bool confirmation) async {
-//     final url = Uri.parse('http://192.168.1.71:8000/enrollments/${enrollment.id}/confirm/');
-//     final response = await http.post(url);
-
-//     if (response.statusCode == 200) {
-
-// setState(() {
-//         enrollment.setConfirmation(confirmation);
-//         if (confirmation) {
-//           confirmedEnrollmentIds.add(enrollment.id!);
-//         } else {
-//           confirmedEnrollmentIds.remove(enrollment.id!);
-//         }
-
-//       });    
-//       } 
-//       else 
-//       {
-//       throw Exception('Failed to update confirmation');
-//     }
-//   }
 
 List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
     enrollments.sort((a, b) {
@@ -74,7 +69,10 @@ final enrollmentProvider = Provider.of<EnrollmentProvider>(context);
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         
-        child:enrollments.isEmpty?Center(
+        child:isLoading?Padding(
+          padding: const EdgeInsets.only(top:150),
+          child: Center(child: CircularProgressIndicator(),),
+        ):enrollments.isEmpty?Center(
           child: Container(
             margin:EdgeInsets.only(top:200),
             child:Text("No enrollment requests found")),
@@ -197,6 +195,7 @@ final enrollmentProvider = Provider.of<EnrollmentProvider>(context);
                                                                               requested_teaching_time: enrollment.requested_teaching_time,
                                                                               startTime: enrollment.startTime,
                                                                               endTime:enrollment.endTime,
+                                                                              subjects:enrollment.subjects,
                                                                         );
                                       
                                       Navigator.push(

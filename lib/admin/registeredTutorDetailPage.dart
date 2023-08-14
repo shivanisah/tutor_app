@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tutor_app/admin/teachercertificate.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
 import 'package:tutor_app/models/user_models/teacher_data.dart';
 
@@ -43,7 +45,7 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
               teacher.setVerificationDate(now);
 
             }); 
-    final snackBar = SnackBar(content: Text('Teacher Verified'),backgroundColor: Palette.theme1,);
+    final snackBar = SnackBar(content: Text('Teacher Verified Successfully'),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
          } 
@@ -59,26 +61,75 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
     });
   }
   }
+
+    Future<void> previewCertificate(TeacherData teacher, bool previewStatus) async {
+    setState(() {
+      isLoading = true;
+    });
+    try{
+    final url = Uri.parse(AppUrl.baseUrl+'/registered_teachers/${teacher.id}/preview-certificate/');
+        final now = DateTime.now();
+
+    final response = await http.post(url,
+        body:{
+      'preview_certificateDate':DateFormat('yyyy-MM-dd HH:mm:ss').format(now),
+    }
+
+    );
+
+    if (response.statusCode == 200) {
+
+      setState(() {
+              teacher.setpreviewCertificate(previewStatus);
+              teacher.setpreviewCertificateDate(now);
+
+
+            }); 
+    final snackBar = SnackBar(content: Text('Preview certificate and reupload message has been sent to teacher'),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+         } 
+         
+         else {
+      throw Exception('Failed to update verification');
+    }
+  }catch(error){
+
+  }finally{
+    setState(() {
+      isLoading = false;
+    });
+  }
+  }
+
     Future<void> showVerificationDialog(TeacherData teacher)async{
     return showDialog<void>(
       context:context,
       builder:(BuildContext context){
         return AlertDialog(
           title:Text("Verify teacher"),
-          content:Text("Are you sure you want verify teacher?"),
+          content:Text("Take Actions"),
           actions: [
             TextButton(
               onPressed: (){
                 Navigator.of(context).pop();
                 updateVerification(teacher,true);
               },
-              child:Text('Yes')
+              child:Text('Verify')
             ),
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+                previewCertificate(teacher,true);
+              },
+              child:Text('Send Preview Certificate Message')
+            ),
+
             TextButton(
               onPressed:(){
                 Navigator.of(context).pop();
               },
-              child:Text('No'),
+              child:Text('Cancel'),
             ),
           ],
 
@@ -104,7 +155,7 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
         child: Container(
           padding:EdgeInsets.only(top:20,left:10),
           margin: EdgeInsets.only(left:20,right:20,top:40,bottom:30),
-          height:580,
+          height:700,
           width:350,
           
           // color:Colors.blue,
@@ -173,77 +224,164 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
     
                       SizedBox(height:10),
                       Divider(endIndent: 10,),
-                      Text("Education Details",style:TextStyle(fontSize: 18,fontWeight: FontWeight.w400,color:Palette.theme1)),
-                      SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.school,size:18),
-                              SizedBox(width:10),
+                      Text("Teaching Details",style:TextStyle(fontSize: 18,fontWeight: FontWeight.w400,color:Palette.theme1)),
+                      SizedBox(height:12),
 
-                              Text("Education: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.education}',style:TextStyle(fontSize: 16)),
-                              ]), 
+                Text("Education",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.education?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                  Text("Teaching Experience",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.teaching_experience?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                              Text("Teaching Grade",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.grade?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                              Text("Teaching Subjects",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text('${teacher.subjects?.join(',')}',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+              Text("Teaching Location",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.teaching_location?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
 
-                     SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.timeline,size:18),
-                              SizedBox(width:10),
 
-                              Text("Teaching Experience: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.teaching_experience}',style:TextStyle(fontSize: 16)),
-                              ]),     
-                    SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.map,size:18),
-                              SizedBox(width:10),
 
-                              Text("Teaching Location: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.teaching_location}',style:TextStyle(fontSize: 16)),
-                              ]),     
-                    SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.class_,size:18),
-                              SizedBox(width:10),
 
-                              Text("Teaching Grade: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.grade}',style:TextStyle(fontSize: 16)),
-                              ]),
-                                          SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.class_,size:18),
-                              SizedBox(width:10),
 
-                              Text("Teaching Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.subjects?.join(',')}',style:TextStyle(fontSize: 16)),
-                              ]),     
+                    Row(
+                      children: [
+                Text("Teacher Educational Certificate ",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+
+                        GestureDetector(
+                              onTap:(){
+                          Navigator.push(                
+                            context,MaterialPageRoute(builder: (context) => TeacherCertificate(teacher),
+                            )
+                            
+                            );
+
+                              },
+                              child:Icon(Icons.visibility,color:Palette.theme1)
+                            ),
+                      ],
+                    ),
         
-
-
-
-
-
             
-
-                      SizedBox(height:60),
+                      SizedBox(height:10),
                       Divider(thickness:2,endIndent: 10,),
       
             Padding(
-              padding: const EdgeInsets.only(left:20.0,right:20),
+              padding: const EdgeInsets.only(left:40.0,right:20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
             
                 teacher.verification_status == true
-                      ? Text("Accepted")
+                      ? Text("Account Detail Verified",
+                                  style:  GoogleFonts.poppins(
+                                  fontSize:  16,
+                                  fontWeight:  FontWeight.w500,
+                                  height:  1.5,
+                                  color:Colors.black,
+                  ),
+
+                      )
                       : 
    
-                          SizedBox(
-                            width:130,
-                            child: ElevatedButton(
-                              onPressed: () {
-                              showVerificationDialog(teacher);
+                          Center(
+                            child: SizedBox(
+                              width:220,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                showVerificationDialog(teacher);
+                          
+                                },
+                                child: isLoading?CircularProgressIndicator(color:Colors.white):Text("Proceed to Verification",
+                                  style:  GoogleFonts.poppins(
+                                  fontSize:  16,
+                                  fontWeight:  FontWeight.w500,
+                                  height:  1.5,
+                                  color:Colors.white,
+                  ),
 
-                              },
-                              child: isLoading?CircularProgressIndicator(color:Colors.white):Text("Accept"),
+                                ),
+                              ),
                             ),
                           ),
               ],),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tutor_app/models/user_models/teacher_data.dart';
 
 
@@ -19,6 +20,34 @@ class _VerifiedTutorDetailPageState extends State<VerifiedTutorDetailPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+    Future<void> showVerificationDialog(TeacherData teacher)async{
+    return showDialog<void>(
+      context:context,
+      builder:(BuildContext context){
+        return AlertDialog(
+          title:Text("Change Status"),
+          content:Text("Take Actions"),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+                // updateVerification(teacher,true);
+              },
+              child:Text('Cancel Verified Tutor')
+            ),
+
+            TextButton(
+              onPressed:(){
+                Navigator.of(context).pop();
+              },
+              child:Text('Back'),
+            ),
+          ],
+
+        );
+      }
+    );
+  }
 
 
 
@@ -26,7 +55,9 @@ class _VerifiedTutorDetailPageState extends State<VerifiedTutorDetailPage> {
   Widget build(BuildContext context) {
     
     TeacherData teacher = ModalRoute.of(context)!.settings.arguments as TeacherData;
-
+ 
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
 
       appBar:AppBar(
@@ -37,7 +68,7 @@ class _VerifiedTutorDetailPageState extends State<VerifiedTutorDetailPage> {
         child: Container(
           padding:EdgeInsets.only(top:20,left:10),
           margin: EdgeInsets.only(left:20,right:20,top:40,bottom:30),
-          height:500,
+          height:height*0.94,
           width:350,
           
           // color:Colors.blue,
@@ -106,48 +137,93 @@ class _VerifiedTutorDetailPageState extends State<VerifiedTutorDetailPage> {
     
                       SizedBox(height:10),
                       Divider(endIndent: 10,),
-                      Text("Education Details",style:TextStyle(fontSize: 18,fontWeight: FontWeight.w400,color:Palette.theme1)),
+                      Text("Teaching Details",style:TextStyle(fontSize: 18,fontWeight: FontWeight.w400,color:Palette.theme1)),
                       SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.school,size:18),
-                              SizedBox(width:10),
 
-                              Text("Education: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.education}',style:TextStyle(fontSize: 16)),
-                              ]), 
-
-                     SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.timeline,size:18),
-                              SizedBox(width:10),
-
-                              Text("Teaching Experience: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.teaching_experience}',style:TextStyle(fontSize: 16)),
-                              ]),     
-                    SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.map,size:18),
-                              SizedBox(width:10),
-
-                              Text("Teaching Location: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.teaching_location}',style:TextStyle(fontSize: 16)),
-                              ]),     
-                    SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.class_,size:18),
-                              SizedBox(width:10),
-
-                              Text("Teaching Grade: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.grade}',style:TextStyle(fontSize: 16)),
-                              ]),
-                                          SizedBox(height:12),  
-                       Row(children: [
-                            Icon(Icons.class_,size:18),
-                              SizedBox(width:10),
-
-                              Text("Teaching Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${teacher.subjects?.join(',')}',style:TextStyle(fontSize: 16)),
-                              ]),     
+                Text("Education",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.education?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                  Text("Teaching Experience",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.teaching_experience?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                              Text("Teaching Grade",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.grade?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+                              Text("Teaching Subjects",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text('${teacher.subjects?.join(',')}',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
+              SizedBox(height:14),
+              Text("Teaching Location",
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: const Color.fromARGB(221, 83, 79, 79),
+                  ),
+              ),
+              Text(teacher.teaching_location?? '',
+                style:  GoogleFonts.poppins(
+                fontSize:  16,
+                fontWeight:  FontWeight.w500,
+                height:  1.5,
+                color: Colors.black,
+                  ),
+              ),
         
 
 
@@ -156,33 +232,42 @@ class _VerifiedTutorDetailPageState extends State<VerifiedTutorDetailPage> {
 
             
 
-                      // SizedBox(height:60),
-                      // Divider(thickness:2,endIndent: 10,),
+                      SizedBox(height:14),
+                      Divider(thickness:2,endIndent: 10,),
       
-            // Padding(
-            //   padding: const EdgeInsets.only(left:20.0,right:20),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            
-            //     teacher.verification_status == true
-            //           ? Text("Accepted")
-            //           : 
-   
-            //               SizedBox(
-            //                 width:130,
-            //                 child: ElevatedButton(
-            //                   onPressed: () {
-            //                   // showVerificationDialog(teacher);
+            Center(
+              child: GestureDetector(
+                onTap:(){
+               showVerificationDialog(teacher);
 
-            //                   },
-            //                   child: isLoading?CircularProgressIndicator(color:Colors.white):Text("Accept"),
-            //                 ),
-            //               ),
-            //   ],),
-            // ),
+                  
+                },
+                child:Container(
+                  height:height*0.06,
+                  width:width*0.4,
+                  margin:EdgeInsets.all(5),
+                  decoration:BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    color:Palette.theme1
+                  ),
+                  child:
+                      
+                  Center(child: Text("Change Status",
+                  style:  GoogleFonts.poppins(
+                  fontSize:  18,
+                  fontWeight:  FontWeight.w500,
+                  height:  1.5,
+                  color: Colors.white,
+                    ),
+            
+                  ))            
+                  
+                )
+              ),
+            )
                             
-          ]),
+          ]
+          ),
         
         ),
       ),

@@ -4,10 +4,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tutor_app/FirstScreen/teachersearch.dart';
 import 'package:tutor_app/tutor/tutorDetailScreen.dart';
 
 import '../app_urls/app_urls.dart';
 import '../models/user_models/teacher_data.dart';
+import '../models/user_models/timeSlot.dart';
 import '../utils/colors.dart';
 
 class TeacherMapPage extends StatefulWidget {
@@ -50,10 +52,8 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
   //     return;
   //   }
 
-    // Check for permission to access the location
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.deniedForever) {
-      // Location permission is permanently denied, handle this case
             showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -63,6 +63,8 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
             ElevatedButton(
               child: Text('OK'),
               onPressed: () {
+                            Geolocator.openLocationSettings();
+
                 Navigator.of(context).pop();
               },
             ),
@@ -86,6 +88,7 @@ class _TeacherMapPageState extends State<TeacherMapPage> {
         ElevatedButton(
           child: Text('OK'),
           onPressed: () {
+            Geolocator.openLocationSettings();
             Navigator.pop(context);
           },
         ),
@@ -120,14 +123,55 @@ print(selectedSubjects);
 
       },
     );
+    print('Response Status Code: ${response.statusCode}');
+  print('Response Body: ${response.body}');
+  if(response.statusCode==405){
+            showDialog(
+          context:context,
+          builder:(BuildContext context)=>AlertDialog(
+            title:Text("No Nearby Teachers Found"),
+            content:Text("Sorry, there are no nearby teachers available as per your search result"),
+            actions: [
+              ElevatedButton(
+                child:Text('OK'),
+                onPressed:(){
+                  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>MyClassSubjectPage()));
+                }
+              )
+            ],
+          )
+        );
 
+  }
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+      if(data.containsKey('message') && data['message'] == 'No nearby teachers found'){
+        showDialog(
+          context:context,
+          builder:(BuildContext context)=>AlertDialog(
+            title:Text("No Nearby Teachers Found"),
+            content:Text("Sorry, there are no nearby teachers available as per your search result"),
+            actions: [
+              ElevatedButton(
+                child:Text('OK'),
+                onPressed:(){
+                  Navigator.push(context,MaterialPageRoute(builder: (context)=>MyClassSubjectPage()));
+                }
+              )
+            ],
+          )
+        );
+
+      }
+    
+      else{
       setState(() {
         teachers = List<Map<String, dynamic>>.from(data['teachers']);
         markers = _createMarkers(teachers);
       });
 
+      }
       // Animate the marker motion
       if (_mapController.isCompleted) {
         GoogleMapController controller = await _mapController.future;
@@ -140,11 +184,15 @@ print(selectedSubjects);
     } else {
       // Handle the error response...
     }
+    
   }
 
   Set<Marker> _createMarkers(List<Map<String, dynamic>> teachers) {
+
     Set<Marker> markers = {};
     teachers.forEach((teacher) {
+
+      List<TimeSlot> timeSlots = List<TimeSlot>.from(teacher['time_slots'].map((slot) => TimeSlot.fromJson(slot)));
       String name = teacher['name'];
       String? grade = teacher['grade'];
       String email = teacher['email'];
@@ -156,6 +204,8 @@ print(selectedSubjects);
       String? gender = teacher['gender'];
       String? education = teacher['education'];
       String? subjects = teacher['subjects'];
+      String? image    = teacher['image'];  
+      print(timeSlots);                                                
 
       double latitude = double.parse(teacher['latitude']);
       double longitude = double.parse(teacher['longitude']);
@@ -170,7 +220,7 @@ print(selectedSubjects);
         onTap:(){
           _showTeacherInfo(context, name, grade ?? '',email,id,phone_number,address ?? '',teaching_location ??'',
           
-          teaching_experience?? '',gender?? '',education ??'',subjects ?? '');
+          teaching_experience?? '',gender?? '',education ??'',subjects ?? '',image,timeSlots);
         }
       );
 
@@ -179,7 +229,7 @@ print(selectedSubjects);
     return markers;
   }
   void _showTeacherInfo(BuildContext context, String name, String? grade,String email,int id,String phone_number,String? address,
-                        String? teaching_location,String? teaching_experience,String? gender,String? education,String? subjects
+                        String? teaching_location,String? teaching_experience,String? gender,String? education,String? subjects, String? image, List<TimeSlot> timeSlots
   ) {
   showModalBottomSheet(
     context: context,
@@ -210,6 +260,8 @@ print(selectedSubjects);
                                     GestureDetector(
                                         onTap: (){
                                           List<String>? subjectsList = subjects?.split(',');
+                                          String? finalImage;
+                                          image!=null?finalImage = AppUrl.baseUrl+image:finalImage="assets/images/d1.jpg";
                                         TeacherData teacher = TeacherData(
                                           
                                                             fullName:name,
@@ -223,6 +275,8 @@ print(selectedSubjects);
                                                             education: education,
                                                             gender:gender,
                                                             subjects:subjectsList,
+                                                            image:finalImage,
+                                                            timeSlots: timeSlots
 
 
                                                           );
@@ -258,15 +312,18 @@ print(selectedSubjects);
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color:Palette.theme1),
         title: Text('Teacher Map'),
       ),
       body: Column(
         children: [
+          SizedBox(height:20),
           Expanded(
             
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
-                  target: LatLng(27.7172, 85.3240),                        
+                  target: LatLng(26.4565, 87.2834),                        
                   zoom: 12,             
               ),
               markers: markers,

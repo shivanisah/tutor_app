@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/utils/colors.dart';
 import 'package:tutor_app/models/user_models/timeSlotmodel.dart';
@@ -50,6 +49,7 @@ void _addNewTimeSlot() {
   });
 }
 String _formatTimeOfDay(TimeOfDay time) {
+  // ignore: unnecessary_null_comparison
   if (time == null) {
     return '00:00';
   } else {
@@ -350,11 +350,9 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
     final timeSlotProvider = Provider.of<TimeSlotProvider>(context, listen: false);
 
     userPreferences.getUser().then((teacher) {
-      if (teacher != null) {
-        setState(() {
-          teacherId = teacher.id;
-        });
-      }
+      setState(() {
+        teacherId = teacher.id;
+      });
     });
 
     return Scaffold(
@@ -422,6 +420,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                       children: [
                         ElevatedButton(
                           child: Text(
+                            // ignore: unnecessary_null_comparison
                             timeSlot.startTime != null ? _formatTimeOfDay(timeSlot.startTime) : 'Select Start',
                           ),
                           onPressed: () => _showStartTimePickerDialog(index),
@@ -429,6 +428,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                         Icon(Icons.arrow_forward),
                         ElevatedButton(
                           child: Text(
+                            // ignore: unnecessary_null_comparison
                             timeSlot.endTime != null ? _formatTimeOfDay(timeSlot.endTime) : 'Select End',
                           ),
                           onPressed: () => _showEndTimePickerDialog(index),

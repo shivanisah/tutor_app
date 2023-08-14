@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/FirstScreen/teacherList.dart';
 import 'package:tutor_app/FirstScreen/teachersearch.dart';
+import 'package:tutor_app/admin/admindrawer.dart';
 import 'package:tutor_app/tutorDrawer/mainPageDrawer.dart';
 import 'package:tutor_app/utils/colors.dart';
 
@@ -10,6 +11,8 @@ import '../screens/auth_screens/login.dart';
 import '../shared_preferences.dart/user_preferences.dart';
 import '../studentDrawer/studentDrawer.dart';
 import 'package:http/http.dart' as http;
+
+import '../tutorDrawer/tutorDashboardDrawer.dart';
 
 class Home extends StatefulWidget{
 
@@ -27,12 +30,15 @@ class _HomeState extends State<Home> {
     // Size size = MediaQuery.of(context).size;
     return
       SafeArea(
+        
         child: Scaffold(
            key: _scaffoldKey,
-           drawer:user == 'teacher'?TutorMainPageDrawer():StudentDrawer(),
+           drawer:
+           user == 'teacher'?TutorDashboardDrawer():user == 'student'?StudentDrawer():AdminDrawer(),
             appBar: 
             
             PreferredSize(
+              
               preferredSize: const Size.fromHeight(160),
               child:Container(
                 height: 170,

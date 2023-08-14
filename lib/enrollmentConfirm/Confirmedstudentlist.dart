@@ -17,15 +17,31 @@ class ConfirmStudentList extends StatefulWidget{
 
 class _ConfirmStudentList extends State<ConfirmStudentList> {
   int? teacherId;
-  bool isLoading = false;
+  bool isLoading = true;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    fetchData();
+    // final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
+    // teacherId = ModalRoute.of(context)!.settings.arguments as int;
+    // enrollmentProvider.fetchConfirmEnrollments(teacherId!);
+  }
+    Future<void> fetchData()async{
+    try{
     final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
     teacherId = ModalRoute.of(context)!.settings.arguments as int;
-    enrollmentProvider.fetchConfirmEnrollments(teacherId!);
+   await enrollmentProvider.fetchConfirmEnrollments(teacherId!);
+
+    }catch(error){
+
+    }finally{
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
+
+  List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
     enrollments.sort((a, b) {
       DateTime aDate = a.confirmedDate !=null?DateTime.parse(a.confirmedDate!):DateTime(0);
       DateTime bDate = b.confirmedDate !=null?DateTime.parse(b.confirmedDate!):DateTime(0);
@@ -46,7 +62,10 @@ List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
-        child: enrollments.isEmpty?Center(
+        child:isLoading?Padding(
+          padding: const EdgeInsets.only(top:150),
+          child: Center(child:CircularProgressIndicator()),
+        ): enrollments.isEmpty?Center(
           child: Container(
             margin:EdgeInsets.only(top:200),
             child:Text("No Enrolled Students")))
@@ -151,6 +170,7 @@ List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
                                                                               startTime: enrollment.startTime,
                                                                               endTime:enrollment.endTime,
                                                                               confirmedDate:enrollment.confirmedDate,
+                                                                              subjects: enrollment.subjects,
 
                                                                         );
                                       

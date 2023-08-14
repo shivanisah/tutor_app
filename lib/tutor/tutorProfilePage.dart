@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -86,20 +87,24 @@ List teaching_experience = [
 void setSelectedTeachingExperience(String? value){
       setState(() {
         selectedTeachingExperience= value!;
-   TeacherProfile(
-      id: teacherId!,
-      teaching_experience: selectedTeachingExperience,
-    );
+  //  TeacherProfile(
+  //   education:selected_education,
+  //   teaching_location: selectedTeachinglocation,
+  //     id: teacherId!,
+  //     teaching_experience: selectedTeachingExperience,
+  //   );
       });   
   
 }
 void setSelectedEducation(String? value){
       setState(() {
         selected_education= value!;
-        TeacherProfile(
-      id: teacherId!,
-      education: selected_education,
-    );
+    //     TeacherProfile(
+    // teaching_location: selectedTeachinglocation,
+    //   id: teacherId!,
+    //   teaching_experience: selectedTeachingExperience,
+    //   education: selected_education,
+    // );
 
       });   
   
@@ -109,26 +114,29 @@ void setSelectedEducation(String? value){
 void setSelectedTeachingLocation(String? value){
       setState(() {
         selectedTeachinglocation = value!;
-                TeacherProfile(
-      id: teacherId!,
-      teaching_location: selectedTeachinglocation,
-    );
+    //             TeacherProfile(
+    //   id: teacherId!,
+    //   teaching_location: selectedTeachinglocation,
+    //   teaching_experience: selectedTeachingExperience,
+    //   education: selected_education,
+
+    // );
 
       });   
   
 }
 
-void setSelectedGrade(String? value){
-      setState(() {
-        selectedTeachinglocation = value!;
+// void setSelectedGrade(String? value){
+//       setState(() {
+//         selectedTeachinglocation = value!;
 
-      });   
-                TeacherProfile(
-      id: teacherId!,
-      teaching_location: selectedTeachinglocation,
-    );
+//       });   
+//                 TeacherProfile(
+//       id: teacherId!,
+//       teaching_location: selectedTeachinglocation,
+//     );
   
-}
+// }
 
 
 
@@ -139,6 +147,7 @@ void didChangeDependencies() {
   final userPreferences = UserPreferences();
 
   userPreferences.getUser().then((teacher) {
+    // ignore: unnecessary_null_comparison
     if (teacher != null && _isMounted) {
       setState(() {
         teacherId = teacher.id;
@@ -151,7 +160,7 @@ void didChangeDependencies() {
   @override
   Widget build(BuildContext context) {
     final teacherprofileProvider = Provider.of<TeacherProfileProvider>(context);
-    final profile = teacherprofileProvider.teacherProfile;
+    // final profile = teacherprofileProvider.teacherProfile;
     // final userPreferences = UserPreferences();
     // int? teacherId;
 
@@ -190,7 +199,7 @@ void didChangeDependencies() {
                 ),
           
             // SizedBox(height:20),
-                      Container(
+            Container(
               margin:EdgeInsets.all(20),
             child:  InputDecorator(
               decoration: InputDecoration(
@@ -199,17 +208,18 @@ void didChangeDependencies() {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    // value:selected_education,
-                   value:selected_education.isNotEmpty?selected_education:profile?.education?? '',
+                    value:selected_education.isNotEmpty?selected_education:null,
+                  //  value:selected_education.isNotEmpty?selected_education:profile?.education?? '',
 
                     isExpanded: true,
                     isDense: true,
-              
+                  hint: Text('Your Education',style:TextStyle(color:Colors.black)),
+
               
                     
                     
                     items: [
-                        const DropdownMenuItem(child: Text("Your Education"),value:""),
+                        // const DropdownMenuItem(child: Text("Your Education"),value:""),
                          ...Education.map<DropdownMenuItem<String>>((e){
               
                           return DropdownMenuItem(child: Text(e['title']),value:e['value']);
@@ -217,8 +227,8 @@ void didChangeDependencies() {
                     ],
                     onChanged:(value){
                       setState(() {
-                        setSelectedEducation(value);
-                        // selected_education = value!;
+                        // setSelectedEducation(value);
+                        selected_education = value!;
                         
                       });
                     }),
@@ -235,17 +245,18 @@ void didChangeDependencies() {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    // value:selectedTeachingExperience,
-                   value:selectedTeachingExperience.isNotEmpty?selectedTeachingExperience:profile?.teaching_experience?? '',
+                    value:selectedTeachingExperience.isNotEmpty?selectedTeachingExperience:null,
+                  //  value:selectedTeachingExperience.isNotEmpty?selectedTeachingExperience:profile?.teaching_experience?? '',
 
                     isExpanded: true,
                     isDense: true,
-              
+                   hint: Text('Your Teaching Experience',style:TextStyle(color:Colors.black)),
+
 
                     
                     
                     items: [
-                        const DropdownMenuItem(child: Text("Your Teaching Experience"),value:""),
+                        // const DropdownMenuItem(child: Text("Your Teaching Experience"),value:""),
                          ...teaching_experience.map<DropdownMenuItem<String>>((e){
               
                           return DropdownMenuItem(child: Text(e['title']),value:e['value']);
@@ -253,8 +264,8 @@ void didChangeDependencies() {
                     ],
                     onChanged:(value){
                       setState(() {
-                        setSelectedTeachingExperience(value);
-                        // selectedTeachingExperience = value!;
+                        // setSelectedTeachingExperience(value);
+                        selectedTeachingExperience = value!;
                       });
                     }),
               ),
@@ -346,17 +357,18 @@ void didChangeDependencies() {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                    value:selectedTeachinglocation.isNotEmpty?selectedTeachinglocation:profile?.teaching_location?? '',
+                    // value:selectedTeachinglocation.isNotEmpty?selectedTeachinglocation:profile?.teaching_location?? '',
                   
-                    // value:selectedTeachinglocation,
+                    value:selectedTeachinglocation.isNotEmpty?selectedTeachinglocation:null,
                     isExpanded: true,
                     isDense: true,
-              
+                     hint: Text('Select Teaching Location',style:TextStyle(color:Colors.black)),
+
               
                     
                     
                     items: [
-                        const DropdownMenuItem(child: Text("Select location for Teaching"),value:""),
+                        // const DropdownMenuItem(child: Text("Select location for Teaching"),value:""),
                          ...teaching_location.map<DropdownMenuItem<String>>((e){
               
                           return DropdownMenuItem(child: Text(e['title']),value:e['value']);
@@ -367,8 +379,8 @@ void didChangeDependencies() {
                        print("///////////////////");
                         print(selectedTeachinglocation);
 
-                        setSelectedTeachingLocation(value);
-                        // selectedTeachinglocation = value!;
+                        // setSelectedTeachingLocation(value);
+                        selectedTeachinglocation = value!;
                       });
                     }),
               ),
@@ -381,20 +393,23 @@ void didChangeDependencies() {
                         GestureDetector(
                           
                                           onTap: ()async{
-                          //             if(selectedTeachinglocation=="" 
+                                      if(selectedTeachinglocation=="" || selectedTeachingExperience=="" 
+                                      || selected_education =="" || _selectedClassSubject==null || _selectedSubjects.isEmpty)
                                       
-                          //             ){
+                                    {
                           // final snackBar = SnackBar(content: Text('All selection fields are required'));
-                          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          
-                          //             }
-                                      
-
-                            //  updateTeacherProfile();           
-                                         
+                          // ScaffoldMessenger.of(context).showSnackBar(snackBar); 
+                                                          Flushbar(
+                                                            flushbarPosition: FlushbarPosition.TOP,
+                                        message: 'All selection fields are required',
+                                        backgroundColor:Colors.red,
+                                        duration: Duration(seconds: 3),
+                                      )..show(context);   
+                                      }  
+                          else{                                                                
                 final teacher = TeacherProfile(
                   id: teacherId!, 
-                  teaching_location: selectedTeachinglocation,
+                  teaching_location:selectedTeachinglocation,
                   teaching_experience: selectedTeachingExperience,
                   education: selected_education, 
                   className : _selectedClassSubject?.className?? '',
@@ -403,7 +418,7 @@ void didChangeDependencies() {
           
                 await teacherprofileProvider.updateTeacher(context,teacher.id, teacher);
               
-          
+                                      }
                                       
           
                                           },
@@ -420,7 +435,29 @@ void didChangeDependencies() {
                                             child:
           
                                                         
-                                                Center(child: Text('Update',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
+                                                Center(child: 
+                                                // Text('Update',style:TextStyle(color:Colors.white,fontSize: 16))
+                                                                                  Consumer<TeacherProfileProvider>(
+                                                builder: (context, provider,child) {
+                                                  if (provider.loading) {
+                                                    return Center(child: CircularProgressIndicator(color: Colors.white));
+                                                  } else {
+                                                    return Center(child: Text('Update', 
+                                                                         style:  GoogleFonts.poppins(
+                
+                                                                          fontSize:  18,
+                                                                          fontWeight:  FontWeight.w500,
+                                                                           height:  1.5,
+                        
+                                                                           color: Colors.white,
+                
+                      )
+));
+                                                  }
+                                                },
+                                              ),           
+
+                                                ),                                       
                                           ),
                                         ),
           

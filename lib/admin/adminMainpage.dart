@@ -131,36 +131,36 @@ class _AdminMainPageState extends State<AdminMainPage> {
                ],) 
               )
             ),
-            SizedBox(width:size.width*0.04),
-                        GestureDetector(
-              onTap:(){
-              },
-              child:Container(
-                height:size.height*0.22,
-                width: size.width*0.39,
-                margin:EdgeInsets.only(left:22),
-                decoration:BoxDecoration(
-                  color:Colors.white,
-                  borderRadius:BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      offset:Offset(0,7),
-                      blurRadius: 10,
-                      color:Colors.black.withOpacity(0.3),
+            // SizedBox(width:size.width*0.04),
+            //             GestureDetector(
+            //   onTap:(){
+            //   },
+            //   child:Container(
+            //     height:size.height*0.22,
+            //     width: size.width*0.39,
+            //     margin:EdgeInsets.only(left:22),
+            //     decoration:BoxDecoration(
+            //       color:Colors.white,
+            //       borderRadius:BorderRadius.circular(10),
+            //       boxShadow: [
+            //         BoxShadow(
+            //           offset:Offset(0,7),
+            //           blurRadius: 10,
+            //           color:Colors.black.withOpacity(0.3),
       
-                    )
-                  ]
-                ),
-               child:Column(
-                mainAxisAlignment:MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                      Icon(Icons.people,color:Palette.theme1,size:28),
-                      SizedBox(height:5),
-                      Text('Students',style:TextStyle(color:Colors.black,fontSize:16))
-               ],) 
-              )
-            )
+            //         )
+            //       ]
+            //     ),
+            //    child:Column(
+            //     mainAxisAlignment:MainAxisAlignment.center,
+            //     crossAxisAlignment: CrossAxisAlignment.center,
+            //     children: [
+            //           Icon(Icons.people,color:Palette.theme1,size:28),
+            //           SizedBox(height:5),
+            //           Text('Students',style:TextStyle(color:Colors.black,fontSize:16))
+            //    ],) 
+            //   )
+            // )
 
           ],)
 

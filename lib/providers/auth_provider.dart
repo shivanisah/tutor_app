@@ -5,7 +5,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tutor_app/admin/adminMainpage.dart';
+import 'package:tutor_app/screens/auth_screens/changepwdverify.dart';
+import 'package:tutor_app/screens/auth_screens/resetpwdverify.dart';
 // import 'package:tutor_app/tutor/tutorDashboard.dart';
 import 'package:tutor_app/utils/colors.dart';
 // import 'package:http/http.dart';
@@ -106,8 +110,9 @@ class AuthProvider extends ChangeNotifier{
 //StudentEnrollment
   Future<void> studentEnrollment(BuildContext context,String parentsName,String ParentsNumber,
   String studentsName,String studentsNumber,String gender,String grade,String? teaching_location,List<String> subjects,
+  String teacher_email,String teacher_name,
   
-  int tutor,int student,String finalselectedDate,
+  int tutor,String student_email,int student,String finalselectedDate,
   // String selectedTimeSlot
   String selecctedStartTimeSlot,
   String selectedEndTimeSlot
@@ -127,6 +132,9 @@ class AuthProvider extends ChangeNotifier{
       // 'teaching_time':selectedTimeSlot,
       'startTime':selecctedStartTimeSlot,
       'endTime':selectedEndTimeSlot,
+      'teacher_name':teacher_name,
+      'teacher_email':teacher_email,
+      'student_email':student_email,
 
 
     
@@ -284,7 +292,27 @@ Future<void> teacherSignup(
 
   var latitude = position.latitude;
   var longitude = position.longitude;
+  String? address = '';
  
+                  try{
+                  List<Placemark> placemarks = await placemarkFromCoordinates(
+                      latitude,longitude
+                  );
+                  if(placemarks!=null && placemarks.isNotEmpty){
+                    Placemark placemark = placemarks[0];
+                    print(placemark);
+                    if(placemark.subLocality!=null && placemark.subLocality!.trim().isNotEmpty){
+                     address ='${placemark.subLocality}, ${placemark.locality}';
+
+                    }else{
+                    address = placemark.locality;
+                    }
+                  }else{
+                    print("Address not found");
+                  }
+                }catch(e){
+                  print("Error fetching address: $e");
+                }
 
 
   var request = http.MultipartRequest(
@@ -297,7 +325,7 @@ Future<void> teacherSignup(
   request.fields['phone_number'] = number;
   request.fields['email'] = email;
   request.fields['password'] = password;
-  // request.fields['address'] = address;
+  request.fields['address'] = address?? '';
   request.fields['password_confirmation'] = confirmpassword;
   request.fields['gender'] = gender;
   // request.fields['grade'] = selectedGrade;
@@ -345,6 +373,16 @@ Future<void> teacherSignup(
         );
       });
     }
+    if (response.statusCode == 400) {
+      final Map<String, dynamic> responseBodyMap = json.decode(responsebody);
+      if (responseBodyMap.containsKey('email')) {
+        final errorMessage = responseBodyMap['email'][0];
+        
+        final snackBar = SnackBar(content: Text(errorMessage), backgroundColor: Colors.red);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+
   } on SocketException {
     // setSignUpLoading(false);
     // notifyListeners();
@@ -354,6 +392,56 @@ Future<void> teacherSignup(
   _signUpLoading = false;
   notifyListeners();
 }
+
+// Add Teacher
+  Future<void> addteacher(BuildContext context,String email,String name,
+  String number,String gender) async{
+    var body = jsonEncode({
+      
+      'email':email,
+      'full_name':name,
+      'phone_number':number,
+      'gender':gender
+      
+    });
+
+    _signUpLoading = true;
+    
+    notifyListeners();
+    try{
+      http.Response response = await http.post(Uri.parse(AppUrl.addteacherApiEndPoint),headers: headers,
+    body: body
+    );
+    
+      if(response.statusCode ==400){
+        
+      }
+        if(response.statusCode==201){
+        final snackBar = SnackBar(content: Text('Account created successfully and mail sent to ${email}'),backgroundColor: Palette.theme1,);
+         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                         Timer(Duration(seconds: 2), (){
+                 Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>AdminMainPage()),
+              );
+        });
+
+
+
+        }
+
+
+
+      
+    } on SocketException{
+      final snackBar = SnackBar(content: Text('No Internet Connection'));
+       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      // flushBarErrorMessage('NO Internet connection', context);
+    }
+    _signUpLoading = false;
+    notifyListeners();
+  }
 
 
   //Code for login
@@ -397,11 +485,11 @@ Future<void> teacherSignup(
       final snackBar = SnackBar(content: Text('Login success'),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-      if(user.user_type=='student'){
+      if(user.user_type =='admin'){
                Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>Home(),
-                settings: RouteSettings(arguments:user.user_type )
+                MaterialPageRoute(builder: (context) =>AdminMainPage(),
+                // settings: RouteSettings(arguments:user.user_type )
                 ),
               );
 
@@ -420,7 +508,8 @@ Future<void> teacherSignup(
       
     }
    
-    }catch (e){
+    }
+    catch (e){
       SnackBar(
       content: Text(e.toString()),
     ) ;                                   
@@ -429,6 +518,137 @@ Future<void> teacherSignup(
     _loading = false;   
 
   }
+// Forgot Password
+Future<void> forgotPassword(BuildContext context,String email) async{
+
+  var body = jsonEncode(
+    {'email':email}
+  );
+  _loading = true;
+  notifyListeners();
+  try{
+    http.Response response = await http.post(Uri.parse(AppUrl.resetpassword),body:body,headers:headers);
+
+    if(response.statusCode == 201){
+      final snackbar = SnackBar(content:Text("Reset code has been sent to your email"),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      Timer(Duration(seconds:3),(){
+          Navigator.push(context,MaterialPageRoute(builder: (context)=>PasswordVerify()));
+      });
+
+    }
+  }on SocketException {
+    final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  _loading = false;
+  notifyListeners();
+}
+
+Future<void> resetPasswordVerify(BuildContext context,String password,code) async{
+
+  var body = jsonEncode(
+    {'reset_code':code,
+    'new_password':password
+    }
+  );
+  _loading = true;
+  notifyListeners();
+  try{
+    http.Response response = await http.post(Uri.parse(AppUrl.passwordverify),body:body,headers:headers);
+print(response.body);
+    if(response.statusCode == 200){
+      final snackbar = SnackBar(content: Text("Password reset successfully, Login to continue"),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      Timer(Duration(seconds:2),(){
+        Navigator.push(context,MaterialPageRoute(builder:(context) => Login(),));
+      });
+      
+
+    }
+  }on SocketException {
+    final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+    catch (e){
+      SnackBar(
+      content: Text(e.toString()),
+    ) ;                                   
+    }
+  _loading = false;
+  notifyListeners();
+}
+
+// Change Password
+Future<void> changePassword(BuildContext context,String email,String oldpassword,String newpassword) async{
+
+  var body = jsonEncode(
+    {'email':email,
+      'old_password':oldpassword,
+      'new_password':newpassword
+    
+    }
+  );
+  _loading = true;
+  notifyListeners();
+  try{
+    http.Response response = await http.post(Uri.parse(AppUrl.changepassword),body:body,headers:headers);
+
+    if(response.statusCode == 201){
+      final snackbar = SnackBar(content:Text("Password Change code has been sent to your email"),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      Timer(Duration(seconds:3),(){
+          Navigator.push(context,MaterialPageRoute(builder: (context)=>ChangePasswordVerify()));
+      });
+
+    }
+    if(response.statusCode == 400){
+      final snackbar = SnackBar(content:Text("Give your current password correctly"),backgroundColor:Colors.red,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+    }
+  }on SocketException {
+    final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  _loading = false;
+  notifyListeners();
+}
+
+Future<void> changePasswordVerify(BuildContext context,code) async{
+
+  var body = jsonEncode(
+    {'reset_code':code,
+    
+    }
+  );
+  _loading = true;
+  notifyListeners();
+  try{
+    http.Response response = await http.post(Uri.parse(AppUrl.changepasswordverify),body:body,headers:headers);
+print(response.body);
+    if(response.statusCode == 200){
+      final snackbar = SnackBar(content: Text("Password changed successfully"),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      // Timer(Duration(seconds:2),(){
+      //   Navigator.push(context,MaterialPageRoute(builder:(context) => Login(),));
+      // });
+      
+
+    }
+    
+  }on SocketException {
+    final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+    catch (e){
+      SnackBar(
+      content: Text(e.toString()),
+    ) ;                                   
+    }
+  _loading = false;
+  notifyListeners();
+}
 
 
 }

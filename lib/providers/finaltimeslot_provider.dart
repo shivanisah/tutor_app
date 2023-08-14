@@ -15,15 +15,30 @@ class FinalTimeSlotProvider with ChangeNotifier{
   bool get loading =>_loading;
 
   List<TimeSlot> timeSlots = [];
+  List<TimeSlot> timeSlotsoccupied = [];
 
 
 Future<void> TimeSlots(int teacherId)async{
-  final url = Uri.parse(AppUrl.baseUrl+'/timeslotList/$teacherId');
+  final url = Uri.parse(AppUrl.baseUrl+'/timeslotListavailable/$teacherId');
   final response = await http.get(url);
 
   if(response.statusCode == 200){
     final List<dynamic> responseData = jsonDecode(response.body);
     timeSlots = responseData.map((data)=>TimeSlot.fromJson(data)).toList();   
+    notifyListeners();
+
+  }else{
+    throw Exception('Failed to fetch the time slots.Status code:${response.statusCode}');
+  }
+}
+
+Future<void> TimeSlotsOccupied(int teacherId)async{
+  final url = Uri.parse(AppUrl.baseUrl+'/timeslotListoccupied/$teacherId');
+  final response = await http.get(url);
+
+  if(response.statusCode == 200){
+    final List<dynamic> responseData = jsonDecode(response.body);
+    timeSlotsoccupied = responseData.map((data)=>TimeSlot.fromJson(data)).toList();   
     notifyListeners();
 
   }else{

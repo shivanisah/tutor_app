@@ -15,19 +15,44 @@ class RegisteredTutorList extends StatefulWidget{
 }
 
 class _RegisteredTutorListState extends State<RegisteredTutorList> {
-
+bool isLoading = true;
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final teacherProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
-    teacherProvider.fetchRegisteredTeacherList();
+  void initState() {
+    super.initState();
+    fetchData();
+    // final teacherProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
+    // teacherProvider.fetchRegisteredTeacherList();
   }
 
+  Future<void> fetchData()async{
+    try{
+          final teacherProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
+  await  teacherProvider.fetchRegisteredTeacherList();
+
+    }catch(error){
+
+    }finally{
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  List<TeacherData> sortDate(List<TeacherData> teachersdata) {
+    teachersdata.sort((a, b) {
+      final aDateTime = DateTime(a.date_joined!.year, a.date_joined!.month, a.date_joined!.day, );
+      final bDateTime = DateTime(b.date_joined!.year, b.date_joined!.month, b.date_joined!.day,);
+      return bDateTime.compareTo(aDateTime);
+    });
+
+    return teachersdata;
+  }  
 
   @override
   Widget build(BuildContext context) {
     final teacherProvider = Provider.of<TeacherProfileProvider>(context);
     final teachers = teacherProvider.registeredTeacher;
+    final sortedData = sortDate(teachers);
+
 
 
 
@@ -36,7 +61,11 @@ class _RegisteredTutorListState extends State<RegisteredTutorList> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         
-        child:teachers.isEmpty?Center(
+        child:isLoading?Padding(
+          padding: const EdgeInsets.only(top:150),
+          child: Center(child:CircularProgressIndicator()),
+        ):
+        teachers.isEmpty?Center(
           child: Container(
             margin:EdgeInsets.only(top:200),
             child:Text("No registered teachers found")),
@@ -81,18 +110,18 @@ class _RegisteredTutorListState extends State<RegisteredTutorList> {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: teachers.length,
+                itemCount: sortedData.length,
                 // itemCount: sortedEnrollments.length,
 
                 itemBuilder: (context, index) {
-                  final teacher = teachers[index];
+                  final teacher = sortedData[index];
                   // final enrollment = sortedEnrollments[index];
                   // final isConfirmed = confirmedEnrollmentIds.contains(enrollment.id);
                   return
                    Container(
                     margin:EdgeInsets.only(left:20,top:10,bottom:10,right:20),
                     padding:EdgeInsets.only(top:10),
-                    height:150,
+                    height:125,
                     
                         decoration: BoxDecoration(
                           borderRadius:BorderRadius.circular(6),
@@ -152,7 +181,8 @@ class _RegisteredTutorListState extends State<RegisteredTutorList> {
                                           id:teacher.id,
                                           grade:teacher.grade,
                                           subjects:subjectsString?? [],
-                                          verification_status: teacher.verification_status
+                                          verification_status: teacher.verification_status,
+                                          certificate: teacher.certificate
 
 
                                       );

@@ -166,6 +166,7 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
     Enrollment enrollment = ModalRoute.of(context)!.settings.arguments as Enrollment;
     String formattedStartTime = enrollment.startTime?? '';
     String formattedEndTime = enrollment.endTime?? '';
+    List<String>? subjectsString = enrollment.subjects?? [];
 
     return Scaffold(
 
@@ -209,7 +210,7 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
                 children: [
                 Text('${enrollment.students_name}',style:TextStyle(fontSize: 20)),
                 SizedBox(height:6),
-                Text('shah.shiwani560@gmail.com',style:TextStyle(fontSize: 15)),
+                Text(enrollment.students_email?? '',style:TextStyle(fontSize: 15)),
                 // Text('${enrollment.students_email}',style:TextStyle(fontSize: 15)),
 
       
@@ -258,7 +259,7 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('Maths, English, Science',style:TextStyle(fontSize: 16)),
+                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
                               ]), 
                       SizedBox(height:12),  
                        Row(children: [

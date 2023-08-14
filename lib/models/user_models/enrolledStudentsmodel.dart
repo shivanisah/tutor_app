@@ -18,11 +18,15 @@ class Enrollment{
    late String? confirmedDate;
    late String? cancelledDate;
    final String? students_email;
+   final String? teacher_email;
+   final String? teacher_name;
    final String? tuition_joining_date;
    final String? requested_teaching_time;
    final String? startTime;
    final String? endTime;
    late final String? finishedTeachingDate;
+   final String? teaching_location;
+   final List<String>? subjects;
 
 
 
@@ -49,6 +53,10 @@ Enrollment({
  this.startTime,
  this.endTime,
  this.finishedTeachingDate,
+ this.teaching_location,
+ this.teacher_email,
+ this.teacher_name,
+ this.subjects,
 
 
 });
@@ -56,7 +64,14 @@ Enrollment({
 factory Enrollment.fromJson(Map<String, dynamic> json) {
   final dateFormat = DateFormat('yyyy-MM-dd');
   final timeFormat = DateFormat('HH:mm:ss');
-  
+  List<String>? subjectsList;
+  dynamic subjectsData = json['subjects'];
+  if (subjectsData is String) {
+    subjectsList = [subjectsData];
+  } else if (subjectsData is List<dynamic>) {
+    subjectsList = List<String>.from(subjectsData);
+  }
+
 
     return Enrollment(
       id: json['id'],
@@ -70,6 +85,9 @@ factory Enrollment.fromJson(Map<String, dynamic> json) {
       address:json['address'],
       gender:json['gender'],
       grade:json['grade'],
+      students_email: json['student_email'],
+      teacher_email: json['teacher_email'],
+      teacher_name: json['teacher_name'],
       confirmation:json['confirmation'] as bool,
       cancellation:json['cancellation'] as bool,
       dateJoined: dateFormat.parse(json['date_joined']),
@@ -79,8 +97,9 @@ factory Enrollment.fromJson(Map<String, dynamic> json) {
       startTime: json['startTime'],
       endTime:json['endTime'],
       confirmedDate: json['confirmedDate'],
-      cancelledDate: json['cancelledDate']
-      // students_email: json['student']("email")    
+      cancelledDate: json['cancelledDate'],
+      teaching_location: json['preffered_teaching_location'],
+      subjects:subjectsList
         );
   }
   void setConfirmation(bool value) {

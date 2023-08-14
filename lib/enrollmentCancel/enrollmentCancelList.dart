@@ -18,28 +18,57 @@ class RejectedStudentsList extends StatefulWidget{
 
 class _RejectedStudentsList extends State<RejectedStudentsList> {
   int? teacherId;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
-    teacherId = ModalRoute.of(context)!.settings.arguments as int;
-    enrollmentProvider.fetchRejectedEnrollments(teacherId!);
+    fetchData();
+    // final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
+    // teacherId = ModalRoute.of(context)!.settings.arguments as int;
+    // enrollmentProvider.fetchRejectedEnrollments(teacherId!);
   }
-  
+
+  Future<void> fetchData()async{
+    try{
+          final enrollmentProvider = Provider.of<EnrollmentProvider>(context, listen: false);
+    teacherId = ModalRoute.of(context)!.settings.arguments as int;
+   await enrollmentProvider.fetchRejectedEnrollments(teacherId!);
+
+    }catch(error){
+
+    }finally{
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+    List<Enrollment> sortEnrollments(List<Enrollment> enrollments) {
+    enrollments.sort((a, b) {
+      DateTime aDate = a.cancelledDate !=null?DateTime.parse(a.cancelledDate!):DateTime(0);
+      DateTime bDate = b.cancelledDate !=null?DateTime.parse(b.cancelledDate!):DateTime(0);
+      return bDate.compareTo(aDate);
+    });
+
+    return enrollments;
+  }  
+
 
   @override
   Widget build(BuildContext context) {
 
   final enrollmentProvider = Provider.of<EnrollmentProvider>(context);
   final enrollments = enrollmentProvider.rejectedEnrollments;
+  final sortedEnrollments = sortEnrollments(enrollments);
 
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
         
-        child:enrollments.isEmpty?Center(child: Container(
+        child:isLoading?Padding(
+          padding: const EdgeInsets.only(top:150),
+          child: Center(child: CircularProgressIndicator(),),
+        ):enrollments.isEmpty?Center(child: Container(
           margin:EdgeInsets.only(top:200),
           child:Text("No Rejected Enrollments"))) :
         
@@ -66,9 +95,9 @@ class _RejectedStudentsList extends State<RejectedStudentsList> {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics:NeverScrollableScrollPhysics(),
-                itemCount: enrollments.length,
+                itemCount: sortedEnrollments.length,
                 itemBuilder: (context, index) {
-                  final enrollment = enrollments[index];
+                  final enrollment = sortedEnrollments[index];
                   return
                    Container(
                     margin:EdgeInsets.only(left:20,top:10,bottom:10,right:20),
@@ -142,7 +171,8 @@ class _RejectedStudentsList extends State<RejectedStudentsList> {
                                                                               startTime: enrollment.startTime,
                                                                               endTime:enrollment.endTime,
                                                                               cancelledDate:enrollment.cancelledDate,
-
+                                                                              confirmedDate: enrollment.confirmedDate,
+                                                                              subjects: enrollment.subjects,
                                                                         );
                                       
                                       Navigator.push(

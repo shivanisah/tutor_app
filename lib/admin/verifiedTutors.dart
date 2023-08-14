@@ -16,19 +16,44 @@ class VerifiedTutorList extends StatefulWidget{
 }
 
 class _VerifiedTutorListState extends State<VerifiedTutorList> {
-
+bool isLoading = true;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final teacherProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
-    teacherProvider.fetchVerifiedTeacherList();
+    fetchData();
+    // final teacherProvider = Provider.of<TeacherProfileProvider>(context, listen: false);
+    // teacherProvider.fetchVerifiedTeacherList();
   }
 
+ Future<void> fetchData() async{
+  try{
+    final teacherProvider = Provider.of<TeacherProfileProvider>(context,listen:false);
+    await teacherProvider.fetchVerifiedTeacherList();
+  }catch(error){
+
+  }finally{
+    setState(() {
+      isLoading = false;
+    });
+  }
+ }
+
+   List<TeacherData> sortDate(List<TeacherData> enrollments) {
+    enrollments.sort((a, b) {
+      DateTime aDate = a.verification_date !=null?DateTime.parse(a.verification_date!):DateTime(0);
+      DateTime bDate = b.verification_date !=null?DateTime.parse(b.verification_date!):DateTime(0);
+      return bDate.compareTo(aDate);
+    });
+
+    return enrollments;
+  }  
 
   @override
   Widget build(BuildContext context) {
     final teacherProvider = Provider.of<TeacherProfileProvider>(context);
     final teachers = teacherProvider.verifiedTeacher;
+    final sortedData = sortDate(teachers);
+
 
 
 
@@ -37,7 +62,12 @@ class _VerifiedTutorListState extends State<VerifiedTutorList> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         
-        child:teachers.isEmpty?Center(
+        child:isLoading?Padding(
+          padding: const EdgeInsets.only(top:150),
+          child: Center(
+            child:CircularProgressIndicator(),
+          ),
+        ):teachers.isEmpty?Center(
           child: Container(
             margin:EdgeInsets.only(top:200),
             child:Text("No verified teachers found")),
@@ -82,11 +112,11 @@ class _VerifiedTutorListState extends State<VerifiedTutorList> {
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: teachers.length,
+                itemCount: sortedData.length,
                 // itemCount: sortedEnrollments.length,
 
                 itemBuilder: (context, index) {
-                  final teacher = teachers[index];
+                  final teacher = sortedData[index];
                   // final enrollment = sortedEnrollments[index];
                   // final isConfirmed = confirmedEnrollmentIds.contains(enrollment.id);
                   return

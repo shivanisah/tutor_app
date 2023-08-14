@@ -8,7 +8,7 @@ class TeacherData {
   final String fullName;
   final String phoneNumber;
   final String? address;
-  File? image;
+  final String? image;
   final String email;
   final int id;
   final String? teaching_location;
@@ -20,8 +20,15 @@ class TeacherData {
   final List<String>? subjects;
   List<TimeSlot>? timeSlots;
   late bool? verification_status;
+  late bool? preview_certificate;
+
   final DateTime? date_joined;
   late String? verification_date;
+  late String? preview_certificateDate;
+
+  String? latitude;
+  String? longitude;
+  final String? certificate;
   // final String subjects;
 
   TeacherData({
@@ -39,9 +46,14 @@ class TeacherData {
     this.gender,
     this.subjects,
     this.timeSlots,
-     this.verification_status,
+    this.verification_status,
+    this.preview_certificate,
     this.date_joined,
     this.verification_date,
+    this.preview_certificateDate,
+    this.latitude,
+    this.longitude,
+    this.certificate,
   });
   factory TeacherData.fromJson(Map<String, dynamic> json) {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -66,18 +78,32 @@ class TeacherData {
       verification_status:json['verification_status'] as bool,
       date_joined: dateFormat.parse(json['date_joined']),
       verification_date : json['verification_date'],
+      preview_certificateDate : json['preview_certificateDate'],
+
       subjects:subjectsList, 
+      image:json['image'],
+      latitude:json['latitude'],
+      longitude:json['longitude'],
+      certificate:json['certificate'],
         );
   }
 void setVerification(bool value){
   verification_status = value;
 }
 
+void setpreviewCertificate(bool value){
+  preview_certificate = value;
+}
+
+
 void setVerificationDate(DateTime date){
       final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       verification_date = dateFormat.format(date);
 }
 
-
+void setpreviewCertificateDate(DateTime date){
+      final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      preview_certificateDate = dateFormat.format(date);
+}
 
 }

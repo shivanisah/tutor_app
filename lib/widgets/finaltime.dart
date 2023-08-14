@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tutor_app/Apis/teacherList.dart';
 import 'package:tutor_app/utils/colors.dart';
 import 'package:tutor_app/models/user_models/timeSlotmodel.dart';
 
@@ -27,11 +28,13 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
   List<SelectedTimeSlot> _timeSlots = [];
   final userPreferences = UserPreferences();
   int? teacherId;
+  TeacherList teacherlist =TeacherList();
 
   @override
   void initState() {
     super.initState();
     _addNewTimeSlot();
+
   }
   int? teacher;
   bool isLoading = false;
@@ -43,6 +46,7 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
     final timeSlotProvider = Provider.of<FinalTimeSlotProvider>(context, listen: false);
     teacher = ModalRoute.of(context)!.settings.arguments as int;
     timeSlotProvider.TimeSlots(teacher!);
+    timeSlotProvider.TimeSlotsOccupied(teacher!);
   }
 
 
@@ -114,6 +118,11 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
   }
 
   }
+  String _formattime(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
 
 
   // @override
@@ -134,6 +143,7 @@ void _addNewTimeSlot() {
   });
 }
 String _formatTimeOfDay(TimeOfDay time) {
+  // ignore: unnecessary_null_comparison
   if (time == null) {
     return '00:00';
   } else {
@@ -226,6 +236,10 @@ void _saveTimeSlots() async{
         'endTime': _formatTime(timeSlot.endTime),
       };
     }).toList();
+    setState(() {
+      teacherlist.getAllTeacher();
+
+    });
 
 final timeSlotProvider = Provider.of<TimeSlotProvider>(context, listen: false);
 final fetchedData = await timeSlotProvider.fetchTimeSlots(teacherId!);
@@ -243,6 +257,7 @@ final List<TimeSlot> fetchedTimeSlots = fetchedData;
   } else {
     _showConflictingSlotsDialog(conflictingSlots);
   }
+
 }
 
 List<SelectedTimeSlot> _getMatchingTimeSlots(List<SelectedTimeSlot> selectedSlots, List<TimeSlot> fetchedSlots) {
@@ -355,19 +370,19 @@ List<int> _checkConflictingTimeSlots(List<SelectedTimeSlot> timeSlots) {
 void _showConflictingSlotsDialog(List<int> conflictingSlots) {
   String message = 'Conflicting time slots found:\n\nPlease Review';
 
-  for (int i = 0; i < conflictingSlots.length; i += 2) {
-    final int index1 = conflictingSlots[i];
-    final int index2 = conflictingSlots[i + 1];
+  // for (int i = 0; i < conflictingSlots.length; i += 2) {
+  //   final int index1 = conflictingSlots[i];
+  //   final int index2 = conflictingSlots[i + 1];
 
-    final SelectedTimeSlot slot1 = _timeSlots[index1];
-    final SelectedTimeSlot slot2 = _timeSlots[index2];
+  //   final SelectedTimeSlot slot1 = _timeSlots[index1];
+  //   final SelectedTimeSlot slot2 = _timeSlots[index2];
 
     // if (slot1.isSelected && slot2.isSelected) {
     //   message += 'Slot ${index1 + 1}: ${_formatTimeOfDay(slot1.startTime)} - ${_formatTimeOfDay(slot1.endTime)}\n';
     //   message += 'Slot ${index2 + 1}: ${_formatTimeOfDay(slot2.startTime)} - ${_formatTimeOfDay(slot2.endTime)}';
     //   message += '\n\n'; 
     // }
-  }
+  // }
 
   showDialog(
     context: context,
@@ -390,14 +405,15 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
 
   @override
   Widget build(BuildContext context) {
-    bool isChecked = false;
     final timeSlotProvider = Provider.of<TimeSlotProvider>(context, listen: false);
     final timeProvider = Provider.of<FinalTimeSlotProvider>(context, listen: false);
 
        final dtimeslots = timeProvider.timeSlots;
+       final occupiedslots = timeProvider.timeSlotsoccupied;
 
 
     userPreferences.getUser().then((teacher) {
+      // ignore: unnecessary_null_comparison
       if (teacher != null) {
         setState(() {
           teacherId = teacher.id;
@@ -415,9 +431,9 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                         Padding(
               padding: const EdgeInsets.only(left: 15.0, bottom: 9),
               child: Text(
-                'Your Available Teaching Time ',
+                'Your Teaching Time Slots',
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.w500,
                   height: 1.0,
                   color: Color(0xff000000),
@@ -427,7 +443,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
             SizedBox(height: 18),
             Row(
               children: [
-                SizedBox(width:90),
+                SizedBox(width:65),
                 Text("Start Time",style: GoogleFonts.poppins(
                   fontSize: 18,
                   // fontWeight: FontWeight.w500,
@@ -435,7 +451,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                   color: Color(0xff000000),
                 ),
                  ),
-                SizedBox(width:26),
+                SizedBox(width:22),
                 Text("End Time", style: GoogleFonts.poppins(
                   fontSize: 18,
                   // fontWeight: FontWeight.w500,
@@ -458,17 +474,28 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                 
                 return  
                 ListTile(
-                    title: Text(
+                    // title: Text(
+                    //   '${index + 1}',
+                    //   style: GoogleFonts.poppins(
+                    //     // fontSize: 18,
+                    //     // height: 1.0,
+                    //     color: Color(0xff000000),
+                    //   ),
+                    // ),
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(width:5),
+                        Text(
                       'Slot ${index + 1}',
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
+                        // fontSize: 18,
                         height: 1.0,
                         color: Color(0xff000000),
                       ),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+                        SizedBox(width:10),
+
                         ElevatedButton(
                           child: Text('${timeslot.startTime}'),
     
@@ -480,6 +507,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                           
                           onPressed: () {}
                         ),
+                        SizedBox(width:20),
                     //    timeslot.disable == false? 
                     //    IconButton(
                     //       icon: Icon(
@@ -549,6 +577,68 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
             ),
             
           ),
+// occupied slots
+           Container(
+      
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics:NeverScrollableScrollPhysics(),
+              itemCount: occupiedslots.length,
+              itemBuilder: (context, index) {
+                final timeslot = occupiedslots[index];
+                
+                return  
+                ListTile(
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(width:5),
+                        Text(
+                      'Slot ${index + 1}',
+                      style: GoogleFonts.poppins(
+                        // fontSize: 18,
+                        height: 1.0,
+                        color: Color(0xff000000),
+                      ),
+                    ),
+                        SizedBox(width:10),
+
+                        ElevatedButton(
+                          child: Text('${timeslot.startTime}'),
+    
+                          onPressed: () {}
+                        ),
+                        Icon(Icons.arrow_forward),
+                        ElevatedButton(
+                          child: Text('${timeslot.endTime}'),
+                          
+                          onPressed: () {}
+                        ),
+                        SizedBox(width:3),
+
+                
+                        GestureDetector(
+                                  onTap: () {
+                                  },
+                                  child: Text("Occupied",style:  GoogleFonts.poppins(           
+                  fontWeight:  FontWeight.w600,
+                  height:  1.0,
+                  fontSize: 14,
+                  color: Color.fromARGB(255, 28, 116, 1),
+                
+                )
+                ),
+                                    
+                )],
+              ),
+            );
+
+                
+              },
+            ),
+            
+          ),
+
 
             SizedBox(height:20),
             Divider(thickness: 2,),
@@ -611,6 +701,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                       children: [
                         ElevatedButton(
                           child: Text(
+                            // ignore: unnecessary_null_comparison
                             timeSlot.startTime != null ? _formatTimeOfDay(timeSlot.startTime) : 'Select Start',
                           ),
                           onPressed: () => _showStartTimePickerDialog(index),
@@ -618,6 +709,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                         Icon(Icons.arrow_forward),
                         ElevatedButton(
                           child: Text(
+                            // ignore: unnecessary_null_comparison
                             timeSlot.endTime != null ? _formatTimeOfDay(timeSlot.endTime) : 'Select End',
                           ),
                           onPressed: () => _showEndTimePickerDialog(index),

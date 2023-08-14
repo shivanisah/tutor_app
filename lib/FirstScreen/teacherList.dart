@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tutor_app/tutor/tutorDetailScreen.dart';
 
@@ -95,17 +97,17 @@ class _TeachersListState extends State<TeachersList> {
                                   
                                   image:DecorationImage(
                                     
-                                    image:AssetImage("assets/images/d1.jpg"),
-                                    fit:BoxFit.cover
+                                    // image:AssetImage("assets/images/d1.jpg"),
+                                    // fit:BoxFit.cover
                                   
 
-                                          // image: snapshot.data![i]["image"] != null
-                                          //   ? 
-                                          //   NetworkImage(snapshot.data![i]["image"])
-                                          //   : const AssetImage("assets/images/d1.jpg") as ImageProvider<Object>,                 
-                                          //  fit:BoxFit.cover,
+                                          image: snapshot.data![i]["image"] != null
+                                            ? 
+                                            NetworkImage(snapshot.data![i]["image"])
+                                            : const AssetImage("assets/images/d1.jpg") as ImageProvider<Object>,                 
+                                           fit:BoxFit.cover,
                                            
-                                          //  alignment: Alignment.topCenter,
+                                           alignment: Alignment.topCenter,
                                   )
                                   
 
@@ -162,7 +164,8 @@ class _TeachersListState extends State<TeachersList> {
                                                             address: snapshot.data![i]['address'],
                                                             email: snapshot.data![i]['email'],
                                                             id: snapshot.data![i]['id'] ,
-                                                            // image:File( snapshot.data![i]['image']),
+                                                            image: snapshot.data![i]["image"] ?? "assets/images/d1.jpg",
+    
                                                             education: snapshot.data![i]['education'],
                                                             teaching_experience: snapshot.data![i]['teaching_experience'],
                                                             teaching_location: snapshot.data![i]['teaching_location'],

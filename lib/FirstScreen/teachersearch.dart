@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'package:tutor_app/FirstScreen/Home.dart';
 
 import '../Apis/fetchClassSubject.dart';
 import '../location/teachermap_page.dart';
 import '../models/user_models/searchmodel.dart';
+import '../shared_preferences.dart/user_preferences.dart';
 import '../utils/colors.dart';
 
 class MyClassSubjectPage extends StatefulWidget {
@@ -15,6 +17,8 @@ class _MyClassSubjectPageState extends State<MyClassSubjectPage> {
   List<ClassSubject> _classSubjects = [];
   ClassSubject? _selectedClassSubject;
   List<String> _selectedSubjects = [];
+  final userPreferences = UserPreferences();
+  String user_type = '';
 
 // @override
 // void dispose(){
@@ -37,10 +41,27 @@ class _MyClassSubjectPageState extends State<MyClassSubjectPage> {
 
   @override
   Widget build(BuildContext context) {
+      userPreferences.getUser().then((user) {
+      setState(() {
+          user_type = user.user_type?? '';
+      });
+    });  
 
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        
+          leading:IconButton(
+            onPressed:(){
+            Navigator.push(context,MaterialPageRoute(builder:((context) => Home()),
+            settings: RouteSettings(arguments: user_type)
+            ));
+
+            },
+            icon: Icon(Icons.arrow_back), 
+          )
+        
+      ),
       body: Container(
         
         child: 

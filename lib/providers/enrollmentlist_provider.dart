@@ -53,7 +53,20 @@ class EnrollmentProvider with ChangeNotifier {
       throw Exception('Failed to fetch rejected enrollments');
     }
   }
+List<Enrollment> enrollhistory = [];
+  Future<void> enrollmentHistory(int? studentId) async{
+    final url = Uri.parse(AppUrl.baseUrl+'/student-history/$studentId');
+    final response = await http.get(url);
 
+    if(response.statusCode == 200){
+      final List<dynamic> data = json.decode(response.body);
+      enrollhistory = data.map((json)=>Enrollment.fromJson(json)).toList();
+      notifyListeners();
 
+    }
+    else{
+      throw Exception("Failed to fetch enrollment history");
+    }
+  }
 
 }

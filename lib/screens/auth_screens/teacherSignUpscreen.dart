@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,17 +58,36 @@ File? imageFile;
   }
 
 
-Future _pickCertificate()async{
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if(pickedFile !=null){
-    setState(() { _certificateFile = File(pickedFile.path);
-    _certificateFilePath = pickedFile.path;
-    }
+// Future _pickCertificate()async{
+//   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//   if(pickedFile !=null){
+//     setState(() { _certificateFile = File(pickedFile.path);
+//     _certificateFilePath = pickedFile.path;
+//     }
+//     );
+//   }
+// }
+Future _pickCertificate() async {
+  try {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx'],
     );
+
+    if (result != null) {
+      PlatformFile file = result.files.single;
+      setState(() {
+        _certificateFile = File(file.path!);
+        print(_certificateFile);
+        _certificateFilePath = file.name;
+        print(_certificateFilePath);
+      });
+    }
+  } catch (e) {
+    print("Error picking certificate file: $e");
   }
-
-
 }
+
 @override
 void dispose(){
   name.dispose();

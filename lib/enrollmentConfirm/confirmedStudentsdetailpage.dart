@@ -87,7 +87,9 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
         enrollment.setUpdateTeachingDate(finishedTeachingDate);
 
       }); 
-                  final snackBar = SnackBar(content: Text('Updation Success'),backgroundColor: Palette.theme1,);
+                  final snackBar = SnackBar(content: Text('Updation Success'),backgroundColor: Palette.theme1,
+                  duration:Duration(seconds:4)
+                  );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
 
@@ -128,6 +130,14 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
               },
               child:Text('Cancel Enrollment'),
             ),
+              TextButton(
+              onPressed:(){
+                Navigator.of(context).pop();
+
+              },
+              child:Text('Cancel'),
+            ),
+
           ],
 
         );
@@ -188,6 +198,7 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
     Enrollment enrollment = ModalRoute.of(context)!.settings.arguments as Enrollment;
     String formattedStartTime = enrollment.startTime?? '';
     String formattedEndTime = enrollment.endTime?? '';
+    List<String>? subjectsString = enrollment.subjects?? [];
 
 
     return Scaffold(
@@ -198,10 +209,10 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
 
       body:SingleChildScrollView(
         child: Container(
-          padding:EdgeInsets.only(top:20,left:10),
-          margin: EdgeInsets.only(left:20,right:20,top:40,bottom:30),
+          padding:EdgeInsets.only(top:20,left:10,right:10),
+          margin: EdgeInsets.only(left:20,right:10,top:40,bottom:30),
           height:630,
-          width:350,
+          width:400,
           
           // color:Colors.blue,
           decoration:BoxDecoration(
@@ -232,7 +243,7 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
                 children: [
                 Text('${enrollment.students_name}',style:TextStyle(fontSize: 20)),
                 SizedBox(height:6),
-                Text('shah.shiwani560@gmail.com',style:TextStyle(fontSize: 15)),
+                Text(enrollment.students_email?? '',style:TextStyle(fontSize: 15)),
                 // Text('${enrollment.students_email}',style:TextStyle(fontSize: 15)),
 
       
@@ -281,7 +292,7 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('Maths, English, Science',style:TextStyle(fontSize: 16)),
+                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
                               ]), 
                       SizedBox(height:12),  
                        Row(children: [
@@ -342,7 +353,7 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
       
             Center(
               child: enrollment.cancellation
-                      ? Text("Cancelled")
+                      ? Text("Enrollment Cancelled")
                       : 
                           
                           SizedBox(

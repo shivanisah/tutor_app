@@ -11,7 +11,6 @@ import '../models/user_models/enrolledStudentsmodel.dart';
 import '../utils/colors.dart';
 import 'package:http/http.dart' as http;
 
-
 class EnrollmentRejectedDetailPage extends StatefulWidget{
 
   @override
@@ -97,6 +96,7 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
     Enrollment enrollment = ModalRoute.of(context)!.settings.arguments as Enrollment;
     String formattedStartTime = enrollment.startTime?? '';
     String formattedEndTime = enrollment.endTime?? '';
+    List<String>? subjectsString = enrollment.subjects?? [];
 
 
     return Scaffold(
@@ -107,9 +107,9 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
 
       body:SingleChildScrollView(
         child: Container(
-          padding:EdgeInsets.only(top:20,left:10),
-          margin: EdgeInsets.only(left:20,right:20,top:40,bottom:30),
-          height:630,
+          padding:EdgeInsets.only(top:20,left:10,right:10),
+          margin: EdgeInsets.only(left:20,right:10,top:40,bottom:30),
+          height:650,
           width:350,
           
           // color:Colors.blue,
@@ -141,7 +141,7 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
                 children: [
                 Text('${enrollment.students_name}',style:TextStyle(fontSize: 20)),
                 SizedBox(height:6),
-                Text('shah.shiwani560@gmail.com',style:TextStyle(fontSize: 15)),
+                Text(enrollment.students_email?? '',style:TextStyle(fontSize: 15)),
                 // Text('${enrollment.students_email}',style:TextStyle(fontSize: 15)),
 
       
@@ -190,7 +190,7 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('Maths, English, Science',style:TextStyle(fontSize: 16)),
+                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
                               ]), 
                       SizedBox(height:12),  
                        Row(children: [
@@ -202,15 +202,41 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
                               ]),     
                      SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.punch_clock_rounded,size:18),
+                            Icon(Icons.access_time,size:18),
                               SizedBox(width:10),
 
                               Text("Requested teaching time: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
                               Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
-                              ]), 
+                              ]),
+                      SizedBox(height:12),  
+
+                      enrollment.confirmation?
+                       
+                       Row(children: [
+                            Icon(Icons.check_circle_sharp,size:18,color:Color.fromARGB(255, 5, 85, 8)),
+                              SizedBox(width:10),
+
+                              Text("Confirmed on: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
+                              Text(  
+                             '${enrollment.confirmedDate != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(enrollment.confirmedDate!)) : ''}',                              
+                              
+                              ),
+                              ]):
+                       Row(children: [
+                            Icon(Icons.check_circle_sharp,size:18,),
+                              SizedBox(width:10),
+
+                              Text("Confirmation: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
+                              Text( "Not Confirmed Yet" )
+                              
+                              
+                              ]),
+
+
+
                       SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.lock_clock,size:18),
+                            Icon(Icons.cancel,size:18,color:const Color.fromARGB(255, 182, 70, 62)),
                               SizedBox(width:10),
 
                               Text("Rejected on: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),

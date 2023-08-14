@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tutor_app/student/studentEnrollment.dart';
 
 import '../models/user_models/teacher_data.dart';
 import '../utils/colors.dart';
@@ -267,12 +266,12 @@ class _TutorDetailpage extends State<TutorDetailPage> {
                                           child: 
                                           GestureDetector(
                                               onTap: (){
-                                                 Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(builder: (context) =>StudentEnrollment(),
-                                                  settings: RouteSettings(arguments:widget.teacher)
-                                                    ),
-                                                );
+                                                //  Navigator.push(
+                                                //   context,
+                                                //   MaterialPageRoute(builder: (context) =>StudentEnrollment(profile),
+                                                //   settings: RouteSettings(arguments:widget.teacher)
+                                                //     ),
+                                                // );
                                               
                                               
                                               },

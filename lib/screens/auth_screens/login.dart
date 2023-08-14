@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tutor_app/screens/auth_screens/resetpassword.dart';
 // import 'package:tutor_app/FirstScreen/appBar.dart';
 import 'package:tutor_app/startScreens/studenttutorAccount.dart';
 import 'package:tutor_app/utils/colors.dart';
@@ -87,7 +88,6 @@ double height = MediaQuery.of(context).size.height;
                style:  GoogleFonts.poppins(
 
               fontSize:  15,
-                  // fontWeight:  FontWeight.w600,
                   height:  1.5,
                 color:  Colors.black,
 
@@ -125,7 +125,8 @@ double height = MediaQuery.of(context).size.height;
                 validator: (value) {
                     if (value == null || value.isEmpty) {
                      return 'This field is required';
-                    }else if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
+                    }
+                    else if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
             return ("Please enter a valid email");
                     }
           
@@ -218,6 +219,8 @@ double height = MediaQuery.of(context).size.height;
                 )
                            ),
                            TextSpan(text: 'Reset Password',
+                           recognizer:TapGestureRecognizer()..onTap=() => 
+                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>ResetPassword())),
                            style:GoogleFonts.poppins(
 
                           fontSize:  15,

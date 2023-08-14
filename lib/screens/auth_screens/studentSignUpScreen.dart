@@ -305,7 +305,9 @@ double height = MediaQuery.of(context).size.height;
                                                     return Center(child: Text('Sign Up', style: TextStyle(color: Colors.white, fontSize: 16)));
                                                   }
                                                 },
-                                              ),                                      ),
+                                              ),           
+                                                                         ),
+
                                     ),
 
               SizedBox(height:20),
