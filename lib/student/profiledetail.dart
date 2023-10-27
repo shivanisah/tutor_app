@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/FirstScreen/Home.dart';
 import 'package:tutor_app/providers/student_provider.dart';
+import 'package:tutor_app/student/studentprofileupdate.dart';
 import 'package:tutor_app/student/updateprofile.dart';
 import 'package:tutor_app/utils/colors.dart';
 import '../shared_preferences.dart/user_preferences.dart';
@@ -26,14 +27,14 @@ class _StudentProfileDetailPageState extends State<StudentProfileDetailPage> {
   bool isLoading = true;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     fetchData();
   }
 
   Future<void>  fetchData()async{
     try{
-    final studentProfileProvider = Provider.of<StudentProvider>(context);
+    final studentProfileProvider = Provider.of<StudentProvider>(context,listen: false);
     studentId = ModalRoute.of(context)!.settings.arguments as int;
     await studentProfileProvider.fetchStudentProfile(studentId!);
 
@@ -167,10 +168,21 @@ class _StudentProfileDetailPageState extends State<StudentProfileDetailPage> {
                   SizedBox(width:width*0.23),
                   GestureDetector(child:Icon(Icons.edit,color:Palette.theme1),
                   onTap:(){
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>StudentProfileUpdate(profile!)
+                    print("Icon Tapped");
+                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>StudentDataUpdate(profile!)
                     ));
                   }
-                  )
+                  ),
+
+                  // SizedBox(width:width*0.23),
+                  // GestureDetector(child:Icon(Icons.edit,color:Palette.theme1),
+                  // onTap:(){
+                  //   print(profile);
+                  //   print("Icon Tapped");
+                  //   Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>StudentProfileUpdate(profile!)
+                  //   ));
+                  // }
+                  // )
                 ],
               ),
               SizedBox(height:14),

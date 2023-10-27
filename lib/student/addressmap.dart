@@ -34,6 +34,8 @@ class _StudentAddressMapPageState extends State<StudentAddressMapPage> {
     final Placemark placemark = placemarks[0];
                     if(placemark.subLocality!=null && placemark.subLocality!.trim().isNotEmpty){
                      address ='${placemark.subLocality}, ${placemark.locality}';
+    print(_selectedLocation.latitude);
+    print(_selectedLocation.longitude);
 
                     }else{
                     address = placemark.locality!;
@@ -41,7 +43,6 @@ class _StudentAddressMapPageState extends State<StudentAddressMapPage> {
 
     // address = "${placemark.street}, ${placemark.locality}, ${placemark.country}";
   }
-    
     final selectedData = {
       'latitude': _selectedLocation.latitude,
       'longitude': _selectedLocation.longitude,
@@ -53,7 +54,7 @@ class _StudentAddressMapPageState extends State<StudentAddressMapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Map Page')),
+      appBar: AppBar(title: Text('Locate Your Address on Map')),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(target: _selectedLocation, zoom: 15),

@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:tutor_app/models/user_models/timeSlot.dart';
 class Enrollment{
 
   late final int? id;
@@ -27,6 +28,9 @@ class Enrollment{
    late final String? finishedTeachingDate;
    final String? teaching_location;
    final List<String>? subjects;
+   List<TimeSlot>? timelsots;
+   final String? enrollment_for;
+
 
 
 
@@ -57,7 +61,8 @@ Enrollment({
  this.teacher_email,
  this.teacher_name,
  this.subjects,
-
+ this.timelsots,
+  this.enrollment_for
 
 });
 
@@ -70,6 +75,13 @@ factory Enrollment.fromJson(Map<String, dynamic> json) {
     subjectsList = [subjectsData];
   } else if (subjectsData is List<dynamic>) {
     subjectsList = List<String>.from(subjectsData);
+  }
+
+  final List<dynamic> timeslotsData = json['timeslot'];
+  List<TimeSlot> timeslots = [];
+  if(timeslotsData!=null){
+         timeslots = timeslotsData.map((item) => TimeSlot.fromJson(item)).toList();
+ 
   }
 
 
@@ -99,7 +111,9 @@ factory Enrollment.fromJson(Map<String, dynamic> json) {
       confirmedDate: json['confirmedDate'],
       cancelledDate: json['cancelledDate'],
       teaching_location: json['preffered_teaching_location'],
-      subjects:subjectsList
+      subjects:subjectsList,
+      timelsots: timeslots,
+      enrollment_for: json['enrollment_for']
         );
   }
   void setConfirmation(bool value) {

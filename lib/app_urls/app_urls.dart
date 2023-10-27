@@ -2,7 +2,7 @@ class AppUrl {
 
   
   // static var baseUrl = 'http://192.168.1.71:8000/';
-    static var baseUrl = 'http://192.168.1.73:8000/';
+  static var baseUrl = 'http://192.168.1.120:8000/';
 
   // static var loginEndPoint =  'http://192.168.1.72:8000/login/' ;
   static var loginEndPoint =  baseUrl+'login/' ; 
@@ -24,6 +24,8 @@ class AppUrl {
   // static var enrolledlists='http://192.168.1.72:8000/teacher/';
 
   static var classSubjectSearch= baseUrl+'classSubject/';
+
+  static var addclassandsubjectByteacher = baseUrl+'addteacherclasssubject/';
 
 
 

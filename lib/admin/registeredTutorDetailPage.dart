@@ -2,16 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:tutor_app/admin/teachercertificate.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
 import 'package:tutor_app/models/user_models/teacher_data.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../models/user_models/classsubjectmodel.dart';
+import '../providers/teacherProfileprovider.dart';
 import '../utils/colors.dart';
 
 
 class RegisteredTutorDetailPage extends StatefulWidget{
+  late final TeacherData profile;
+  RegisteredTutorDetailPage({required this.profile});
 
   @override
   State<RegisteredTutorDetailPage> createState() => _RegisteredTutorDetailPageState();
@@ -24,6 +29,19 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+  // Future<void>  fetchData()async{
+  //   try{
+  //   final teacherProfileProvider = Provider.of<TeacherProfileProvider>(context);
+  //   await teacherProfileProvider.fetchTeacherProfile(widget.profile.id);
+
+  //   }catch(error){
+
+  //   }finally{
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   Future<void> updateVerification(TeacherData teacher, bool verification) async {
     setState(() {
@@ -144,6 +162,8 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
   Widget build(BuildContext context) {
     
     TeacherData teacher = ModalRoute.of(context)!.settings.arguments as TeacherData;
+    List<GradeSubjectsModel>? classsubject = widget.profile.classSubjectfinallist;
+
 
     return Scaffold(
 
@@ -261,39 +281,47 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
                   ),
               ),
               SizedBox(height:14),
-                              Text("Teaching Grade",
-                style:  GoogleFonts.poppins(
-                fontSize:  16,
-                fontWeight:  FontWeight.w500,
-                height:  1.5,
-                color: const Color.fromARGB(221, 83, 79, 79),
+                Row(
+                children: [
+                  Text("Teaching Class and Subjects",
+                    style:  GoogleFonts.poppins(
+                    fontSize:  16,
+                    fontWeight:  FontWeight.w500,
+                    height:  1.5,
+                    color: const Color.fromARGB(221, 83, 79, 79),
+                      ),
                   ),
+
+                ],
               ),
-              Text(teacher.grade?? '',
+              
+              for(final classname in classsubject!)
+                  Column(children: [
+              Row(
+                children: [
+                  Text(classname.class_name?? '',
+                    style:  GoogleFonts.poppins(
+                    fontSize:  16,
+                    fontWeight:  FontWeight.w500,
+                    height:  1.5,
+                    color: Colors.black,
+                      ),         
+                  ),
+                  SizedBox(width:10),
+              Text(classname.subject_name?.join(',')?? '',
                 style:  GoogleFonts.poppins(
                 fontSize:  16,
-                fontWeight:  FontWeight.w500,
+                fontWeight:  FontWeight.w400,
                 height:  1.5,
                 color: Colors.black,
-                  ),
+                  ),         
               ),
-              SizedBox(height:14),
-                              Text("Teaching Subjects",
-                style:  GoogleFonts.poppins(
-                fontSize:  16,
-                fontWeight:  FontWeight.w500,
-                height:  1.5,
-                color: const Color.fromARGB(221, 83, 79, 79),
-                  ),
+
+
+                ],
               ),
-              Text('${teacher.subjects?.join(',')}',
-                style:  GoogleFonts.poppins(
-                fontSize:  16,
-                fontWeight:  FontWeight.w500,
-                height:  1.5,
-                color: Colors.black,
-                  ),
-              ),
+
+                  ],),
               SizedBox(height:14),
               Text("Teaching Location",
                 style:  GoogleFonts.poppins(
@@ -361,8 +389,8 @@ class _RegisteredTutorDetailPageState extends State<RegisteredTutorDetailPage> {
                                   color:Colors.black,
                   ),
 
-                      )
-                      : 
+                      ):
+                       
    
                           Center(
                             child: SizedBox(

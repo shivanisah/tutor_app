@@ -6,15 +6,15 @@ import '../utils/colors.dart';
 
 
 class TutorDetailPage extends StatefulWidget{
+  TutorDetailPage({required this.teacher});
+
   final TeacherData teacher;
 
-  TutorDetailPage({required this.teacher});
   @override
   State<TutorDetailPage> createState() => _TutorDetailpage();
 }
 
 class _TutorDetailpage extends State<TutorDetailPage> {
-
   @override
   Widget build(BuildContext context) {
 
@@ -311,5 +311,4 @@ class _TutorDetailpage extends State<TutorDetailPage> {
 
 
   }
-
 }

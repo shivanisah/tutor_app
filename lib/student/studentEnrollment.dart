@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import 'package:tutor_app/utils/colors.dart';
 import '../../providers/auth_provider.dart';
 import '../models/user_models/teacher_data.dart';
 import '../shared_preferences.dart/user_preferences.dart';
+import 'addressmap.dart';
 
 
 class StudentEnrollment extends StatefulWidget{
@@ -26,6 +28,8 @@ class _StudentEnrollment extends State<StudentEnrollment> {
   TextEditingController snameController = TextEditingController();
   TextEditingController snumberController = TextEditingController();
   TextEditingController sgenderController = TextEditingController();
+    TextEditingController addressController = TextEditingController();
+
   String gender = "Male";
   DateTime currentDate = DateTime.now();
   String? finalselectedDate;
@@ -131,9 +135,27 @@ void dispose(){
   snameController.dispose();
   snumberController.dispose();
   sgenderController.dispose();
+  addressController.dispose();
 
   super.dispose();
 }
+double? latitude;
+double? longitude;
+void _onMapPage() async{
+  final selectedLocation = await Navigator.push(context,
+  MaterialPageRoute(builder: (context) => StudentAddressMapPage(),)
+  );
+  if(selectedLocation!=null){
+    setState(() {
+      addressController.text = selectedLocation['address'];
+       latitude = selectedLocation['latitude'];
+       longitude = selectedLocation['longitude'];
+       print(latitude);
+       print(longitude);
+    });
+  }
+}
+
   @override
   Widget build(BuildContext context) {
   final userPreferences = UserPreferences();
@@ -155,6 +177,10 @@ void dispose(){
   final teacher = arguments['teacher'] as TeacherData;
   final selectedStartTimeSlot = arguments['selectedstartTimeSlot'] as String?;
   final selectedEndTimeSlot = arguments['selectedendTimeSlot'] as String?;
+  final selectedClass = arguments['selectedClass'] as String?;
+  final selectedSubjects = arguments['selectedSubject'];
+  final selectedslotid = arguments['selectedslotid'];
+
   final provider = Provider.of<AuthProvider>(context,listen: false);
 
 
@@ -477,6 +503,58 @@ double height = MediaQuery.of(context).size.height;
                 Text("Female")
       
               ],),
+              //address
+                        Text(
+               "Address",
+               style:  GoogleFonts.poppins(
+
+              fontSize:  15,
+                  // fontWeight:  FontWeight.w600,
+                  height:  1.5,
+                color:  Colors.black,
+
+                )
+            ),           
+
+            SizedBox(height:4),
+                TextFormField(              
+                controller:addressController,
+                decoration:InputDecoration(             
+                border:InputBorder.none,  
+                hintText:"Address",
+                hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400 
+                ),
+                fillColor: Color.fromARGB(255, 234, 235, 236),
+                filled: true,
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red,),
+                  borderRadius:BorderRadius.circular(6),
+                ),
+                focusedErrorBorder: OutlineInputBorder
+                (borderSide:BorderSide(color:Colors.red),
+                borderRadius:BorderRadius.circular(6),
+                ),
+                enabledBorder:OutlineInputBorder(                 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
+                  ),
+                  focusedBorder:OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
+                  )
+                    
+                ),
+             
+                validator: (value) {
+                    if (value == null || value.isEmpty) {
+                     return 'This field is required';
+                    }
+                    return null;
+                  },  
+                 onTap:_onMapPage,   
+                 ),
+
+
               //DatePicker
                   SizedBox(height: 16), 
                   Text("To Join Tuition",
@@ -526,12 +604,25 @@ double height = MediaQuery.of(context).size.height;
                    ),
       
        
-              SizedBox(height:20),
+                      SizedBox(height:20),
                       GestureDetector(
-                                        onTap: ()  {
-                                    if (_formkey.currentState!.validate()) {
-                                       // Set the loading state to true
-      
+                                    onTap: ()  {
+
+
+                               if(_formkey.currentState!.validate()) {
+                                  print(addressController.text.toString());
+                                  if(userSelectedDate==null){
+                                      Flushbar(borderRadius: BorderRadius.circular(8),
+                                      margin: EdgeInsets.all(12),
+                                      duration: Duration(seconds:3),
+                                      flushbarPosition: FlushbarPosition.TOP,
+                                      backgroundColor: const Color.fromARGB(255, 140, 54, 48),
+                                      message:"Please pick the date for Joining Tuition"
+                                      ).show(context);
+                                      
+                                    }
+
+
                                       
                                         provider.studentEnrollment(
                                           context,
@@ -540,9 +631,9 @@ double height = MediaQuery.of(context).size.height;
                                           snameController.text.toString(),
                                           snumberController.text.toString(),
                                           gender,
-                                          teacher.grade.toString(),
+                                          selectedClass.toString(),
                                           teacher.teaching_location?? ''.toString(),
-                                          teacher.subjects!,
+                                          selectedSubjects,
                                           teacher.email,
                                           teacher.fullName,
                                           teacher.id,
@@ -552,6 +643,9 @@ double height = MediaQuery.of(context).size.height;
                                           // selectedTimeSlot!,
                                           selectedStartTimeSlot?? '',
                                           selectedEndTimeSlot?? '',
+                                          addressController.text.toString(),
+                                          selectedslotid,
+                                          
                                         
       
                                         );

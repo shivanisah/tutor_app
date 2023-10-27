@@ -13,12 +13,12 @@ class TeacherList{
     final url = Uri.parse(AppUrl.teacherlists);  
     var response = await http.get(url); 
     if (response.statusCode == 200) {
-      print(response.body);
+      print(">>>>>>>>>");
 
-      List<dynamic> data = jsonDecode(response.body);
-      return data;
+        List<dynamic> data = jsonDecode(response.body);
+        return data;
     } else {
-      throw Exception('Failed to fetch teachers. Status code: ${response.statusCode}');
+        throw Exception('Failed to fetch teachers. Status code: ${response.statusCode}');
     }
   } catch (e) {
     throw Exception('Failed to fetch teachers. Error: $e');

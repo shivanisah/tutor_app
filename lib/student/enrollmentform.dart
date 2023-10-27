@@ -62,6 +62,9 @@ class _StudentEnrollDataForm extends State<StudentEnrollDataForm> {
 
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  double? latitude;
+  double? longitude;
+
   @override
   void initState(){
     pnameController.text = widget.profile.parents_name!;
@@ -69,11 +72,12 @@ class _StudentEnrollDataForm extends State<StudentEnrollDataForm> {
     snameController.text = widget.profile.name!;
     snumberController.text = widget.profile.number!;
     gender = widget.profile.gender!;
+    
     super.initState();
 
   }
-      final userPreferences = UserPreferences();
-    String user_type = '';
+  final userPreferences = UserPreferences();
+  String user_type = '';
 
   int? studentId;
   bool isLoading = true;
@@ -478,6 +482,8 @@ double height = MediaQuery.of(context).size.height;
                 Text("Female")
       
               ],),
+              //Address
+
               //DatePicker
                   SizedBox(height: 16), 
                   Text("To Join Tuition",
@@ -530,33 +536,33 @@ double height = MediaQuery.of(context).size.height;
               SizedBox(height:20),
                       GestureDetector(
                                         onTap: ()  {
-                                    if (_formkey.currentState!.validate()) {
-                                       // Set the loading state to true
+                                    // if (_formkey.currentState!.validate()) {
+                                    //    // Set the loading state to true
       
                                       
-                                        provider.studentEnrollment(
-                                          context,
-                                          pnameController.text.toString(),
-                                          pnumberController.text.toString(),
-                                          snameController.text.toString(),
-                                          snumberController.text.toString(),
-                                          gender,
-                                          teacher.grade.toString(),
-                                          teacher.teaching_location?? ''.toString(),
-                                          teacher.subjects!,
-                                          teacher.email,
-                                          teacher.fullName,
-                                          teacher.id,
-                                          student_email!,
-                                          userId!,
-                                          finalselectedDate!,
-                                          // selectedTimeSlot!,
-                                          selectedStartTimeSlot?? '',
-                                          selectedEndTimeSlot?? '',
+                                    //     provider.studentEnrollment(
+                                    //       context,
+                                    //       pnameController.text.toString(),
+                                    //       pnumberController.text.toString(),
+                                    //       snameController.text.toString(),
+                                    //       snumberController.text.toString(),
+                                    //       gender,
+                                    //       teacher.grade.toString(),
+                                    //       teacher.teaching_location?? ''.toString(),
+                                    //       teacher.subjects!,
+                                    //       teacher.email,
+                                    //       teacher.fullName,
+                                    //       teacher.id,
+                                    //       student_email!,
+                                    //       userId!,
+                                    //       finalselectedDate!,
+                                    //       // selectedTimeSlot!,
+                                    //       selectedStartTimeSlot?? '',
+                                    //       selectedEndTimeSlot?? '',
                                         
       
-                                        );
-                                    }
+                                    //     );
+                                    // }
                                       },
                                         child: Container(
                                           height:50,

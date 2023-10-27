@@ -1,8 +1,6 @@
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_app/models/user_models/classsubjectmodel.dart';
 import 'package:tutor_app/models/user_models/mapclasssubject.dart';
@@ -14,31 +12,29 @@ import '../Apis/teacherList.dart';
 import '../models/user_models/studentmodel.dart';
 import '../models/user_models/teacher_data.dart';
 import '../models/user_models/timeSlot.dart';
-import '../providers/enrollmentlist_provider.dart';
-import '../student/enrollmentRequest.dart';
 import '../student/studentEnrollment.dart';
 import '../utils/colors.dart';
 
 
-class TutorDetailScreen extends StatefulWidget {
+class MapTutorDetailScreen extends StatefulWidget {
     final TeacherData teacher;
 
-  TutorDetailScreen({required this.teacher});
+  MapTutorDetailScreen({required this.teacher});
 
   @override
-  State<TutorDetailScreen> createState() => _TutorDetailScreen();
+  State<MapTutorDetailScreen> createState() => _MapTutorDetailScreen();
 }
 
-class _TutorDetailScreen extends State<TutorDetailScreen> {
+class _MapTutorDetailScreen extends State<MapTutorDetailScreen> {
 
   final userPreferences = UserPreferences();
   String user_type = '';
-  int? stdid;
 
   int? studentId;
   bool isLoading = true;
   Student? profile;
-  GradeSubjectsModel? _selectedClass;
+
+  Classlist? _selectedClass;
   List<String> _selectedSubjects = [];
 
 TeacherList teacherlist = TeacherList();
@@ -50,14 +46,13 @@ TeacherList teacherlist = TeacherList();
     
         setState(() {
           user_type = user.user_type?? '';
-          stdid = user.id;
-          print(stdid);
         });
       
     
    });  
 
     fetchData();
+
     // profile = null;
     // teacherlist.getAllTeacher();
   }
@@ -71,8 +66,6 @@ TeacherList teacherlist = TeacherList();
   Future<void>  fetchData()async{
     try{
     final studentProfileProvider = Provider.of<StudentProvider>(context,listen:false);
-    // profile = studentProfileProvider.studentProfile ?? null;
-
           final student = await userPreferences.getUser();
     // ignore: unnecessary_null_comparison
     if (student != null && student.user_type == 'student') {
@@ -102,23 +95,17 @@ TeacherList teacherlist = TeacherList();
   String? selectedTimeSlot;
   TimeOfDay? selectedstartTimeSlot;
   TimeOfDay? selectedendTimeSlot;
-  int? selectedslotid;
   String _formatTime(TimeOfDay time) {
   final hour = time.hour.toString().padLeft(2, '0');
   final minute = time.minute.toString().padLeft(2, '0');
   return '$hour:$minute';
 }
-  String requestfor = "self";
-
 
 
   @override
   Widget build(BuildContext context) {
-    final studentProfileProvider = Provider.of<StudentProvider>(context,listen:false);
-    profile = studentProfileProvider.studentProfile?? null;
-    final slotcheckprovider = Provider.of<EnrollmentProvider>(context,listen:false);
-    
-
+    final studentProfileProvider = Provider.of<StudentProvider>(context);
+     profile = studentProfileProvider.studentProfile?? null;
   //   userPreferences.getUser().then((user) {
     
   //       setState(() {
@@ -131,7 +118,11 @@ TeacherList teacherlist = TeacherList();
     
     // print("<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>");
     // print(profile);
-    List<GradeSubjectsModel>? classlists = widget.teacher.classSubjectlist;
+    // print("fdjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjd");
+    MapClassSubject maplist = widget.teacher.mapclasssubject;
+    List<Classlist> classlists = maplist.classlist;
+    // print(classlists.length);
+
     Size size = MediaQuery.of(context).size;
 
     return SafeArea(
@@ -170,10 +161,8 @@ TeacherList teacherlist = TeacherList();
                 Positioned(
                   top: 240,
                   bottom: 0,
-                  child: 
-                  Container(
+                  child: Container(
                     padding:EdgeInsets.only(left:20,right:10),
-                    // height: size.height*1,
                     width: size.width * 1,
                     decoration: const BoxDecoration(
                         color: Colors.white,
@@ -203,8 +192,8 @@ TeacherList teacherlist = TeacherList();
                       Icon(Icons.place_rounded,size:20),
                             SizedBox(width:16),
                           
-                      // Text('City: ',style: TextStyle(fontSize: 18,color:Palette.theme1,fontWeight:FontWeight.w500,
-                      // )),
+                      Text('City: ',style: TextStyle(fontSize: 18,color:Palette.theme1,fontWeight:FontWeight.w500,
+                      )),
                           
                       Text('${widget.teacher.address}',style: TextStyle(fontSize: 18,)),
                                  
@@ -238,20 +227,58 @@ TeacherList teacherlist = TeacherList();
                           
                       SizedBox(height:15),
                           
+                                    //     Row(children: [
+                                    //     Icon(Icons.class_,size:20),
+                                    //     SizedBox(width:16),
+                                    //     Text('Teaching Grade: ',style: TextStyle(fontSize: 18,color:Palette.theme1,fontWeight:FontWeight.w500)),
+                          
+                                    //     ],),
+                                    //     SizedBox(height:2),
+                                    //     Text('        ${widget.teacher.grade}',style: TextStyle(fontSize: 18,)),
+                          
+                                    //   SizedBox(height:15),
+                          
+                                    //   Row(children: [
+                                    //   Icon(Icons.subject,size:20),
+                                    //     SizedBox(width:16),
+                                
+                                    //     Text('Teaching subjects: ',style: TextStyle(fontSize: 18,color:Palette.theme1,fontWeight:FontWeight.w500)),
+                          
+                                    //     ],),
+                                    // SizedBox(height:2),
+                                
+                                    //   Text('        ${widget.teacher.subjects?.join(', ')}',style: TextStyle(fontSize: 18,)),
                     
-                          Row(children: [
-                              Icon(Icons.class_,size:20),
-                              SizedBox(width:16),
-                              Text("Select Your Class and Subjects",style: TextStyle(fontSize: 18,color:Palette.theme1,fontWeight:FontWeight.w500))
-                          ],),
                     
+                                //..........................................................................................
+                                //MultipleclassSubject
+                    
+                          //showing in dropdown
+                          //         ListView.builder(
+                          //   shrinkWrap: true,
+                          //   itemCount:maplist.classlist.length,
+                          //   itemBuilder: (context,index){
+                            
+                          //     Classlist classsubject = maplist.classlist[index];
+                          //     // print(classsubject);
+                          //     String subjectsString = classsubject.subjects.join(',');
+                          //   return ListTile(
+                          //     title: Text(classsubject.className),
+                    
+                          //     subtitle: Text(subjectsString),
+                    
+                    
+                          //  );
+                          // }
+                          
+                          // ),
                     
                                 Column(
                                 
                                   
                                 children: [
                                 Container(
-                                margin:EdgeInsets.only(top:4,left:20,right:20),
+                                margin:EdgeInsets.only(top:4),
                                 child: InputDecorator(
                               decoration: InputDecoration(
                                 border:OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
@@ -259,13 +286,13 @@ TeacherList teacherlist = TeacherList();
                                 ),
                     
                                   child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<GradeSubjectsModel>(
+                                    child: DropdownButton<Classlist>(
                                       value: _selectedClass,
                                       isExpanded:true,
                                       isDense: true,
                       hint: Text("Select Class",style:TextStyle(color:Colors.black)),
                     
-                                      onChanged: (GradeSubjectsModel? newValue) {
+                                      onChanged: (Classlist? newValue) {
                       setState(() {
                         _selectedClass = newValue;
                         
@@ -273,10 +300,10 @@ TeacherList teacherlist = TeacherList();
                       });
                                       },
                                       
-                                      items:classlists?.map<DropdownMenuItem<GradeSubjectsModel>>((GradeSubjectsModel classSubject) {
-                      return DropdownMenuItem<GradeSubjectsModel>(
+                                      items:classlists.map<DropdownMenuItem<Classlist>>((Classlist classSubject) {
+                      return DropdownMenuItem<Classlist>(
                         value: classSubject,
-                        child: Text(classSubject.class_name?? ''),
+                        child: Text(classSubject.className),
                       );
                                       }).toList(),
                                       style: TextStyle(color: Colors.black, fontSize: 19),
@@ -288,72 +315,32 @@ TeacherList teacherlist = TeacherList();
                                 ),
                                 SizedBox(height: 4),
                                 if (_selectedClass != null)
-                                GridView.builder(
-                                shrinkWrap: true,
-                                gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                mainAxisExtent:MediaQuery.of(context).size.height*0.06,
-                    
-                                
-                                ), 
-                                itemCount: _selectedClass?.subject_name?.length,
-                                itemBuilder: (context, index) {
-                                  String subject = _selectedClass!.subject_name![index];
-                    
-                                  return ListTile(
-                        title: Text(subject),
-                        leading: Theme(
-                          data: ThemeData(
-                        checkboxTheme: CheckboxThemeData(
-                          fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
-                         ),
-                            ),
-                          child: Checkbox(
-                            value: _selectedSubjects.contains(subject),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (value == true) {
-                                  _selectedSubjects.add(subject);
-                                } else {
-                                  _selectedSubjects.remove(subject);
-                                }
-                              });
-                            },
-                          ),
+                                Column(
+                                  children: _selectedClass!.subjects.map<Widget>((subject) {
+                                    return ListTile(
+                                      title: Text(subject),
+                                      leading: Theme(
+                      data: ThemeData(
+                                      checkboxTheme: CheckboxThemeData(
+                      fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
+                                       ),
                         ),
-                      );
-                    
-                                },
+                      child: Checkbox(
+                        value: _selectedSubjects.contains(subject),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              _selectedSubjects.add(subject);
+                            } else {
+                              _selectedSubjects.remove(subject);
+                            }
+                          });
+                        },
+                      ),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
-                                
-                                // Column(
-                                //   children: _selectedClass!.subject_name!.map<Widget>((subject) {
-                                //     return 
-                                // ListTile(
-                                //       title: Text(subject),
-                                //       leading: Theme(
-                                //         data: ThemeData(
-                                //       checkboxTheme: CheckboxThemeData(
-                                //         fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
-                                //        ),
-                                //           ),
-                                //         child: Checkbox(
-                                //           value: _selectedSubjects.contains(subject),
-                                //           onChanged: (bool? value) {
-                                //             setState(() {
-                                //               if (value == true) {
-                                //                 _selectedSubjects.add(subject);
-                                //               } else {
-                                //                 _selectedSubjects.remove(subject);
-                                //               }
-                                //             });
-                                //           },
-                                //         ),
-                                //       ),
-                                //     );
-                                //   }).toList(),
-                                // ),
                                 ]
                               ),
                     
@@ -424,8 +411,7 @@ TeacherList teacherlist = TeacherList();
                                 // selectedTimeSlot = '${timeSlot.startTime!.substring(0,5)} - ${timeSlot.endTime!.substring(0,5)}';
                                 //       print(selectedTimeSlot); 
                                 selectedstartTimeSlot = timeSlot.startTime; 
-                                selectedendTimeSlot = timeSlot.endTime;
-                                selectedslotid = timeSlot.id;
+                                selectedendTimeSlot = timeSlot.endTime;             
                                 
                           });
                         },
@@ -489,52 +475,9 @@ TeacherList teacherlist = TeacherList();
                       );
                       
                       
-                        }
+                                      }
                                       
-                  ) , 
-
-           //requestfor
-           SizedBox(height:13),
-            Text(
-              
-                 "Mark you want to make request for yourself or others.",
-                 style:  GoogleFonts.poppins(
-      
-                fontSize:  15,
-                    height:  1.5,
-                  color:  Colors.black,
-      
-                  )
-              ),  
-              SizedBox(height:4),
-              Row(children: [
-                Radio(
-                  groupValue: requestfor,
-                value:"self",
-                
-                onChanged: (value){
-                  setState(() {
-                    requestfor = value.toString();
-                  });
-                },
-              
-                ),
-                Text("Self"),
-                SizedBox(width:30),
-              Radio(
-                groupValue: requestfor,
-                value:"others",
-                onChanged: (value){
-                  setState(() {
-                    requestfor = value.toString();
-                  });
-                },
-      
-                ),
-                Text("Others")
-      
-              ],),
-                           
+                                      ) , 
                                               
                                      SizedBox(height:40),
                                       timeSlots == null || timeSlots!.isEmpty? Center(
@@ -552,7 +495,6 @@ TeacherList teacherlist = TeacherList();
                                             child: Container(
                                               height:50,
                                               width:300,
-                                              
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(6),
@@ -569,12 +511,8 @@ TeacherList teacherlist = TeacherList();
                                       Center(
                                         child: 
                                         GestureDetector(
-                                            onTap: ()async{
-                                              var msg;
-                                        
-                                        
-                                        
-                                         if(user_type!='student'){
+                                            onTap: (){
+                                     if(user_type!='student'){
                                           Flushbar(
                                             margin:EdgeInsets.all(15),
                                             borderRadius: BorderRadius.circular(8),
@@ -584,28 +522,6 @@ TeacherList teacherlist = TeacherList();
                                             duration:Duration(seconds:3),                   
                                           ).show(context);
                                         }
-                                        else if(profile?.name==null){
-                                            Flushbar(
-                                            margin:EdgeInsets.all(15),
-                                            borderRadius: BorderRadius.circular(8),
-                                            flushbarPosition: FlushbarPosition.TOP,
-                                            message: 'You havent created your profile.',
-                                            backgroundColor: Palette.theme1,
-                                            duration:Duration(seconds:3),                   
-                                          ).show(context);
-                                        }
-                                          else if(selectedstartTimeSlot== null || selectedendTimeSlot == null){
-                                          Flushbar(
-                                            margin:EdgeInsets.all(15),
-                                            borderRadius: BorderRadius.circular(8),
-                    
-                                                    flushbarPosition: FlushbarPosition.TOP,
-                                                    message: 'You must select time slot',
-                                                    backgroundColor:Colors.red,
-                                                    duration: Duration(seconds: 3),
-                                                    )..show(context);   
-                    
-                                              }
                     
                                         else if(_selectedClass==null){
                                           Flushbar(
@@ -627,81 +543,20 @@ TeacherList teacherlist = TeacherList();
                                             duration:Duration(seconds:3),                   
                                           ).show(context);
                                         }
-                                      //  if(selectedstartTimeSlot!=null || selectedendTimeSlot!=null){
-                                      // final slotrequest = await slotcheckprovider.timeslotcheckenrollment(context,stdid, selectedslotid,requestfor);
-                                      //    msg =  slotcheckprovider.message;
-                                        
-                                         
-                                      //   }
-                                      //   else if( msg is Map && msg.containsKey('slotcount')){
-                                      //   Flushbar(
-                                      //       margin:EdgeInsets.all(15),
-                                      //       borderRadius: BorderRadius.circular(8),
-                                      //       flushbarPosition: FlushbarPosition.TOP,
-                                      //       message:"You can't make more than 5 enrollment requests.",
-                                      //       backgroundColor: Colors.red,
-                                      //       duration:Duration(seconds:3),                   
-                                      //     ).show(context);
-
-                                      //   }
-                                      //   else  if(msg is Map && msg.containsKey('sameslot')){
-                                      //         Flushbar(
-                                      //       margin:EdgeInsets.all(15),
-                                      //       borderRadius: BorderRadius.circular(8),
-                                      //       flushbarPosition: FlushbarPosition.TOP,
-                                      //       message: "Sorry, you have already done self-enrollment with this time slot.",
-                                      //       backgroundColor: Colors.red,
-                                      //       duration:Duration(seconds:3),                   
-                                      //     ).show(context);
-
-
-                                      //     }
-                                          
-                                       
-                                         
-                                        
-                                      
-                                        
                     
                     
+                                              
                                               else{
+                                
                     
                                           final formattedStartTime = _formatTime(selectedstartTimeSlot!);
                                            final formattedEndTime = _formatTime(selectedendTimeSlot!);
-                                          final selectedclass = _selectedClass?.class_name;
+                                           final selectedclass = _selectedClass?.className;
                                            final selectedsubjects = _selectedSubjects;
-                                           final slotrequest = await slotcheckprovider.timeslotcheckenrollment(context,stdid, selectedslotid,requestfor);
-                                            msg =  slotcheckprovider.message;
-                                             if( msg is Map && msg.containsKey('slotcount')){
-                                        Flushbar(
-                                            margin:EdgeInsets.all(15),
-                                            borderRadius: BorderRadius.circular(8),
-                                            flushbarPosition: FlushbarPosition.TOP,
-                                            message:"You can't make more than 5 enrollment requests.",
-                                            backgroundColor: Colors.red,
-                                            duration:Duration(seconds:3),                   
-                                          ).show(context);
-
-                                        }
-                                        else  if(msg is Map && msg.containsKey('sameslot')){
-                                              Flushbar(
-                                            margin:EdgeInsets.all(15),
-                                            borderRadius: BorderRadius.circular(8),
-                                            flushbarPosition: FlushbarPosition.TOP,
-                                            message: "Sorry, you have already done self-enrollment with this time slot.",
-                                            backgroundColor: Colors.red,
-                                            duration:Duration(seconds:3),                   
-                                          ).show(context);
-
-
-                                          }
-                                          //  print(profile?.name?? '');
-                                           
-                                              // profile?.name==null? 
-                                              else{
-                                            Navigator.push(
+                                              profile?.name==null? 
+                                              Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) =>StudentEnrollmentRequest(),
+                                                MaterialPageRoute(builder: (context) =>StudentEnrollment(),
                                                 settings: RouteSettings(arguments:{
                                                   'teacher':widget.teacher,
                                                   // 'selectedTimeSlot':selectedTimeSlot,
@@ -709,7 +564,22 @@ TeacherList teacherlist = TeacherList();
                                                   'selectedendTimeSlot':formattedEndTime,
                                                   'selectedClass':selectedclass,
                                                   'selectedSubject':selectedsubjects,
-                                                  'selectedslotid':selectedslotid,
+                                                }
+                                                
+                                                
+                                                )
+                                                  ),
+                                              ):
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) =>StudentEnrollDataForm(profile!),
+                                                settings: RouteSettings(arguments:{
+                                                  'teacher':widget.teacher,
+                                                  // 'selectedTimeSlot':selectedTimeSlot,
+                                                  'selectedstartTimeSlot':formattedStartTime,
+                                                  'selectedendTimeSlot':formattedEndTime,
+                                                  'selectedClass':selectedclass,
+                                                  'selectedSubject':selectedsubjects,
                     
                                                 }
                                                 
@@ -717,27 +587,6 @@ TeacherList teacherlist = TeacherList();
                                                 )
                                                   ),
                                               );
-                                              }
-                                             
-                                              // :
-                                              
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(builder: (context) =>StudentEnrollDataForm(profile!),
-                                              //   settings: RouteSettings(arguments:{
-                                              //     'teacher':widget.teacher,
-                                              //     // 'selectedTimeSlot':selectedTimeSlot,
-                                              //     'selectedstartTimeSlot':formattedStartTime,
-                                              //     'selectedendTimeSlot':formattedEndTime,
-                                              //     'selectedClass':selectedclass,
-                                              //     'selectedSubject':selectedsubjects,
-                    
-                                              //   }
-                                                
-                                                
-                                              //   )
-                                              //     ),
-                                              // );
                     
                                             
                                               }  
@@ -757,6 +606,7 @@ TeacherList teacherlist = TeacherList();
                                             ),
                                           ),
                                       ),
+                                    
                                 
                       
                       ]),

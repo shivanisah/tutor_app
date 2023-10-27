@@ -1,23 +1,23 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_app/models/user_models/studentmodel.dart';
-import 'package:tutor_app/providers/student_provider.dart';
 import 'package:tutor_app/student/updateaddressmap.dart';
-import 'package:tutor_app/utils/colors.dart';
 
-import '../../providers/auth_provider.dart';
+import '../models/user_models/studentmodel.dart';
+import '../providers/auth_provider.dart';
+import '../providers/student_provider.dart';
+import '../utils/colors.dart';
 
-class StudentProfileUpdate extends StatefulWidget{
+
+class StudentDataUpdate extends StatefulWidget{
   final Student profile;
-  StudentProfileUpdate(this.profile,{super.key});
+  StudentDataUpdate(this.profile,{super.key});
 
   @override
-  State<StudentProfileUpdate> createState() => _StudentProfileUpdateState();
+  State<StudentDataUpdate> createState() => _StudentDataUpdate();
 }
 
-class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
+class _StudentDataUpdate extends State<StudentDataUpdate> {
 
   TextEditingController pnameController=TextEditingController();
   TextEditingController pnumberController = TextEditingController();
@@ -75,9 +75,9 @@ void _onMapPage() async{
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
+
   @override
   Widget build(BuildContext context) {
-    print("studentprofileupdate");
 
     final studentprofileProvider = Provider.of<StudentProvider>(context);
 
@@ -457,10 +457,12 @@ void _onMapPage() async{
         ),
 
       )
-
     );
+
+
+    
+
 
   }
 
 }
-

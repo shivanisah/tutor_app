@@ -5,11 +5,14 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tutor_app/FirstScreen/teachersearch.dart';
+import 'package:tutor_app/models/user_models/classsubjectmodel.dart';
+import 'package:tutor_app/models/user_models/mapclasssubject.dart';
 import 'package:tutor_app/tutor/tutorDetailScreen.dart';
 
 import '../app_urls/app_urls.dart';
 import '../models/user_models/teacher_data.dart';
 import '../models/user_models/timeSlot.dart';
+import '../tutor/maptutordetailscreen.dart';
 import '../utils/colors.dart';
 
 class TeacherMapPage extends StatefulWidget {
@@ -145,7 +148,6 @@ print(selectedSubjects);
   }
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
       if(data.containsKey('message') && data['message'] == 'No nearby teachers found'){
         showDialog(
           context:context,
@@ -191,8 +193,18 @@ print(selectedSubjects);
 
     Set<Marker> markers = {};
     teachers.forEach((teacher) {
+      String jsonResponse = teacher['classlist'];
 
+      // print("response $jsonResponse");
+      Map<String, dynamic> teacherData = jsonDecode(jsonResponse);
+      List<dynamic> classList = teacherData['classlist'];
+
+// Map<String, dynamic> teacherData = jsonDecode(teacher['classlist']);
+      
       List<TimeSlot> timeSlots = List<TimeSlot>.from(teacher['time_slots'].map((slot) => TimeSlot.fromJson(slot)));
+      // List<MapClassSubject> classSubjectlist = List<MapClassSubject>.from(teacherData.map((e)=>MapClassSubject.fromMap(e)));
+      dynamic classSubjectlist = MapClassSubject.fromMap(teacherData);
+
       String name = teacher['name'];
       String? grade = teacher['grade'];
       String email = teacher['email'];
@@ -205,11 +217,27 @@ print(selectedSubjects);
       String? education = teacher['education'];
       String? subjects = teacher['subjects'];
       String? image    = teacher['image'];  
-      print(timeSlots);                                                
-
+      
+      // print(timeSlots);
+      // print(teacher['classlist']); 
+      print(classSubjectlist);
       double latitude = double.parse(teacher['latitude']);
       double longitude = double.parse(teacher['longitude']);
+// String jsonResponse = teacher['classlist'];
+// print("response $jsonResponse");
+// Map<String, dynamic> teacherData = jsonDecode(jsonResponse);
+// print("data:$teacherData");
 
+// List<dynamic> classList = teacherData['classlist'];
+// for (var classData in classList) {
+//   String className = classData['class_name'];
+//   List<dynamic> subject = classData['subjects'];
+//   print('Class Name: $className');
+//   for(String getsubject in subject){
+//     print("Subjects: $getsubject");
+//   }
+  
+// }
       Marker marker = Marker(
         markerId: MarkerId(name),
         position: LatLng(latitude, longitude),
@@ -220,7 +248,7 @@ print(selectedSubjects);
         onTap:(){
           _showTeacherInfo(context, name, grade ?? '',email,id,phone_number,address ?? '',teaching_location ??'',
           
-          teaching_experience?? '',gender?? '',education ??'',subjects ?? '',image,timeSlots);
+          teaching_experience?? '',gender?? '',education ??'',subjects ?? '',image,timeSlots,classSubjectlist);
         }
       );
 
@@ -229,7 +257,8 @@ print(selectedSubjects);
     return markers;
   }
   void _showTeacherInfo(BuildContext context, String name, String? grade,String email,int id,String phone_number,String? address,
-                        String? teaching_location,String? teaching_experience,String? gender,String? education,String? subjects, String? image, List<TimeSlot> timeSlots
+                        String? teaching_location,String? teaching_experience,String? gender,String? education,String? subjects, String? image, 
+                        List<TimeSlot> timeSlots, classSubjectlist, 
   ) {
   showModalBottomSheet(
     context: context,
@@ -276,11 +305,12 @@ print(selectedSubjects);
                                                             gender:gender,
                                                             subjects:subjectsList,
                                                             image:finalImage,
-                                                            timeSlots: timeSlots
+                                                            timeSlots: timeSlots,
+                                                            mapclasssubject: classSubjectlist,
 
 
                                                           );
-                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>TutorDetailScreen(teacher:teacher)));
+                                        Navigator.push(context,MaterialPageRoute(builder: (context)=>MapTutorDetailScreen(teacher:teacher)));
           
           
                                         },

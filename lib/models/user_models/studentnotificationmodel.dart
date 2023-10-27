@@ -10,6 +10,7 @@ class StudentNotification{
    late DateTime? date;
    late bool? seen;
    final AssociatedTeacher? teacher;
+   final AssociatedEnrollment? enrrollmentform;
 
    StudentNotification({
     required this.id,
@@ -19,6 +20,7 @@ class StudentNotification{
     this.message,
     this.seen,
     this.teacher,
+    this.enrrollmentform,
    }
    );
 
@@ -33,6 +35,7 @@ class StudentNotification{
       date:dateFormat.parse(json['date']),
       seen:json['seen'],
       teacher:json['teacher']!=null?AssociatedTeacher.fromJson(json['teacher']):null,
+      enrrollmentform: json['enrollmentform']!=null?AssociatedEnrollment.fromJson(json['enrollmentform']):null,
     );
    }
     
@@ -67,9 +70,44 @@ class AssociatedTeacher{
       email:json['email'],
       fullName: json['full_name'],
       grade: json['grade'],
-      phoneNumber: json['phoneNumber'],
+      phoneNumber: json['phone_number'],
       subjects:subjectsList, 
 
     );
   }
+}
+
+class AssociatedEnrollment{
+
+    String? grade;
+    List<String>? subjects;
+    bool? confirmation;
+    bool? cancellation;
+
+    AssociatedEnrollment({
+      this.grade,
+      this.subjects,
+      this.confirmation,
+      this.cancellation,
+
+    });
+
+factory AssociatedEnrollment.fromJson(Map<String,dynamic> json){
+  List<String>? subjectsList;
+  dynamic subjectsData = json['subjects'];
+  if (subjectsData is String) {
+    subjectsList = [subjectsData];
+  } else if (subjectsData is List<dynamic>) {
+    subjectsList = List<String>.from(subjectsData);
+  }
+
+        return AssociatedEnrollment(
+          grade:json['grade'],
+          subjects:subjectsList,
+          confirmation: json['confirmation'],
+          cancellation:json['cancellation'],
+        );
+
+    }
+
 }

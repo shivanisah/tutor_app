@@ -39,7 +39,7 @@ class _AdminDrawerState extends State<AdminDrawer> {
               builder: (BuildContext context) {
                 return UserAccountsDrawerHeader(accountName: Text(""), accountEmail: Text(email),
                 currentAccountPicture: CircleAvatar(
-                  child:ClipOval(child: Image.asset("assets/images/d1.jpg",
+                  child:ClipOval(child: Image.asset("assets/images/blankimage.png",
                   width:90,
                   height:90,
                   fit:BoxFit.cover,
@@ -102,11 +102,12 @@ class _AdminDrawerState extends State<AdminDrawer> {
               title:Text("Logout"),
               onTap:(){
                 UserPreferences().removeUser();
+                popallScreens(context);
 
-                Navigator.push(context,MaterialPageRoute(builder: (context) => Login(),
+                // Navigator.push(context,MaterialPageRoute(builder: (context) => Login(),
 
-                ),
-                );
+                // ),
+                // );
               }
             ),
 
@@ -127,5 +128,12 @@ class _AdminDrawerState extends State<AdminDrawer> {
 
 
   }
+    void popallScreens(BuildContext context) {
+
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context)=>Login()), (route) => false);
+
+  
+  }
+
 
 }

@@ -80,6 +80,14 @@ List teaching_experience = [
     selected_education = widget.profile.education?? '';
     selectedTeachingExperience = widget.profile.teaching_experience?? '';
     _selectedClassSubject?.className =widget.profile.grade?? '';
+
+    if (_selectedClassSubject == null) {
+    _selectedClassSubject?.className =widget.profile.grade?? '';
+
+
+    _selectedSubjects.addAll(widget.profile.subjects ?? []);
+  }
+
     super.initState();
   }
 
@@ -206,91 +214,91 @@ List teaching_experience = [
 
             SizedBox(height:14),         
 
-           Text(
-               'Teaching Grade',
-               style:  GoogleFonts.poppins(
+          //  Text(
+          //      'Teaching Grade',
+          //      style:  GoogleFonts.poppins(
 
-              fontSize:  15,
-              height:  1.5,
-              color:  Colors.black,
+          //     fontSize:  15,
+          //     height:  1.5,
+          //     color:  Colors.black,
 
-                )
-            ), 
+          //       )
+          //   ), 
 
-            Column(
+          //   Column(
             
                   
-            children: [
-              Container(
-              margin:EdgeInsets.only(top:4),
-                child: InputDecorator(
-                                decoration: InputDecoration(
-                border:OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-                contentPadding:const EdgeInsets.all(10),
-              ),
+          //   children: [
+          //     Container(
+          //     margin:EdgeInsets.only(top:4),
+          //       child: InputDecorator(
+          //                       decoration: InputDecoration(
+          //       border:OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+          //       contentPadding:const EdgeInsets.all(10),
+          //     ),
 
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<ClassSubject>(
-                      value: _selectedClassSubject,
-                      isExpanded:true,
-                      isDense: true,
-                        hint: Text(widget.profile.grade?? '',style:TextStyle(color:Colors.black)),
+          //         child: DropdownButtonHideUnderline(
+          //           child: DropdownButton<ClassSubject>(
+          //             value: _selectedClassSubject,
+          //             isExpanded:true,
+          //             isDense: true,
+          //               hint: Text(widget.profile.grade?? '',style:TextStyle(color:Colors.black)),
 
-                      onChanged: (ClassSubject? newValue) {
-                        setState(() {
-                          _selectedClassSubject = newValue;
+          //             onChanged: (ClassSubject? newValue) {
+          //               setState(() {
+          //                 _selectedClassSubject = newValue;
                           
-                          _selectedSubjects.clear();
-                        });
-                      },
+          //                 _selectedSubjects.clear();
+          //               });
+          //             },
                       
-                      items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
-                        return DropdownMenuItem<ClassSubject>(
-                          value: classSubject,
-                          child: Text(classSubject.className),
-                        );
-                      }).toList(),
-                      style: TextStyle(color: Colors.black, fontSize: 19),
-                      icon: Icon(Icons.arrow_drop_down,size: 30,),
-                      underline: SizedBox(),      
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              if (_selectedClassSubject != null)
-                Column(
-                  children: _selectedClassSubject!.subjects.map<Widget>((subject) {
-                    return ListTile(
-                      title: Text(subject),
-                      leading: Theme(
-                        data: ThemeData(
-                      checkboxTheme: CheckboxThemeData(
-                        fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
-                       ),
-                          ),
-                        child: Checkbox(
-                          value: _selectedSubjects.contains(subject),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value == true) {
-                                _selectedSubjects.add(subject);
-                              } else {
-                                _selectedSubjects.remove(subject);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ]
-          ),
+          //             items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
+          //               return DropdownMenuItem<ClassSubject>(
+          //                 value: classSubject,
+          //                 child: Text(classSubject.className),
+          //               );
+          //             }).toList(),
+          //             style: TextStyle(color: Colors.black, fontSize: 19),
+          //             icon: Icon(Icons.arrow_drop_down,size: 30,),
+          //             underline: SizedBox(),      
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(height: 4),
+          //     if (_selectedClassSubject != null)
+          //       Column(
+          //         children: _selectedClassSubject!.subjects.map<Widget>((subject) {
+          //           return ListTile(
+          //             title: Text(subject),
+          //             leading: Theme(
+          //               data: ThemeData(
+          //             checkboxTheme: CheckboxThemeData(
+          //               fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
+          //              ),
+          //                 ),
+          //               child: Checkbox(
+          //                 value: _selectedSubjects.contains(subject),
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     if (value == true) {
+          //                       _selectedSubjects.add(subject);
+          //                     } else {
+          //                       _selectedSubjects.remove(subject);
+          //                     }
+          //                   });
+          //                 },
+          //               ),
+          //             ),
+          //           );
+          //         }).toList(),
+          //       ),
+          //   ]
+          // ),
           
 
 
-            SizedBox(height:14),         
+          //   SizedBox(height:14),         
 
            Text(
                'Teaching Location',
@@ -341,13 +349,22 @@ List teaching_experience = [
             SizedBox(height:height*0.1),
             GestureDetector(
               onTap:(){
-                if(formkey.currentState!.validate()){
+                // if(formkey.currentState!.validate()){
+                //   teacherprofileProvider.teacherteachingInfoUpdate(context,selectedTeachinglocation,
+                //   selected_education,selectedTeachingExperience,_selectedClassSubject?.className?? '',_selectedSubjects,
+                  
+                //   widget.profile.id);
+        
+                // }
+
+              if(formkey.currentState!.validate()){
                   teacherprofileProvider.teacherteachingInfoUpdate(context,selectedTeachinglocation,
-                  selected_education,selectedTeachingExperience,_selectedClassSubject?.className?? '',_selectedSubjects,
+                  selected_education,selectedTeachingExperience,
                   
                   widget.profile.id);
         
                 }
+
               },
               child:Container(
                 height:50,

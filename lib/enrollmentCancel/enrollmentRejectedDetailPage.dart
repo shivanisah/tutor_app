@@ -1,13 +1,17 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:tutor_app/student/studentEnrollment.dart';
 
 import '../models/user_models/enrolledStudentsmodel.dart';
 // import '../models/user_models/teacher_data.dart';
 // import '../utils/colors.dart';
 
+import '../models/user_models/timeSlot.dart';
 import '../utils/colors.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,6 +27,15 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+   Future<void> callnumber(String? number) async{
+    await launchUrl(Uri(scheme:'tel',path:number));
+
+  }
+  Future<void> callparentsnumber(String? number) async{
+    await launchUrl(Uri(scheme:'tel',path:number));
+
+  }
+
 
   Future<void> updateConfirmation(Enrollment enrollment, bool confirmation) async {
     setState(() {
@@ -91,12 +104,20 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
   }
 
 
+String _formatTime(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+} 
+
   @override
   Widget build(BuildContext context) {
     Enrollment enrollment = ModalRoute.of(context)!.settings.arguments as Enrollment;
-    String formattedStartTime = enrollment.startTime?? '';
-    String formattedEndTime = enrollment.endTime?? '';
+    // String formattedStartTime = enrollment.startTime?? '';
+    // String formattedEndTime = enrollment.endTime?? '';
     List<String>? subjectsString = enrollment.subjects?? [];
+    List<TimeSlot>? slots = enrollment.timelsots;
+    
 
 
     return Scaffold(
@@ -109,7 +130,7 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
         child: Container(
           padding:EdgeInsets.only(top:20,left:10,right:10),
           margin: EdgeInsets.only(left:20,right:10,top:40,bottom:30),
-          height:650,
+          height:665,
           width:350,
           
           // color:Colors.blue,
@@ -168,7 +189,22 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
      
             SizedBox(height:12),  
                         Row(children: [
-                              Icon(Icons.call,size:18),
+                            // Container(
+                            //   color: Colors.blue,
+                            //   child: IconButton(onPressed:(){
+                            //     print(enrollment.students_number);
+                            //       callnumber(enrollment.students_number);
+                            //   } , 
+                            //   icon:Icon(Icons.call),
+                            //   iconSize: 6,
+                            //   ),
+                            // ),
+                            GestureDetector(
+                              child:Icon(Icons.call,size: 20,color:Color.fromARGB(255, 5, 85, 8)),
+                              onTap:(){
+                                callnumber(enrollment.students_number);
+                              }
+                            ),
                               SizedBox(width:10),
 
                               Text("Phone Number: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
@@ -190,8 +226,14 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
                               ]), 
+                              Row(
+                                children: [
+                                  SizedBox(width: 26),
+                                  Expanded(child: Text(subjectsString.join(','),style:TextStyle(fontSize: 16))),
+                                ],
+                              ),
+
                       SizedBox(height:12),  
                        Row(children: [
                               Icon(Icons.date_range,size:18),
@@ -206,7 +248,16 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
                               SizedBox(width:10),
 
                               Text("Requested teaching time: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
+                              for(TimeSlot slot in slots!)
+                              Text('${_formatTime(slot.startTime!)} - ${_formatTime(slot.endTime!)}',
+                              style:  GoogleFonts.poppins(
+
+                                   fontSize:  15,
+                                   fontWeight: FontWeight.w400,
+
+                                     )
+                              ),
+                              // Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
                               ]),
                       SizedBox(height:12),  
 
@@ -261,7 +312,13 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
 
                      SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.call,size:18),
+                            GestureDetector(
+                              child:Icon(Icons.call,size: 20,color:Color.fromARGB(255, 5, 85, 8)),
+                              onTap:(){
+                                callparentsnumber(enrollment.parents_number);
+                              }
+                            ),
+                            
                               SizedBox(width:10),
 
                               Text("Contact Number: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
@@ -305,5 +362,6 @@ class _EnrollmentRejectedDetailPage extends State<EnrollmentRejectedDetailPage> 
 
 
   }
+  
 
 }

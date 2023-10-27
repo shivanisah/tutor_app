@@ -51,6 +51,10 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^19.1.69-beta
   material_design_icons_flutter: ^5.0.0 
   file_picker: ^4.0.0
+  shimmer: 
+  url_launcher: ^6.1.0
+  chips_choice:
+
 
 dev_dependencies:
   flutter_test:

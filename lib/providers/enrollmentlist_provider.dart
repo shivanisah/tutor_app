@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
 
 import '../models/user_models/enrolledStudentsmodel.dart';
@@ -69,4 +71,47 @@ List<Enrollment> enrollhistory = [];
     }
   }
 
+dynamic message;
+Future<void> timeslotcheckenrollment(BuildContext context,int? studentId,int? slotid, String? requestfor) async
+{
+  final url = Uri.parse(AppUrl.baseUrl+'/studentrelatedslot/$studentId/$slotid/$requestfor');
+  final response = await http.get(url);
+  var responsebody = response.body;
+  message = jsonDecode(responsebody);
+  
+  notifyListeners();
+  // if(msg['sameslot']!=null){
+  //   message = msg;
+  //   print("hhhhhhhhhhhhh/.............");
+  //   print(message);
+  // }
+  // if(msg['slotcount']!=null){
+  //   message = msg;
+  //   print("hhhhhhhhhhhhh/.............");
+  //   print(message);
+  // }
+  // if(msg['sameslot']!=null){
+  //                                       Flushbar(
+  //                                           margin:EdgeInsets.all(15),
+  //                                           borderRadius: BorderRadius.circular(8),
+  //                                           flushbarPosition: FlushbarPosition.TOP,
+  //                                           message: "Sorry, you have already done self-enrollment with this time slot.",
+  //                                           backgroundColor: Colors.red,
+  //                                           duration:Duration(seconds:3),                   
+  //                                         ).show(context);
+
+  // }
+  // if(msg['slotcount']!=null){
+  //                                       Flushbar(
+  //                                           margin:EdgeInsets.all(15),
+  //                                           borderRadius: BorderRadius.circular(8),
+  //                                           flushbarPosition: FlushbarPosition.TOP,
+  //                                           message:"You can't make more than 5 enrollment requests.",
+  //                                           backgroundColor: Colors.red,
+  //                                           duration:Duration(seconds:3),                   
+  //                                         ).show(context);
+
+
+  // }
+}
 }

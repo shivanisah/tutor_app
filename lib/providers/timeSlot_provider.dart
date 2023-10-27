@@ -72,9 +72,11 @@ Future<List<TimeSlot>> fetchTimeSlots(int teacherId) async {
 
     if (responseData is List) {
       final List<TimeSlot> timeSlots = responseData.map((data) => TimeSlot.fromJson(data)).toList();
+      notifyListeners();
       return timeSlots;
     } else if (responseData is Map<String, dynamic>) {
       final List<TimeSlot> timeSlots = [TimeSlot.fromJson(responseData as Map<String, dynamic>)];
+      notifyListeners();
       return timeSlots;
     } else {
       throw Exception('Invalid response data format');

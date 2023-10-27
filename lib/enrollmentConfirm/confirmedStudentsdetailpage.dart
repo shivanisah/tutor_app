@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
 
 import '../models/user_models/enrolledStudentsmodel.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/user_models/timeSlot.dart';
 import '../utils/colors.dart';
 
 
@@ -190,7 +192,11 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
       }
     );
   }
-
+String _formatTime(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+} 
 
 
   @override
@@ -199,7 +205,8 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
     String formattedStartTime = enrollment.startTime?? '';
     String formattedEndTime = enrollment.endTime?? '';
     List<String>? subjectsString = enrollment.subjects?? [];
-
+    List<TimeSlot>? slots = enrollment.timelsots;
+     
 
     return Scaffold(
 
@@ -292,8 +299,14 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
-                              ]), 
+                              ]),
+                        Row(
+                          children: [
+                            SizedBox(width:24),
+                            Expanded(child: Text(subjectsString.join(','),style:TextStyle(fontSize: 16))),
+                          ],
+                        ),
+ 
                       SizedBox(height:12),  
                        Row(children: [
                               Icon(Icons.date_range,size:18),
@@ -302,17 +315,28 @@ class _EnrollmentConfirmedDetailPage extends State<EnrollmentConfirmedDetailPage
                               Text("Requested teaching date: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
                               Text('${enrollment.tuition_joining_date}',style:TextStyle(fontSize: 16)),
                               ]),     
-                     SizedBox(height:12),  
+                      SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.punch_clock_rounded,size:18),
+                            Icon(Icons.hourglass_bottom,size:18),
                               SizedBox(width:10),
 
                               Text("Requested teaching time: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
+                              for(TimeSlot slot in slots!)
+                              Text('${_formatTime(slot.startTime!)} - ${_formatTime(slot.endTime!)}',
+                              style:  GoogleFonts.poppins(
+
+                                   fontSize:  15,
+                                   fontWeight: FontWeight.w400,
+
+                                     )
+                              ),
+
+                              // Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
+                              
                               ]), 
                       SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.lock_clock,size:18),
+                            Icon(Icons.check_circle,size:18),
                               SizedBox(width:10),
 
                               Text("Confirmed on: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),

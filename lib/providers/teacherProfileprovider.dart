@@ -28,8 +28,8 @@ class TeacherProfileProvider with ChangeNotifier{
       'teaching_location': teacher.teaching_location,
       'teaching_experience': teacher.teaching_experience,
       'education': teacher.education,
-      'grade':teacher.className,
-      'subjects':teacher.subjects?.join(',') ,
+      // 'grade':teacher.className,
+      // 'subjects':teacher.subjects?.join(',') ,
     });
     _loading = true;
     notifyListeners();
@@ -105,8 +105,8 @@ debugPrint("Response Body: ${response.body}");
   }
 
   Future<void> teacherteachingInfoUpdate(BuildContext context,String teaching_location,String education,String teaching_experience,
-                                          String grade,List subjects,int teacherId) 
-  
+                                          int teacherId) 
+  // String grade,List subjects,
   async {
     final url = AppUrl.baseUrl+'/teacherprofileUpdate/$teacherId';
 
@@ -114,8 +114,8 @@ debugPrint("Response Body: ${response.body}");
       'teaching_location':teaching_location,
       'teaching_experience': teaching_experience,
       'education': education,
-      'grade':grade,
-      'subjects':subjects.join(',') ,
+      // 'grade':grade,
+      // 'subjects':subjects.join(',') ,
 
     });
     _loading = true;
@@ -278,6 +278,28 @@ Future<void> notificationCount(int teacherId) async{
     final responseData = json.decode(response.body);
     int count = responseData['notification_count']; 
     notification_count = count;     
+      notifyListeners();
+    
+    
+  }    
+  else{
+      throw Exception("Failed to fetch notification list");
+    }
+
+
+}
+
+int enrollnotification_count = 0;
+int get enrollnotificationcount => notification_count;
+Future<void> enrollnotificationCount(int teacherId) async{
+  final url = Uri.parse(AppUrl.baseUrl+'/enrollmentrequestcount/$teacherId');
+  final response = await http.get(url);
+
+  if(response.statusCode == 200){
+    
+    final responseData = json.decode(response.body);
+    int count = responseData['notification_count']; 
+    enrollnotification_count = count;     
       notifyListeners();
     
     

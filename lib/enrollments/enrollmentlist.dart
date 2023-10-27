@@ -128,7 +128,7 @@ final enrollmentProvider = Provider.of<EnrollmentProvider>(context);
                    Container(
                     margin:EdgeInsets.only(left:20,top:10,bottom:10,right:20),
                     padding:EdgeInsets.only(top:10),
-                    height:150,
+                    height:120,
                     
                         decoration: BoxDecoration(
                           borderRadius:BorderRadius.circular(6),
@@ -196,6 +196,7 @@ final enrollmentProvider = Provider.of<EnrollmentProvider>(context);
                                                                               startTime: enrollment.startTime,
                                                                               endTime:enrollment.endTime,
                                                                               subjects:enrollment.subjects,
+                                                                              timelsots: enrollment.timelsots,
                                                                         );
                                       
                                       Navigator.push(

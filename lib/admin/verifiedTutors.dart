@@ -183,14 +183,16 @@ bool isLoading = true;
                                           id:teacher.id,
                                           grade:teacher.grade,
                                           subjects:subjectsString?? [],
-                                          verification_status: teacher.verification_status
+                                          verification_status: teacher.verification_status,
+                                          certificate: teacher.certificate,
+                                          block:teacher.block,
 
 
                                       );
                                       
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => VerifiedTutorDetailPage(),
+                                        MaterialPageRoute(builder: (context) => VerifiedTutorDetailPage(profile:teacher),
                                         settings: RouteSettings(arguments: verified_teacher)
                                         ),
                                       );

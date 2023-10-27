@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -115,7 +116,7 @@ class AuthProvider extends ChangeNotifier{
   int tutor,String student_email,int student,String finalselectedDate,
   // String selectedTimeSlot
   String selecctedStartTimeSlot,
-  String selectedEndTimeSlot
+  String selectedEndTimeSlot, String address, [selectedslotid]
   )async{
     var body = jsonEncode({
       'parents_name':parentsName,
@@ -135,6 +136,7 @@ class AuthProvider extends ChangeNotifier{
       'teacher_name':teacher_name,
       'teacher_email':teacher_email,
       'student_email':student_email,
+      'address':address,
 
 
     
@@ -146,7 +148,7 @@ class AuthProvider extends ChangeNotifier{
   _loading = true;    
     notifyListeners();
     try{
-      http.Response response = await http.post(Uri.parse(AppUrl.studentenrollmentApiEndPoint),headers: headers,
+      http.Response response = await http.post(Uri.parse(AppUrl.baseUrl+'/enrollment/$selectedslotid'),headers: headers,
     body: body
     );
     
@@ -193,6 +195,77 @@ class AuthProvider extends ChangeNotifier{
     _loading = false;
     notifyListeners();
   }
+
+
+    Future<void> studentEnrollmentrequest(BuildContext context,
+  String requestfor,String grade,String? teaching_location,List<String> subjects,
+  String teacher_email,String teacher_name,
+  
+  int tutor,String student_email,int student,String finalselectedDate,
+  String selecctedStartTimeSlot,
+  String selectedEndTimeSlot, String address, [selectedslotid]
+  )async{
+    var body = jsonEncode({
+      'enrollment_for':requestfor,
+      'grade':grade,
+      'preffered_teaching_location':teaching_location,
+      'subjects':subjects.join(','),
+      'tutor':tutor,
+      'student':student,
+      'selected_tuitionjoining_date':finalselectedDate,
+      // 'teaching_time':selectedTimeSlot,
+      'startTime':selecctedStartTimeSlot,
+      'endTime':selectedEndTimeSlot,
+      'teacher_name':teacher_name,
+      'teacher_email':teacher_email,
+      'student_email':student_email,
+      'address':address,
+
+      
+    });
+
+  _loading = true;    
+    notifyListeners();
+    try{
+      http.Response response = await http.post(Uri.parse(AppUrl.baseUrl+'/enrollment/$selectedslotid'),headers: headers,
+    body: body
+    );
+    
+      var responsebody = response.body;
+      var mssg = jsonDecode(responsebody);
+      if(response.statusCode ==400){
+        // setSignUpLoading(false);
+        // notifyListeners();
+       final snackBar = SnackBar(content: Text('Something went wrong'),backgroundColor: Colors.red,);
+       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        
+      }
+        if(response.statusCode==201){
+        final snackBar = SnackBar(content: Text('Your enrollment form is submitted successfully'),backgroundColor: Palette.theme1,);
+         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Timer(Duration(seconds: 2), (){
+                 Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>EnrollmentMessage()),
+              );
+        });
+
+
+
+        }
+
+
+
+      
+    } on SocketException{
+      final snackBar = SnackBar(content: Text('No Internet Connection'));
+       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    }
+    _loading = false;
+    notifyListeners();
+  }
+
 //tutor Details Adding
   Future<void> teacherDetails(BuildContext context,String address) async{
     var body = jsonEncode({
@@ -225,7 +298,7 @@ class AuthProvider extends ChangeNotifier{
         // notifyListeners();
         final snackBar = SnackBar(content: Text('Your enrollment form is submitted successfully'));
          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                         Timer(Duration(seconds: 2), (){
+            Timer(Duration(seconds: 2), (){
                  Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>Login()),
@@ -528,7 +601,7 @@ Future<void> forgotPassword(BuildContext context,String email) async{
   notifyListeners();
   try{
     http.Response response = await http.post(Uri.parse(AppUrl.resetpassword),body:body,headers:headers);
-
+    print(response.statusCode);
     if(response.statusCode == 201){
       final snackbar = SnackBar(content:Text("Reset code has been sent to your email"),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -536,6 +609,15 @@ Future<void> forgotPassword(BuildContext context,String email) async{
           Navigator.push(context,MaterialPageRoute(builder: (context)=>PasswordVerify()));
       });
 
+    }
+    if(response.statusCode == 404){
+      Flushbar(backgroundColor: Colors.red,
+      message:"User with this email doesn't exist. Provide your email correctly ",
+      flushbarPosition: FlushbarPosition.TOP,
+      duration: Duration(seconds: 3),
+      margin: EdgeInsets.all(6),
+      borderRadius: BorderRadius.circular(6),
+      ).show(context);
     }
   }on SocketException {
     final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);
@@ -630,12 +712,19 @@ print(response.body);
     if(response.statusCode == 200){
       final snackbar = SnackBar(content: Text("Password changed successfully"),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      // Timer(Duration(seconds:2),(){
-      //   Navigator.push(context,MaterialPageRoute(builder:(context) => Login(),));
-      // });
+      Timer(Duration(seconds:2),(){
+        Navigator.push(context,MaterialPageRoute(builder:(context) => Login(),));
+      });
       
 
     }
+    else if(response.statusCode == 404){
+      final snackbar = SnackBar(content: Text("Please re-check your email and enter correct code"),backgroundColor: Palette.theme1,);
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      
+
+    }
+
     
   }on SocketException {
     final snackBar = SnackBar(content: Text('No Internet Connection'),backgroundColor: Colors.red,);

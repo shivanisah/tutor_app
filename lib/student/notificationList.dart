@@ -35,6 +35,7 @@ bool loading = true;
 
     }finally{
       setState(() {
+        
         loading = false;
       });
     }
@@ -67,6 +68,7 @@ bool loading = true;
       backgroundColor: Color(0xFFF5F7F9),
       appBar: AppBar(backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: Palette.theme1),
+      elevation:0
       
       ),
       body: SingleChildScrollView(
@@ -98,7 +100,7 @@ bool loading = true;
                    Container(
                     margin:EdgeInsets.only(left:20,top:10,bottom:10,right:20),
                     padding:EdgeInsets.only(top:2,left:10,bottom:3),
-                    height:110,
+                    height:130,
                         decoration: BoxDecoration(
                           borderRadius:BorderRadius.circular(8),
                           color: Colors.white,
@@ -122,6 +124,7 @@ bool loading = true;
                                        )
 
                                       ),
+                                    
                              TextSpan(
                                         text:data.teacher?.fullName,
                                     style:  GoogleFonts.poppins(                                
@@ -141,7 +144,7 @@ bool loading = true;
                                        )
                                     ),
                                   TextSpan(
-                                        text:data.teacher?.grade,
+                                        text:data.enrrollmentform?.grade,
                                     style:  GoogleFonts.poppins(                                
                                      fontSize:  15,
                                      fontWeight: FontWeight.w500,
@@ -159,7 +162,8 @@ bool loading = true;
                                        )
                                     ),
                              TextSpan(
-                                        text:data.teacher?.subjects?.join(','),
+                              
+                                        text:data.enrrollmentform?.subjects?.join(','),
                                     style:  GoogleFonts.poppins(                                
                                      fontSize:  15,
                                      fontWeight: FontWeight.w500,
@@ -206,6 +210,35 @@ bool loading = true;
                               // )
                               ]),
                             SizedBox(height:2),
+                            data.enrrollmentform?.confirmation == true?
+                                                        Row(children: [
+                              Icon(Icons.call,color:Palette.theme1,size: 18,),
+                              SizedBox(width:8),
+
+                                Text("Contact Tutor: ",
+                                  style:  GoogleFonts.poppins(
+
+                                   fontSize:  14,
+                                   fontWeight: FontWeight.w400,
+
+                                     )
+
+                              ),
+
+                              SizedBox(width:8),
+                              Text(data.teacher?.phoneNumber?? '',
+                                  style:  GoogleFonts.poppins(
+
+                                   fontSize:  14,
+                                  //  height:  1.5,
+                                   fontWeight: FontWeight.w400,
+                                  //  color: Palette.theme1,
+
+                                     )
+
+                              ),
+                              ]):const SizedBox.shrink(),
+
                             Row(children: [
                               Icon(Icons.calendar_month,color:Palette.theme1,size: 18,),
                               SizedBox(width:6),

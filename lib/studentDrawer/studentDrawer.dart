@@ -13,10 +13,10 @@ import '../shared_preferences.dart/user_preferences.dart';
 
 class StudentDrawer extends StatefulWidget{
   @override
-  State<StudentDrawer> createState() => _StudentDrawer();
+  State<StudentDrawer> createState() => _StudentDrawerState();
 }
 
-class _StudentDrawer extends State<StudentDrawer> {
+class _StudentDrawerState extends State<StudentDrawer> {
   final userPreferences = UserPreferences();
     String email = '';
     int? studentId;
@@ -70,13 +70,13 @@ class _StudentDrawer extends State<StudentDrawer> {
  final provider = Provider.of<StudentProvider>(context,listen:false);
  provider.notificationCount(studentId!);
 
-    return Drawer(
+    return profile==null?SizedBox.shrink():Drawer(
       child:ListView(
         padding:EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(accountName: Text(""), accountEmail: Text(email),
             currentAccountPicture: CircleAvatar(
-              child:ClipOval(child: Image.asset("assets/images/d1.jpg",
+              child:ClipOval(child: Image.asset("assets/images/teacherimg.png",
               width:90,
               height:90,
               fit:BoxFit.cover,
@@ -89,7 +89,7 @@ class _StudentDrawer extends State<StudentDrawer> {
             // )
             
             ),
-            profile?.name == null?
+            profile.name == null?
             ListTile(
               leading: Icon(Icons.person,color:Palette.theme1),
               title:Text("Profile"),

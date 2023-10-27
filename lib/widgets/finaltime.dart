@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:tutor_app/Apis/teacherList.dart';
 import 'package:tutor_app/utils/colors.dart';
 import 'package:tutor_app/models/user_models/timeSlotmodel.dart';
 
+import '../FirstScreen/Home.dart';
 import '../app_urls/app_urls.dart';
 import '../providers/finaltimeslot_provider.dart';
 import '../providers/timeSlot_provider.dart';
@@ -28,6 +30,8 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
   List<SelectedTimeSlot> _timeSlots = [];
   final userPreferences = UserPreferences();
   int? teacherId;
+  String? user_type;
+
   TeacherList teacherlist =TeacherList();
 
   @override
@@ -35,15 +39,18 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
     super.initState();
     _addNewTimeSlot();
 
+
   }
   int? teacher;
   bool isLoading = false;
   List<int> disabledSlots = [];
+  bool isListViewVisible = false; 
+  bool isListViewOccupiedVisible = false; 
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final timeSlotProvider = Provider.of<FinalTimeSlotProvider>(context, listen: false);
+    final timeSlotProvider = Provider.of<FinalTimeSlotProvider>(context, listen: true);
     teacher = ModalRoute.of(context)!.settings.arguments as int;
     timeSlotProvider.TimeSlots(teacher!);
     timeSlotProvider.TimeSlotsOccupied(teacher!);
@@ -64,12 +71,13 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
 
       setState(() {
               timeslot.setDisable(disable);
+              
               // disabledSlots.add(timeslot.id?? 0);
 
             }); 
     final snackBar = SnackBar(content: Text('Slot Disabled'),backgroundColor: Palette.theme1,);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
+  
          } 
          
          else {
@@ -81,6 +89,7 @@ class _MultipleTimePickState extends State<MultipleTimePick> {
     setState(() {
       isLoading = false;
     });
+    
   }
 
   }
@@ -149,16 +158,16 @@ String _formatTimeOfDay(TimeOfDay time) {
   } else {
     var hour = time.hourOfPeriod.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    // final period = time.period == DayPeriod.am ? 'AM' : 'PM';
     
-    if (hour == '12') {
-      // Convert 12-hour format to 24-hour format for 12 AM
-      if (period == 'AM') {
-        hour = '00';
-      }
-    }
+    // if (hour == '12') {
+    //   // Convert 12-hour format to 24-hour format for 12 AM
+    //   if (period == 'AM') {
+    //     hour = '00';
+    //   }
+    // }
     
-    return '$hour:$minute $period';
+    return '$hour:$minute';
   }
 }
 
@@ -226,6 +235,18 @@ String _formatTimeOfDay(TimeOfDay time) {
 void _saveTimeSlots() async{
   final selectedTimeSlots = _timeSlots.where((timeSlot) => timeSlot.isSelected).toList();
 
+  if(selectedTimeSlots.isEmpty){
+                        Flushbar(
+                        flushbarPosition: FlushbarPosition.TOP,
+                        message: "You haven't selected any time slot",
+                        backgroundColor:Colors.red,
+                        duration: Duration(seconds: 3),
+                      )..show(context);   
+
+  }
+else{
+
+
   final conflictingSlots = _checkConflictingTimeSlots(selectedTimeSlots);
 
   if (conflictingSlots.isEmpty) {
@@ -236,10 +257,8 @@ void _saveTimeSlots() async{
         'endTime': _formatTime(timeSlot.endTime),
       };
     }).toList();
-    setState(() {
-      teacherlist.getAllTeacher();
 
-    });
+
 
 final timeSlotProvider = Provider.of<TimeSlotProvider>(context, listen: false);
 final fetchedData = await timeSlotProvider.fetchTimeSlots(teacherId!);
@@ -251,6 +270,7 @@ final List<TimeSlot> fetchedTimeSlots = fetchedData;
     if (matchingSlots.isEmpty) {
       final timeSlotProvider = Provider.of<TimeSlotProvider>(context, listen: false);
       timeSlotProvider.saveTimeSlots(context, timeSlotsData);
+    
     } else {
       _showMatchingSlotsDialog(matchingSlots);
     }
@@ -259,7 +279,7 @@ final List<TimeSlot> fetchedTimeSlots = fetchedData;
   }
 
 }
-
+}
 List<SelectedTimeSlot> _getMatchingTimeSlots(List<SelectedTimeSlot> selectedSlots, List<TimeSlot> fetchedSlots) {
   final List<SelectedTimeSlot> matchingSlots = [];
 
@@ -274,6 +294,7 @@ List<SelectedTimeSlot> _getMatchingTimeSlots(List<SelectedTimeSlot> selectedSlot
 
   return matchingSlots;
 }
+
 
 bool _isTimeSlotMatch(SelectedTimeSlot selectedSlot, TimeSlot fetchedSlot) {
 
@@ -296,7 +317,7 @@ void _showMatchingSlotsDialog(List<SelectedTimeSlot> matchingSlots) {
   String message = 'The following time slots already exist:\n\n';
 
   for (final slot in matchingSlots) {
-    message += 'Time Slot: ${_formatTimeOfDay(slot.startTime)} - ${_formatTimeOfDay(slot.endTime)}\n\n';
+    message += 'Time Slot: ${_formatTime(slot.startTime)} - ${_formatTime(slot.endTime)}\n\n';
   }
 
   showDialog(
@@ -411,18 +432,26 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
        final dtimeslots = timeProvider.timeSlots;
        final occupiedslots = timeProvider.timeSlotsoccupied;
 
-
     userPreferences.getUser().then((teacher) {
-      // ignore: unnecessary_null_comparison
       if (teacher != null) {
         setState(() {
           teacherId = teacher.id;
+          user_type = teacher.user_type?? '';
         });
       }
     });
 
     return Scaffold(
-      appBar: AppBar(),
+          appBar: AppBar(
+            leading:IconButton(icon:Icon(Icons.home),
+            onPressed:() {
+              Navigator.push(context,MaterialPageRoute(builder: (context) => Home(),
+              settings:RouteSettings(arguments:user_type)
+              ));
+            },
+            )
+    ),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -441,8 +470,255 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
               ),
             ),
             SizedBox(height: 18),
+
+          Container(
+          margin:EdgeInsets.only(left:20,bottom:20),
+          child:   Row(
+          children: [  
+          GestureDetector( 
+        onTap: () {
+ 
+          setState(() { 
+            isListViewVisible = !isListViewVisible; 
+          }); 
+        },
+  
+      
+  
+    child: Container(
+                height:40,
+                // width:350,
+                padding: EdgeInsets.only(left:10,right:5,top:5,bottom:5),
+                decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                                        // border: Border.all(width: 0.7,color: Colors.black),
+                color: Palette.theme1
+                ),
+                child: Row(
+                  children: [
+                    Text("View Not Occupied Slots",style: GoogleFonts.poppins(
+                        color:Colors.white,
+                        fontWeight:FontWeight.w400
+                    )
+                    // TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width:5),
+                    Icon(Icons.watch,size: 16,color:Colors.white)
+                  ],
+                ),
+
+              ),
+
+  
+      
+  
+      ),
+  
+  
+  
+  
+    ],
+  
+  ),
+),
+
+
+           Visibility(
+            visible:isListViewVisible,
+             child: Column(
+               children: [
+                Divider(),
+                            Row(
+              children: [
+                SizedBox(width:65),
+                Text("Start Time",
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  // fontWeight: FontWeight.w500,
+                  height: 1.0,
+                  color: Color(0xff000000),
+                ),
+                 ),
+                SizedBox(width:22),
+                Text("End Time", style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  // fontWeight: FontWeight.w500,
+                  height: 1.0,
+                  color: Color(0xff000000),
+                ),
+                   ),
+
+              ],
+            ),
+
+                 Container(
+                     
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics:NeverScrollableScrollPhysics(),
+                    itemCount: dtimeslots.length,
+                    itemBuilder: (context, index) {
+                      final timeslot = dtimeslots[index];
+                      
+                      return  
+                      ListTile(
+                          // title: Text(
+                          //   '${index + 1}',
+                          //   style: GoogleFonts.poppins(
+                          //     // fontSize: 18,
+                          //     // height: 1.0,
+                          //     color: Color(0xff000000),
+                          //   ),
+                          // ),
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(width:5),
+                              Text(
+                            'Slot ${index + 1}',
+                            style: GoogleFonts.poppins(
+                              // fontSize: 18,
+                              height: 1.0,
+                              color: Color(0xff000000),
+                            ),
+                          ),
+                              SizedBox(width:10),
+           
+                              ElevatedButton(
+                                child: Text('${timeslot.startTime}'),
+                   
+                                onPressed: () {}
+                              ),
+                              Icon(Icons.arrow_forward),
+                              ElevatedButton(
+                                child: Text('${timeslot.endTime}'),
+                                
+                                onPressed: () {}
+                              ),
+                              SizedBox(width:20),
+                          //    timeslot.disable == false? 
+                          //    IconButton(
+                          //       icon: Icon(
+                                  
+                          // isChecked?Icons.check_box:Icons.check_box_outline_blank,
+                          //       color: Palette.theme1,
+                          //       ),
+                          //       onPressed: () {
+                          //           setState(() {
+                          //             isChecked = !isChecked;
+                          //           });
+                          //       disableSlot(timeslot, true);
+           
+           
+                          //       }
+                          //     ):  IconButton(
+                          //       icon: Icon(           
+                          //    isChecked?Icons.check_box_outline_blank:Icons.check_box,
+                          //         color: Palette.theme1,
+                          //       ),
+                          //       onPressed: () {
+                          //         setState(() {
+                          //           isChecked = !isChecked;
+                          //         });
+           
+                          //       }
+                          //     )
+           
+                               timeslot.disable == false
+                                      ?GestureDetector(
+                                        onTap: () {
+                                       disableSlot(timeslot, true);
+                                       print("time..................................");
+                                       print(timeslot.disable);
+           
+                                        },
+                                        child: Text("Disable",style:  GoogleFonts.poppins(
+                      
+                    
+                        fontWeight:  FontWeight.w500,
+                        height:  1.0,
+                        color: Palette.theme1,
+                      
+                      )
+                      ),
+                                          
+                      ):
+                      
+                              GestureDetector(
+                                        onTap: () {
+                                       SlotEnable(timeslot, false);
+                                        },
+                                        child: Text("Enable",style:  GoogleFonts.poppins(           
+                        fontWeight:  FontWeight.w500,
+                        height:  1.0,
+                        color: Palette.theme1,
+                      
+                      )
+                      ),
+                                          
+                      )                      ],
+                          ),
+                        );
+           
+                      
+                    },
+                  ),
+                  
+                         ),
+                  Divider(),
+
+               ],
+             ),
+           ),
+// occupied slots
+      Container(
+        padding:EdgeInsets.only(left:20),
+        child: GestureDetector(
+        
+          onTap:(){
+        
+        isListViewOccupiedVisible=!isListViewOccupiedVisible;
+        
+          },
+        
+    child: Container(
+                height:40,
+                width:200,
+                padding: EdgeInsets.only(left:10,right:5,top:5,bottom:5),
+                decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                                        // border: Border.all(width: 0.7,color: Colors.black),
+                color: Palette.theme1
+                ),
+                child: Row(
+                  children: [
+                    Text("View Occupied Slots",style: GoogleFonts.poppins(
+                        color:Colors.white,
+                        fontWeight:FontWeight.w400
+                    )
+                    // TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width:5),
+                    Icon(Icons.watch,size: 16,color:Colors.white)
+                  ],
+                ),
+
+              ),
+      
+          
+        
+        ),
+      ),
+
+
+           Visibility(
+            visible: isListViewOccupiedVisible,
+             child: Column(
+               children: [
+                SizedBox(height:20),
             Row(
               children: [
+                
                 SizedBox(width:65),
                 Text("Start Time",style: GoogleFonts.poppins(
                   fontSize: 18,
@@ -463,181 +739,69 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
               ],
             ),
 
-           Container(
-      
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics:NeverScrollableScrollPhysics(),
-              itemCount: dtimeslots.length,
-              itemBuilder: (context, index) {
-                final timeslot = dtimeslots[index];
-                
-                return  
-                ListTile(
-                    // title: Text(
-                    //   '${index + 1}',
-                    //   style: GoogleFonts.poppins(
-                    //     // fontSize: 18,
-                    //     // height: 1.0,
-                    //     color: Color(0xff000000),
-                    //   ),
-                    // ),
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width:5),
-                        Text(
-                      'Slot ${index + 1}',
-                      style: GoogleFonts.poppins(
-                        // fontSize: 18,
-                        height: 1.0,
-                        color: Color(0xff000000),
+                 Container(
+                     
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics:NeverScrollableScrollPhysics(),
+                    itemCount: occupiedslots.length,
+                    itemBuilder: (context, index) {
+                      final timeslot = occupiedslots[index];
+                      
+                      return  
+                      ListTile(
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(width:5),
+                              Text(
+                            'Slot ${index + 1}',
+                            style: GoogleFonts.poppins(
+                              // fontSize: 18,
+                              height: 1.0,
+                              color: Color(0xff000000),
+                            ),
+                          ),
+                              SizedBox(width:10),
+           
+                              ElevatedButton(
+                                child: Text('${timeslot.startTime}'),
+                   
+                                onPressed: () {}
+                              ),
+                              Icon(Icons.arrow_forward),
+                              ElevatedButton(
+                                child: Text('${timeslot.endTime}'),
+                                
+                                onPressed: () {}
+                              ),
+                              SizedBox(width:3),
+           
+                      
+                              GestureDetector(
+                                        onTap: () {
+                                        },
+                                        child: Text("Occupied",style:  GoogleFonts.poppins(           
+                        fontWeight:  FontWeight.w600,
+                        height:  1.0,
+                        fontSize: 14,
+                        color: Color.fromARGB(255, 28, 116, 1),
+                      
+                      )
                       ),
-                    ),
-                        SizedBox(width:10),
-
-                        ElevatedButton(
-                          child: Text('${timeslot.startTime}'),
-    
-                          onPressed: () {}
-                        ),
-                        Icon(Icons.arrow_forward),
-                        ElevatedButton(
-                          child: Text('${timeslot.endTime}'),
-                          
-                          onPressed: () {}
-                        ),
-                        SizedBox(width:20),
-                    //    timeslot.disable == false? 
-                    //    IconButton(
-                    //       icon: Icon(
-                            
-                    // isChecked?Icons.check_box:Icons.check_box_outline_blank,
-                    //       color: Palette.theme1,
-                    //       ),
-                    //       onPressed: () {
-                    //           setState(() {
-                    //             isChecked = !isChecked;
-                    //           });
-                    //       disableSlot(timeslot, true);
-
-
-                    //       }
-                    //     ):  IconButton(
-                    //       icon: Icon(           
-                    //    isChecked?Icons.check_box_outline_blank:Icons.check_box,
-                    //         color: Palette.theme1,
-                    //       ),
-                    //       onPressed: () {
-                    //         setState(() {
-                    //           isChecked = !isChecked;
-                    //         });
-
-                    //       }
-                    //     )
-
-                         timeslot.disable == false
-                                ?GestureDetector(
-                                  onTap: () {
-                                 disableSlot(timeslot, true);
-                                 print("time..................................");
-                                 print(timeslot.disable);
-
-                                  },
-                                  child: Text("Disable",style:  GoogleFonts.poppins(
-                
-              
-                  fontWeight:  FontWeight.w500,
-                  height:  1.0,
-                  color: Palette.theme1,
-                
-                )
-                ),
-                                    
-                ):
-                
-                        GestureDetector(
-                                  onTap: () {
-                                 SlotEnable(timeslot, false);
-                                  },
-                                  child: Text("Enable",style:  GoogleFonts.poppins(           
-                  fontWeight:  FontWeight.w500,
-                  height:  1.0,
-                  color: Palette.theme1,
-                
-                )
-                ),
-                                    
-                )                      ],
+                                          
+                      )],
                     ),
                   );
-
-                
-              },
-            ),
-            
-          ),
-// occupied slots
-           Container(
-      
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics:NeverScrollableScrollPhysics(),
-              itemCount: occupiedslots.length,
-              itemBuilder: (context, index) {
-                final timeslot = occupiedslots[index];
-                
-                return  
-                ListTile(
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width:5),
-                        Text(
-                      'Slot ${index + 1}',
-                      style: GoogleFonts.poppins(
-                        // fontSize: 18,
-                        height: 1.0,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                        SizedBox(width:10),
-
-                        ElevatedButton(
-                          child: Text('${timeslot.startTime}'),
-    
-                          onPressed: () {}
-                        ),
-                        Icon(Icons.arrow_forward),
-                        ElevatedButton(
-                          child: Text('${timeslot.endTime}'),
-                          
-                          onPressed: () {}
-                        ),
-                        SizedBox(width:3),
-
-                
-                        GestureDetector(
-                                  onTap: () {
-                                  },
-                                  child: Text("Occupied",style:  GoogleFonts.poppins(           
-                  fontWeight:  FontWeight.w600,
-                  height:  1.0,
-                  fontSize: 14,
-                  color: Color.fromARGB(255, 28, 116, 1),
-                
-                )
-                ),
-                                    
-                )],
-              ),
-            );
-
-                
-              },
-            ),
-            
-          ),
+           
+                      
+                    },
+                  ),
+                  
+                         ),
+               ],
+             ),
+           ),
 
 
             SizedBox(height:20),
@@ -702,7 +866,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                         ElevatedButton(
                           child: Text(
                             // ignore: unnecessary_null_comparison
-                            timeSlot.startTime != null ? _formatTimeOfDay(timeSlot.startTime) : 'Select Start',
+                            timeSlot.startTime != null ? _formatTime(timeSlot.startTime) : 'Select Start',
                           ),
                           onPressed: () => _showStartTimePickerDialog(index),
                         ),
@@ -710,7 +874,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                         ElevatedButton(
                           child: Text(
                             // ignore: unnecessary_null_comparison
-                            timeSlot.endTime != null ? _formatTimeOfDay(timeSlot.endTime) : 'Select End',
+                            timeSlot.endTime != null ? _formatTime(timeSlot.endTime) : 'Select End',
                           ),
                           onPressed: () => _showEndTimePickerDialog(index),
                         ),
@@ -735,7 +899,7 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                   .map((entry) => Container(
                         margin: EdgeInsets.only(left: 45),
                         child: Text(
-                          'Selected Time Slot ${entry.key + 1}:  ${_formatTimeOfDay(entry.value.startTime)} - ${_formatTimeOfDay(entry.value.endTime)}',
+                          'Selected Time Slot ${entry.key + 1}:  ${_formatTime(entry.value.startTime)} - ${_formatTime(entry.value.endTime)}',
                         ),
                       ))
                   .toList(),
@@ -759,7 +923,20 @@ void _showConflictingSlotsDialog(List<int> conflictingSlots) {
                 ),
                 ElevatedButton(
                   child: Text('Add Time Slot'),
-                  onPressed: _addNewTimeSlot,
+                  onPressed:(){
+                    int index = _timeSlots.length;
+                    print("Index.........$index");
+                    if(index>=5){
+                    Flushbar(
+                        flushbarPosition: FlushbarPosition.TOP,
+                        message: 'Sorry, at a time you can only add 5 slots',
+                        backgroundColor:Colors.red,
+                        duration: Duration(seconds: 3),
+                      )..show(context);   
+                    }else{
+                      _addNewTimeSlot();
+                    }
+                  }
                 ),
               ],
             ),

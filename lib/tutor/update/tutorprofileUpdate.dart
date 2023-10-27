@@ -63,7 +63,7 @@ LatLng? _selectedLatLng;
     // TeacherData profile = ModalRoute.of(context)!.settings.arguments as TeacherData;
     final teacherprofileProvider = Provider.of<TeacherProfileProvider>(context);
 
-String imageUrl = widget.profile.image ?? "assets/images/d1.jpg";
+String imageUrl = widget.profile.image ?? "assets/images/teacherimg.png";
 
 
     double height = MediaQuery.of(context).size.height;
@@ -119,7 +119,7 @@ String imageUrl = widget.profile.image ?? "assets/images/d1.jpg";
                                                     alignment: Alignment.topCenter,
 
                                                                ):
-                                                               Image.asset( "assets/images/d1.jpg",
+                                                               Image.asset( "assets/images/teacherimg.png",
                                                     fit:BoxFit.cover,
                                                     width:128,
                                                     height:128,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tutor_app/app_urls/app_urls.dart';
 // import 'package:tutor_app/student/studentEnrollment.dart';
@@ -9,6 +10,7 @@ import '../models/user_models/enrolledStudentsmodel.dart';
 // import '../utils/colors.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/user_models/timeSlot.dart';
 import '../utils/colors.dart';
 
 
@@ -158,7 +160,11 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
       }
     );
   }
-
+String _formatTime(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+} 
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +173,7 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
     String formattedStartTime = enrollment.startTime?? '';
     String formattedEndTime = enrollment.endTime?? '';
     List<String>? subjectsString = enrollment.subjects?? [];
-
+    List<TimeSlot>? slots = enrollment.timelsots;
     return Scaffold(
 
       appBar:AppBar(
@@ -177,9 +183,9 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
       body:SingleChildScrollView(
         child: Container(
           padding:EdgeInsets.only(top:20,left:10),
-          margin: EdgeInsets.only(left:20,right:20,top:40,bottom:30),
-          height:580,
-          width:350,
+          margin: EdgeInsets.only(left:20,right:10,top:40,bottom:30),
+          height:595,
+          width:357,
           
           // color:Colors.blue,
           decoration:BoxDecoration(
@@ -259,8 +265,15 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
                               SizedBox(width:10),
 
                               Text("Subjects: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
-                              ]), 
+                              ]),
+                                                                                   
+                            Row(
+                              children: [
+                                SizedBox(width:26),
+                                Text(subjectsString.join(','),style:TextStyle(fontSize: 16)),
+                              ],
+                            ),
+ 
                       SizedBox(height:12),  
                        Row(children: [
                               Icon(Icons.date_range,size:18),
@@ -271,11 +284,20 @@ class _EnrollmentaDetailPage extends State<EnrollmentDetailPage> {
                               ]),     
                      SizedBox(height:12),  
                        Row(children: [
-                            Icon(Icons.punch_clock_rounded,size:18),
+                            Icon(Icons.hourglass_bottom,size:18),
                               SizedBox(width:10),
 
                               Text("Requested teaching time: ",style:TextStyle(fontSize: 16,fontWeight: FontWeight.w500)),
-                              Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
+                                                            for(TimeSlot slot in slots!)
+                              Text('${_formatTime(slot.startTime!)} - ${_formatTime(slot.endTime!)}',
+                              style:  GoogleFonts.poppins(
+
+                                   fontSize:  15,
+                                   fontWeight: FontWeight.w400,
+
+                                     )
+                              ),
+                              // Text('${formattedStartTime.substring(0,5)} - ${formattedEndTime.substring(0,5)}',style:TextStyle(fontSize: 16)),
                               ]),     
     
                       SizedBox(height:10),

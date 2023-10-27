@@ -21,12 +21,17 @@ class _ChangePasswordState extends State<ChangePassword> {
 
 TextEditingController oldpasswordcontroller = TextEditingController();
 TextEditingController newpasswordcontroller = TextEditingController();
+TextEditingController newconfirmpasswordcontroller = TextEditingController();
+
 bool _isObscure = true;
+bool _isObscure2 = true;
+bool _isObscure3 = true;
 
 @override
   void dispose(){
     oldpasswordcontroller.dispose();
     newpasswordcontroller.dispose();
+    newconfirmpasswordcontroller.dispose();
     super.dispose();
 
   }
@@ -157,15 +162,15 @@ bool _isObscure = true;
         
         
                 TextFormField(    
-                  obscureText:_isObscure,          
+                  obscureText:_isObscure2,          
                   controller:newpasswordcontroller,
                   decoration:InputDecoration(   
                   suffixIcon: IconButton(
-                    icon:Icon(_isObscure?
+                    icon:Icon(_isObscure2?
                     Icons.visibility_off:Icons.visibility),
                     onPressed:(){
                       setState((){
-                        _isObscure=!_isObscure;
+                        _isObscure2=!_isObscure2;
             
                       });
                     }
@@ -208,9 +213,69 @@ bool _isObscure = true;
                                 }
                               },
                 ),
+                 SizedBox(height:15),
+                Text(
+                 'Confirm Your Password ',
+                 style:  GoogleFonts.poppins(
+                fontSize:  15,        
+                height:  1.5,
+                color:  Colors.black,
+        
+                  )
+              ),   
+              SizedBox(height:4) ,       
+                 TextFormField(    
+                 obscureText:_isObscure3,          
+                 controller:newconfirmpasswordcontroller,
+                decoration:InputDecoration(   
+                suffixIcon: IconButton(
+                  icon:Icon(_isObscure3?
+                  Icons.visibility_off:Icons.visibility),
+                  onPressed:(){
+                    setState((){
+                      _isObscure3=!_isObscure3;
+          
+                    });
+                  }
+                  ),
+          
+                
+                border:InputBorder.none,  
+                hintText:"New Confirm Password",
+                hintStyle: TextStyle(color:Colors.black),
+                fillColor: Palette.fillcolor,
+                filled: true,
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red,),
+                  borderRadius:BorderRadius.circular(6),
+                ),
+                focusedErrorBorder: OutlineInputBorder
+                (borderSide:BorderSide(color:Colors.red),
+                borderRadius:BorderRadius.circular(6),
+                ),
+                enabledBorder:OutlineInputBorder(                 
+                    borderRadius:BorderRadius.circular(6),
+                    borderSide:BorderSide(color: Palette.fillcolor), 
+                  ),
+                  focusedBorder:OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide:BorderSide(color:Palette.theme1)
+                  )
+                    
+                ),
+                            validator: (value) {
+                              if (newconfirmpasswordcontroller.text !=
+                                  newpasswordcontroller.text) {
+                                return "Password did not match";
+                              } else {
+                                return null;
+                              }
+                            },
+            
+                 ),
 
 
-            SizedBox(height:height*0.2),
+            SizedBox(height:height*0.1),
             GestureDetector(
               onTap:(){
                 if(formkey.currentState!.validate()){

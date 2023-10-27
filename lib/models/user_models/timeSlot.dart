@@ -5,12 +5,16 @@ class TimeSlot {
   final TimeOfDay? endTime;
   final int? teacherId;
   final int? id;
+  final int? studentId;
+  final int? enrollmentId;
 
   TimeSlot({
     this.startTime,
     this.endTime,
     this.teacherId,
     this.id,
+    this.studentId,
+    this.enrollmentId,
   });
 
 factory TimeSlot.fromJson(Map<String, dynamic> json) {
@@ -19,6 +23,8 @@ factory TimeSlot.fromJson(Map<String, dynamic> json) {
     endTime: _parseTime(json['endTime']),
     teacherId: json['teacherId'],
     id: json['id'],
+    studentId: json['studentId'],
+    enrollmentId: json['enrollmentId'],
   );
 }
 

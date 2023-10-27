@@ -274,77 +274,77 @@ void didChangeDependencies() {
             ),
       
       //Class and subjects
-             Column(
+          //    Column(
             
                   
-            children: [
-              Container(
-              margin:EdgeInsets.all(20),
-                child: InputDecorator(
-                                decoration: InputDecoration(
-                border:OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-                contentPadding:const EdgeInsets.all(10),
-              ),
+          //   children: [
+          //     Container(
+          //     margin:EdgeInsets.all(20),
+          //       child: InputDecorator(
+          //                       decoration: InputDecoration(
+          //       border:OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+          //       contentPadding:const EdgeInsets.all(10),
+          //     ),
 
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<ClassSubject>(
-                      value: _selectedClassSubject,
-                      isExpanded:true,
-                      isDense: true,
-                      // hint: profile?.grade!=null?Text('${profile?.grade}',style:TextStyle(color:Colors.black)):Text('Select class',style:TextStyle(color:Colors.black)),
-                        hint: Text('Select class',style:TextStyle(color:Colors.black)),
+          //         child: DropdownButtonHideUnderline(
+          //           child: DropdownButton<ClassSubject>(
+          //             value: _selectedClassSubject,
+          //             isExpanded:true,
+          //             isDense: true,
+          //             // hint: profile?.grade!=null?Text('${profile?.grade}',style:TextStyle(color:Colors.black)):Text('Select class',style:TextStyle(color:Colors.black)),
+          //               hint: Text('Select class',style:TextStyle(color:Colors.black)),
 
-                      onChanged: (ClassSubject? newValue) {
-                        setState(() {
-                          _selectedClassSubject = newValue;
-                          _selectedSubjects.clear();
-                        });
-                      },
+          //             onChanged: (ClassSubject? newValue) {
+          //               setState(() {
+          //                 _selectedClassSubject = newValue;
+          //                 _selectedSubjects.clear();
+          //               });
+          //             },
                       
-                      items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
-                        return DropdownMenuItem<ClassSubject>(
-                          value: classSubject,
-                          child: Text(classSubject.className),
-                        );
-                      }).toList(),
-                      style: TextStyle(color: Colors.black, fontSize: 19),
-                      icon: Icon(Icons.arrow_drop_down,size: 30,),
-                      underline: SizedBox(),      
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              if (_selectedClassSubject != null)
-                Column(
-                  children: _selectedClassSubject!.subjects.map<Widget>((subject) {
-                    return ListTile(
-                      title: Text(subject),
-                      leading: Theme(
-                        data: ThemeData(
-                      // unselectedWidgetColor: Colors.grey, // Color when checkbox is not selected
-                      checkboxTheme: CheckboxThemeData(
-                        fillColor: MaterialStateProperty.all<Color>(Palette.theme1), // Color when checkbox is selected
-                       ),
-                          ),
-                        child: Checkbox(
-                          value: _selectedSubjects.contains(subject),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value == true) {
-                                _selectedSubjects.add(subject);
-                              } else {
-                                _selectedSubjects.remove(subject);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ]
-          ),
+          //             items: _classSubjects.map<DropdownMenuItem<ClassSubject>>((ClassSubject classSubject) {
+          //               return DropdownMenuItem<ClassSubject>(
+          //                 value: classSubject,
+          //                 child: Text(classSubject.className),
+          //               );
+          //             }).toList(),
+          //             style: TextStyle(color: Colors.black, fontSize: 19),
+          //             icon: Icon(Icons.arrow_drop_down,size: 30,),
+          //             underline: SizedBox(),      
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(height: 4),
+          //     if (_selectedClassSubject != null)
+          //       Column(
+          //         children: _selectedClassSubject!.subjects.map<Widget>((subject) {
+          //           return ListTile(
+          //             title: Text(subject),
+          //             leading: Theme(
+          //               data: ThemeData(
+          //             // unselectedWidgetColor: Colors.grey, 
+          //             checkboxTheme: CheckboxThemeData(
+          //               fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
+          //              ),
+          //                 ),
+          //               child: Checkbox(
+          //                 value: _selectedSubjects.contains(subject),
+          //                 onChanged: (bool? value) {
+          //                   setState(() {
+          //                     if (value == true) {
+          //                       _selectedSubjects.add(subject);
+          //                     } else {
+          //                       _selectedSubjects.remove(subject);
+          //                     }
+          //                   });
+          //                 },
+          //               ),
+          //             ),
+          //           );
+          //         }).toList(),
+          //       ),
+          //   ]
+          // ),
       
       
       
@@ -394,7 +394,7 @@ void didChangeDependencies() {
                           
                                           onTap: ()async{
                                       if(selectedTeachinglocation=="" || selectedTeachingExperience=="" 
-                                      || selected_education =="" || _selectedClassSubject==null || _selectedSubjects.isEmpty)
+                                      || selected_education =="" )
                                       
                                     {
                           // final snackBar = SnackBar(content: Text('All selection fields are required'));
@@ -412,8 +412,8 @@ void didChangeDependencies() {
                   teaching_location:selectedTeachinglocation,
                   teaching_experience: selectedTeachingExperience,
                   education: selected_education, 
-                  className : _selectedClassSubject?.className?? '',
-                  subjects:_selectedSubjects
+                  // className : _selectedClassSubject?.className?? '',
+                  // subjects:_selectedSubjects
                 );
           
                 await teacherprofileProvider.updateTeacher(context,teacher.id, teacher);
@@ -451,8 +451,8 @@ void didChangeDependencies() {
                         
                                                                            color: Colors.white,
                 
-                      )
-));
+                                                                           )
+                                                                          ));
                                                   }
                                                 },
                                               ),           

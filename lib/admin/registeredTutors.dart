@@ -6,6 +6,8 @@ import 'package:tutor_app/models/user_models/teacher_data.dart';
 import 'package:tutor_app/providers/teacherProfileprovider.dart';
 import 'package:tutor_app/utils/colors.dart';
 
+import '../models/user_models/classsubjectmodel.dart';
+
 
 
 
@@ -182,14 +184,16 @@ bool isLoading = true;
                                           grade:teacher.grade,
                                           subjects:subjectsString?? [],
                                           verification_status: teacher.verification_status,
-                                          certificate: teacher.certificate
+                                          certificate: teacher.certificate,
+                                          // classSubjectlist: List<GradeSubjectsModel>.from(teacher['classlist'].map((cslist) => GradeSubjectsModel.fromJson(cslist))),
+
 
 
                                       );
                                       
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => RegisteredTutorDetailPage(),
+                                        MaterialPageRoute(builder: (context) => RegisteredTutorDetailPage(profile:teacher),
                                         settings: RouteSettings(arguments: registered_teacher)
                                         ),
                                       );

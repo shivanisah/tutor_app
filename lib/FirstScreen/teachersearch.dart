@@ -121,9 +121,9 @@ class _MyClassSubjectPageState extends State<MyClassSubjectPage> {
                     title: Text(subject),
                     leading: Theme(
                       data: ThemeData(
-                    // unselectedWidgetColor: Colors.grey, // Color when checkbox is not selected
+                    // unselectedWidgetColor: Colors.grey, 
                     checkboxTheme: CheckboxThemeData(
-                      fillColor: MaterialStateProperty.all<Color>(Palette.theme1), // Color when checkbox is selected
+                      fillColor: MaterialStateProperty.all<Color>(Palette.theme1), 
                      ),
                         ),
                       child: Checkbox(

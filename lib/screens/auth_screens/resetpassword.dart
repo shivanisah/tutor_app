@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tutor_app/screens/auth_screens/login.dart';
 import 'package:tutor_app/utils/colors.dart';
 
 import '../../providers/auth_provider.dart';
@@ -32,6 +33,14 @@ TextEditingController emailcontroller = TextEditingController();
     double width =  MediaQuery.of(context).size.width;
 
     return Scaffold(
+          appBar: AppBar(
+            leading:IconButton(icon:Icon(Icons.arrow_back),
+            onPressed:() {
+              Navigator.push(context,MaterialPageRoute(builder: (context) => Login(),
+              ));
+            },
+            )
+    ),
       body:Container(
         margin:EdgeInsets.all(20),
         height:height,

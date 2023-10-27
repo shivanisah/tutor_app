@@ -41,7 +41,7 @@ double width = MediaQuery.of(context).size.width;
 double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar:AppBar(),
+      // appBar:AppBar(),
       // appBar:PreferredSize(
       //   preferredSize:const Size.fromHeight(60),
       //   child:AppB(),
@@ -61,24 +61,24 @@ double height = MediaQuery.of(context).size.height;
             Text(
                'Log In',
                style:  GoogleFonts.poppins(
-
+    
               fontSize:  25,
                   fontWeight:  FontWeight.w500,
                   height:  1.5,
                 color:  Color(0xff000000),
-
+    
                 )
             ),
             SizedBox(height:6),
             Text(
                'Please enter your login details',
                style:  GoogleFonts.poppins(
-
+    
               fontSize:  12,
                   // fontWeight:  FontWeight.w600,
                   height:  1.5,
                 color:  Color(0xff000000),
-
+    
                 )
             ),           
            
@@ -86,11 +86,11 @@ double height = MediaQuery.of(context).size.height;
                              Text(
                'Email Address ',
                style:  GoogleFonts.poppins(
-
+    
               fontSize:  15,
                   height:  1.5,
                 color:  Colors.black,
-
+    
                 )
             ),           
               SizedBox(height:4),
@@ -138,16 +138,16 @@ double height = MediaQuery.of(context).size.height;
               Text(
                'Password ',
                style:  GoogleFonts.poppins(
-
+    
               fontSize:  15,
                   // fontWeight:  FontWeight.w600,
                   height:  1.5,
                 color:  Colors.black,
-
+    
                 )
             ),   
             SizedBox(height:4) ,       
-
+    
               TextFormField(    
                 obscureText:_isObscure,          
                 controller:passwordController,
@@ -169,7 +169,7 @@ double height = MediaQuery.of(context).size.height;
                 hintStyle: TextStyle(color:Colors.black,fontWeight:FontWeight.w400),
                 fillColor: Color.fromARGB(255, 234, 235, 236),
                 filled: true,
-
+    
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red,),
                   borderRadius:BorderRadius.circular(6),
@@ -201,7 +201,7 @@ double height = MediaQuery.of(context).size.height;
                             },
             
                  ),
-
+    
                  SizedBox(height:40),
                  Center(
                    child: RichText(
@@ -210,24 +210,24 @@ double height = MediaQuery.of(context).size.height;
                          children: <TextSpan>[
                            TextSpan(text: 'Forgot Password? ',
                            style:GoogleFonts.poppins(
-
+    
                           fontSize:  15,
                           fontWeight:  FontWeight.w400,
                           // height:  1.5,
                           color:  Color.fromARGB(255, 134, 148, 162),
-
+    
                 )
                            ),
                            TextSpan(text: 'Reset Password',
                            recognizer:TapGestureRecognizer()..onTap=() => 
-                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>ResetPassword())),
+                           Navigator.push(context,MaterialPageRoute(builder: (context)=>ResetPassword())),
                            style:GoogleFonts.poppins(
-
+    
                           fontSize:  15,
                           fontWeight:  FontWeight.w600,
                           // height:  1.5,
                           color:  Palette.theme1,
-
+    
                               )
                             ),
                          ],
@@ -236,14 +236,14 @@ double height = MediaQuery.of(context).size.height;
                  ),
                 SizedBox(height:20),
                     GestureDetector(
-
+    
                                       onTap: (){
                                   if(_formkey.currentState!.validate()){
                                       provider.userLogin(context,emailController.text.toString(), passwordController.text.toString());
                                     
                                   }
-
-
+    
+    
                                       },
                                       child: Container(
                                         height:50,
@@ -270,12 +270,12 @@ double height = MediaQuery.of(context).size.height;
                                     //  maintainAnimation: true,
                                     //  maintainState: true,
                                     //  visible: true,
-
+    
                                     //       child: CircularProgressIndicator(color:Colors.white)):            
                                             // Center(child: Text('Continue',style:TextStyle(color:Colors.white,fontSize: 16))),                                       
                                       ),
                                     ),
-
+    
               SizedBox(height:20),
                                Center(
                    child: RichText(
@@ -284,32 +284,32 @@ double height = MediaQuery.of(context).size.height;
                          children: <TextSpan>[
                            TextSpan(text: "Don't have an account? ",
                            style:GoogleFonts.poppins(
-
+    
                           fontSize:  15,
                           fontWeight:  FontWeight.w400,
                           // height:  1.5,
                           color:  Color.fromARGB(255, 134, 148, 162),
-
+    
                           )
                            ),
                            TextSpan(text: 'Signup',
                            recognizer:TapGestureRecognizer()..onTap = () =>
-                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>StudentTutorAccount(),)),
+                           Navigator.push(context,MaterialPageRoute(builder: (context) =>StudentTutorAccount(),)),
                            style:GoogleFonts.poppins(
-
+    
                           fontSize:  15,
                           fontWeight:  FontWeight.w600,
                           // height:  1.5,
                           color:  Palette.theme1,
-
+    
                 )
                             ),
                          ],
                      ),
                    ),
                  ),
-
-
+    
+    
                     
             ],),
           ),

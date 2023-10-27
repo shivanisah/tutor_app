@@ -5,6 +5,8 @@ import 'package:tutor_app/models/user_models/enrolledStudentsmodel.dart';
 import 'package:tutor_app/providers/enrollmentlist_provider.dart';
 import 'package:tutor_app/utils/colors.dart';
 
+import '../models/user_models/timeSlot.dart';
+
 class EnrollmentHistory extends StatefulWidget{
   @override
   State<EnrollmentHistory> createState() => _EnrollmentHistoryState();
@@ -46,7 +48,12 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
     });
 
     return enrollments;
-  }  
+  } 
+  String _formatTime(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+} 
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +84,7 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
             Padding(
               padding: const EdgeInsets.only(left:15.0,bottom:9),
               child: Text(
-                 'Enrollment History',
+                 'Enrollment',
                  style:  GoogleFonts.poppins(
                   
                 fontSize:  25,
@@ -99,15 +106,16 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
                 itemBuilder: (context, index) {
                   final data = sortedData[index];
                   List<String>? subjectsString = data.subjects?? [];
-                  String formattedStartTime = data.startTime?? '';
-                  String formattedEndTime = data.endTime?? '';
-
-
+                  // String formattedStartTime = data.startTime?? '';
+                  // String formattedEndTime = data.endTime?? '';
+                  
+                  List<TimeSlot>? slot= data.timelsots;
+                  
                   return
                    Container(
                     margin:EdgeInsets.only(left:20,top:10,bottom:10,right:20),
                     padding:EdgeInsets.only(top:18,left:10,),
-                    height:240,
+                    height:250,
                     
                         decoration: BoxDecoration(
                           borderRadius:BorderRadius.circular(6),
@@ -196,13 +204,15 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
 
                               ),
                               SizedBox(width:6),
-                              Text(subjectsString.join(','),
-                              style:  GoogleFonts.poppins(
-
-                                   fontSize:  15,
-                                   fontWeight: FontWeight.w400,
-
-                                     )
+                              Expanded(
+                                child: Text(subjectsString.join(','),
+                                style:  GoogleFonts.poppins(
+                              
+                                     fontSize:  15,
+                                     fontWeight: FontWeight.w400,
+                              
+                                       )
+                                ),
                               ),
                               ]),
                               SizedBox(height:6),
@@ -265,7 +275,9 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
 
                               ),
                               SizedBox(width:6),
-                              Text('${formattedStartTime} - ${formattedEndTime}',
+                              for(TimeSlot slots in slot!)
+                            Text('${_formatTime(slots.startTime!)} - ${_formatTime(slots.endTime!)}',
+                              // Text('${formattedStartTime} - ${formattedEndTime}',
                               style:  GoogleFonts.poppins(
 
                                    fontSize:  15,
@@ -303,9 +315,34 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
                                      )),
                               
                               ]),
-        
+                                SizedBox(height:6),
+
+                              Row(children: [
+                                SizedBox(width:5),
+
+                                Text("Enrollment for :",
+                                  style:  GoogleFonts.poppins(
+
+                                   fontSize:  15,
+                                  //  height:  1.5,
+                                   fontWeight: FontWeight.w500,
+                                   color: Palette.theme1,
+
+                                     )
+
+                                ),
+                              // Icon(Icons.calendar_month,size:24,color:Palette.theme1),
+                              SizedBox(width: 6),
+                              Text(data.enrollment_for?? '',
+
+                                style:  GoogleFonts.poppins(
+
+                                   fontSize:  15,
+                                   fontWeight: FontWeight.w400,
+
+                                     )),
                               
-                          
+                              ]),
                           ],
                         )
                   );

@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:intl/intl.dart';
+import 'package:tutor_app/models/user_models/mapclasssubject.dart';
 import 'package:tutor_app/models/user_models/timeSlot.dart';
+
+import 'classsubjectmodel.dart';
 
 
 class TeacherData {
@@ -29,6 +32,12 @@ class TeacherData {
   String? latitude;
   String? longitude;
   final String? certificate;
+  List<GradeSubjectsModel>? classSubjectlist;
+  List<GradeSubjectsModel>? classSubjectfinallist;
+
+  dynamic mapclasssubject;
+  late bool? block;
+
   // final String subjects;
 
   TeacherData({
@@ -54,6 +63,10 @@ class TeacherData {
     this.latitude,
     this.longitude,
     this.certificate,
+    this.classSubjectlist,
+    this.classSubjectfinallist,
+    this.mapclasssubject,
+    this.block,
   });
   factory TeacherData.fromJson(Map<String, dynamic> json) {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -64,6 +77,15 @@ class TeacherData {
   } else if (subjectsData is List<dynamic>) {
     subjectsList = List<String>.from(subjectsData);
   }
+
+  final classSubject;
+  final classSubjectListData = json['classlist'] as List<dynamic>?;
+    if (classSubjectListData != null) {
+      classSubject = classSubjectListData
+          .map((classData) => GradeSubjectsModel.fromJson(classData))
+          .toList();
+    }
+
     return TeacherData(
       id: json['id'], 
       email: json['email'],
@@ -85,6 +107,9 @@ class TeacherData {
       latitude:json['latitude'],
       longitude:json['longitude'],
       certificate:json['certificate'],
+      classSubjectfinallist: List<GradeSubjectsModel>.from(json['classlist'].map((classData)=>GradeSubjectsModel.fromJson(classData))),
+      block:json['block'] as bool,
+
         );
   }
 void setVerification(bool value){
@@ -105,5 +130,13 @@ void setpreviewCertificateDate(DateTime date){
       final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       preview_certificateDate = dateFormat.format(date);
 }
+
+  void setBlockedUser(bool value) {
+    block= value;
+  }
+  void setUnBlockedUser(bool value) {
+    block= value;
+  }
+
 
 }
